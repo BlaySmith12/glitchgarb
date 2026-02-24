@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOIN THE CLUB | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container fade-in">
+            <h2 style="margin-bottom: 2rem;">Join the Club</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" minlength="6">
+                    <small style="opacity: 0.6; font-size: 0.7rem;">Minimum 6 characters</small>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Create Account</button>
+            </form>
+
+            <div style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+                Already a member? <a href="login.html" style="color: var(--accent-color); text-decoration: none;">Login
+                    Here</a>
+            </div>
+
+            <div class="social-auth">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                    <span style="font-size: 0.7rem; opacity: 0.5;">OR CONTINUE WITH</span>
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                </div>
+                <button class="btn-social" id="google-signup">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" width="16"> Google
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Other Scripts -->
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+
+    <script>
+        // Initialize Firebase
+        firebaseService.init();
+
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Show loading state
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use Firebase Authentication
+                const result = await firebaseService.signUp(email, password, name);
+
+                if (result.success) {
+                    const user = result.user;
+
+                    // Get the ID token for API authentication
+                    const idToken = await user.getIdToken();
+                    localStorage.setItem('gg_user_token', idToken);
+
+                    // Store user info in localStorage for compatibility
+                    // Use gg_user key to match what storageService.getCurrentUser() expects
+                    localStorage.setItem('gg_user', JSON.stringify({
+                        id: user.uid,
+                        email: user.email,
+                        name: name,
+                        isAdmin: false,
+                        isVIP: false
+                    }));
+
+                    Toast.success('Account created successfully! Redirecting...', { duration: 2000 });
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    console.error('Signup failed:', result);
+                    let errorMsg = result.error || 'Registration failed';
+                    if (result.errorCode === 'auth/operation-not-allowed') {
+                        errorMsg = 'Email/password sign-up is not enabled. Please enable it in Firebase Console > Authentication > Sign-in method.';
+                    }
+                    Toast.error(errorMsg);
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                Toast.error('An error occurred: ' + (error.message || 'Please try again.'));
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Google Sign Up
+        document.getElementById('google-signup').onclick = async () => {
+            try {
+                Toast.info('Connecting to Google...');
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+                // Force account selection every time
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+                const result = await firebase.auth().signInWithPopup(provider);
+                const user = result.user;
+
+                // Create/update user document
+                await firebase.firestore().collection('users').doc(user.uid).set({
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    isAdmin: false,
+                    isVIP: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                // Fetch user data to get admin status
+                let isAdmin = false;
+                let isVIP = false;
+                try {
+                    const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        isAdmin = userData.isAdmin || false;
+                        isVIP = userData.isVIP || false;
+                    }
+                } catch (e) {
+                    console.log('Could not fetch user data:', e);
+                }
+
+                // Get the ID token for API authentication
+                const idToken = await user.getIdToken();
+                localStorage.setItem('gg_user_token', idToken);
+
+                localStorage.setItem('gg_user', JSON.stringify({
+                    id: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    photoURL: user.photoURL,
+                    isAdmin: isAdmin,
+                    isVIP: isVIP
+                }));
+
+                Toast.success('Welcome! Redirecting...', { duration: 2000 });
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Google signup error:', error);
+                console.error('Error code:', error.code);
+                let errorMsg = 'Google signup failed. Please try again.';
+                if (error.code === 'auth/unauthorized-domain') {
+                    errorMsg = 'This domain is not authorized. Please add it in Firebase Console > Authentication > Settings > Authorized domains.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMsg = 'Popup was blocked. Please allow popups for this site.';
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    errorMsg = 'Sign-in was cancelled.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMsg = 'Google sign-in is not enabled. Please enable it in Firebase Console > Authentication > Sign-in method.';
+                }
+                Toast.error(errorMsg);
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,2535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN DASHBOARD | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            background: var(--secondary-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.75rem 0;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+
+        .admin-content {
+            padding: 3rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--secondary-bg);
+            padding: 1.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.7rem;
+            opacity: 0.4;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            font-size: 0.6rem;
+            font-weight: bold;
+            background: #222;
+        }
+
+        .status-secured {
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            border-color: #fff;
+        }
+
+        .danger-btn {
+            border-color: #500;
+            color: #f55;
+        }
+
+        .danger-btn:hover {
+            background: #500;
+            color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--secondary-bg);
+            padding: 2.5rem;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Next Drop Styles */
+        .next-drop-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .next-drop-status {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-indicator {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .status-indicator.active {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--color-success);
+        }
+
+        .status-indicator.inactive {
+            background: rgba(255, 68, 68, 0.15);
+            color: var(--color-error);
+        }
+
+        .status-text h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .status-text p {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin: 0;
+        }
+
+        .next-drop-form {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .next-drop-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .next-drop-form .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .next-drop-form input,
+        .next-drop-form select,
+        .next-drop-form textarea {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .next-drop-form input:focus,
+        .next-drop-form select:focus,
+        .next-drop-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .next-drop-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .next-drop-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .next-drop-actions .btn {
+            flex: 1;
+        }
+
+        .next-drop-preview {
+            grid-column: 1 / -1;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .next-drop-preview h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .preview-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-banner {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .preview-badge {
+            background: var(--accent-color);
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .preview-content {
+            padding: 1.5rem;
+        }
+
+        .preview-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .preview-content p {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        .preview-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: var(--accent-color);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Admin Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .admin-layout {
+                padding-top: 60px;
+            }
+
+            .admin-content {
+                padding: 1rem;
+            }
+
+            .admin-content header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .admin-content header h2 {
+                font-size: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            th,
+            td {
+                padding: 0.5rem;
+            }
+
+            .action-btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.55rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                width: 95vw;
+            }
+
+            .form-group label {
+                font-size: 0.7rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            #add-product-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-content header h2 {
+                font-size: 1.1rem;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Admin Header -->
+    <div class="admin-mobile-header"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--secondary-bg); border-bottom: 1px solid var(--border-color); z-index: 1000; padding: 0 1rem; align-items: center; justify-content: space-between;">
+        <h1 class="logo" style="font-size: 1rem;"><img src="logo.png" alt="GG ADMIN" style="height: 30px;"></h1>
+        <button id="admin-mobile-menu-toggle"
+            style="background: none; border: none; color: #fff; cursor: pointer; padding: 0.5rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Admin Menu Overlay -->
+    <div id="admin-mobile-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1001; opacity: 0; transition: opacity 0.3s;">
+    </div>
+
+    <!-- Mobile Admin Menu -->
+    <div id="admin-mobile-menu"
+        style="display: none; position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--secondary-bg); z-index: 1002; transition: left 0.3s; padding: 2rem; border-right: 1px solid var(--border-color);">
+        <button id="admin-mobile-close"
+            style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #fff; cursor: pointer; padding: 0.5rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <nav style="margin-top: 2rem;">
+            <a href="#" class="sidebar-link active"
+                onclick="showTab('products'); closeAdminMobileMenu(); return false;">PRODUCTS</a>
+            <a href="#" class="sidebar-link"
+                onclick="showTab('orders'); closeAdminMobileMenu(); return false;">ORDERS</a>
+            <a href="#" class="sidebar-link" onclick="showTab('users'); closeAdminMobileMenu(); return false;">USERS</a>
+            <a href="#" class="sidebar-link" onclick="showTab('next-drop'); closeAdminMobileMenu(); return false;">NEXT
+                DROP</a>
+            <a href="#" class="sidebar-link"
+                onclick="showTab('hero-section'); closeAdminMobileMenu(); return false;">HERO SECTION</a>
+            <a href="index.html" class="sidebar-link" style="margin-top: 4rem; opacity: 0.3;">EXIT DASHBOARD</a>
+        </nav>
+    </div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <h1 class="logo" style="font-size: 1rem; margin-bottom: 3rem;"><img src="logo.png" alt="GG ADMIN"
+                    style="height: 35px;"></h1>
+            <nav>
+                <a href="#" class="sidebar-link active" onclick="showTab('products'); return false;">PRODUCTS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('orders'); return false;">ORDERS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('users'); return false;">USERS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('next-drop'); return false;">NEXT DROP</a>
+                <a href="#" class="sidebar-link" onclick="showTab('hero-section'); return false;">HERO SECTION</a>
+                <a href="index.html" class="sidebar-link" style="margin-top: 4rem; opacity: 0.3;">EXIT DASHBOARD</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem;">
+                <div>
+                    <h2 id="tab-title">PRODUCT MANAGEMENT</h2>
+                    <p style="font-size: 0.7rem; opacity: 0.5;">Manage your drops and inventory levels.</p>
+                </div>
+                <button class="btn" onclick="openProductModal()" id="add-product-btn">NEW DROP</button>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Drops</div>
+                    <div class="stat-value" id="stat-total-products">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Nomads</div>
+                    <div class="stat-value" id="stat-total-users">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Secured Orders</div>
+                    <div class="stat-value" id="stat-total-orders">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value" id="stat-revenue">GH₵ 0.00</div>
+                </div>
+            </div>
+
+            <div id="table-container">
+                <!-- Table loaded via JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin-bottom: 2rem;">ADD NEW DROP</h3>
+            <input type="hidden" id="p-id">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="p-name">
+            </div>
+            <div class="form-group">
+                <label>Price (GH₵)</label>
+                <input type="number" id="p-price">
+            </div>
+            <div class="form-group">
+                <label>Initial Stock</label>
+                <input type="number" id="p-stock">
+            </div>
+            <div class="form-group">
+                <label>Release Date (Leave empty for immediate availability)</label>
+                <input type="datetime-local" id="p-release-date"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="p-category"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                    <option value="tshirt">T-Shirt</option>
+                    <option value="hoodie">Hoodie</option>
+                    <option value="cap">Caps</option>
+                    <option value="shorts">Shorts</option>
+                    <option value="pants">Pants</option>
+                    <option value="jacket">Jacket</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Available Colors</label>
+                <div id="color-picker" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div class="color-option" data-color="Black" data-hex="#000000"
+                        style="width: 40px; height: 40px; background: #000000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="White" data-hex="#ffffff"
+                        style="width: 40px; height: 40px; background: #ffffff; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Gray" data-hex="#666666"
+                        style="width: 40px; height: 40px; background: #666666; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Navy" data-hex="#1a237e"
+                        style="width: 40px; height: 40px; background: #1a237e; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Red" data-hex="#c62828"
+                        style="width: 40px; height: 40px; background: #c62828; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Green" data-hex="#2e7d32"
+                        style="width: 40px; height: 40px; background: #2e7d32; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Brown" data-hex="#5d4037"
+                        style="width: 40px; height: 40px; background: #5d4037; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Beige" data-hex="#d4c4b7"
+                        style="width: 40px; height: 40px; background: #d4c4b7; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                </div>
+                <input type="hidden" id="p-colors" value="">
+                <div id="selected-colors-display" style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">Click
+                    colors to select/deselect</div>
+            </div>
+            <div class="form-group">
+                <label>Product Image</label>
+                <div id="file-upload-area"
+                    style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                    <input type="file" id="p-image" accept="image/*" style="display: none;">
+                    <div id="file-upload-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin: 0 auto 1rem; opacity: 0.5;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style="margin: 0; color: #888;">Click to select an image</p>
+                        <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #666;">or drag and drop</p>
+                    </div>
+                    <div id="file-selected-info" style="display: none;">
+                        <img id="p-image-preview" src="" alt="Preview"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; margin-bottom: 1rem;">
+                        <p id="file-name" style="margin: 0 0 1rem; color: #fff; font-size: 0.9rem;"></p>
+                        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                            <button type="button" id="confirm-upload-btn" class="btn"
+                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="vertical-align: middle; margin-right: 0.25rem;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                UPLOAD
+                            </button>
+                            <button type="button" id="cancel-upload-btn" class="btn btn-outline"
+                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="vertical-align: middle; margin-right: 0.25rem;">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                CANCEL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="image-preview-group" style="display: none;">
+                <label>Selected Image</label>
+                <div
+                    style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <img id="confirmed-image-preview" src="" alt="Preview"
+                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <p id="confirmed-file-name" style="margin: 0; color: #fff; font-size: 0.9rem;"></p>
+                        <p style="margin: 0.25rem 0 0; color: #888; font-size: 0.8rem;">Image ready to save</p>
+                    </div>
+                    <button type="button" id="remove-image-btn" class="btn btn-outline"
+                        style="padding: 0.5rem 1rem; font-size: 0.8rem;">REMOVE</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Or Image URL</label>
+                <input type="text" id="p-image-url" placeholder="https://example.com/image.jpg"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+
+            <!-- Product Gallery Images -->
+            <div class="form-group">
+                <label>Product Gallery (Multiple Views)</label>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Add multiple images like Front, Back,
+                    Detail views</p>
+                <div id="gallery-images-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Gallery images will be added here -->
+                </div>
+                <button type="button" class="btn btn-outline" onclick="addGalleryImage()"
+                    style="margin-top: 1rem; padding: 0.75rem; width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    ADD IMAGE VIEW
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn" style="flex: 1;" onclick="saveProduct()">SAVE DROP</button>
+                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script src="admin-api.js"></script>
+    <script>
+        // Configuration - Set to true to use Firebase API, false to use localStorage
+        const USE_FIREBASE_API = true;
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        let currentTab = 'products';
+
+        // Helper function to get auth token
+        function getAuthToken() {
+            return adminAPI.getStoredToken();
+        }
+
+        // Admin authentication and initialization
+        document.addEventListener('DOMContentLoaded', async function () {
+            // First check authentication
+            if (USE_FIREBASE_API) {
+                // Check for Firebase authentication
+                const token = adminAPI.getStoredToken();
+                if (!token) {
+                    // Redirect to admin login
+                    window.location.href = 'admin-setup.html';
+                    return;
+                }
+
+                try {
+                    // Verify token is still valid
+                    const result = await adminAPI.getCurrentUser();
+                    if (!result.success || !result.user?.isAdmin) {
+                        adminAPI.setToken(null);
+                        window.location.href = 'admin-setup.html';
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                    adminAPI.setToken(null);
+                    window.location.href = 'admin-setup.html';
+                    return;
+                }
+            } else {
+                // Use localStorage authentication
+                const currentUser = storageService.getCurrentUser();
+                if (!currentUser || !currentUser.isAdmin) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+            }
+
+            // Initialize after auth check passes
+            renderDashboard();
+            initAdminMobileMenu();
+            initFileUploadHandlers();
+        });
+
+        // Admin Mobile Menu Functions
+        function initAdminMobileMenu() {
+            const mobileHeader = document.querySelector('.admin-mobile-header');
+            const mobileMenu = document.getElementById('admin-mobile-menu');
+            const mobileOverlay = document.getElementById('admin-mobile-overlay');
+            const menuToggle = document.getElementById('admin-mobile-menu-toggle');
+            const menuClose = document.getElementById('admin-mobile-close');
+
+            // Show mobile header on small screens
+            function checkMobile() {
+                if (window.innerWidth <= 768) {
+                    mobileHeader.style.display = 'flex';
+                    mobileMenu.style.display = 'block';
+                    mobileOverlay.style.display = 'block';
+                } else {
+                    mobileHeader.style.display = 'none';
+                    mobileMenu.style.left = '-280px';
+                    mobileOverlay.style.opacity = '0';
+                    document.body.style.overflow = '';
+                }
+            }
+
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', () => {
+                    mobileMenu.style.left = '0';
+                    mobileOverlay.style.opacity = '1';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+
+            function closeAdminMobileMenu() {
+                mobileMenu.style.left = '-280px';
+                mobileOverlay.style.opacity = '0';
+                document.body.style.overflow = '';
+            }
+
+            if (menuClose) {
+                menuClose.addEventListener('click', closeAdminMobileMenu);
+            }
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeAdminMobileMenu);
+            }
+
+            // Make function globally available
+            window.closeAdminMobileMenu = closeAdminMobileMenu;
+        }
+
+        function showTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            // Find and activate the correct sidebar link
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(`'${tab}'`)) {
+                    link.classList.add('active');
+                }
+            });
+
+            const title = document.getElementById('tab-title');
+            const addBtn = document.getElementById('add-product-btn');
+
+            if (tab === 'products') {
+                title.textContent = 'PRODUCT MANAGEMENT';
+                addBtn.style.display = 'block';
+            } else if (tab === 'orders') {
+                title.textContent = 'ORDER TRACKING';
+                addBtn.style.display = 'none';
+            } else if (tab === 'users') {
+                title.textContent = 'USER MANAGEMENT';
+                addBtn.style.display = 'none';
+            } else if (tab === 'next-drop') {
+                title.textContent = 'NEXT DROP CONFIGURATION';
+                addBtn.style.display = 'none';
+            } else if (tab === 'hero-section') {
+                title.textContent = 'HERO SECTION MANAGEMENT';
+                addBtn.style.display = 'none';
+            }
+
+            renderTable();
+        }
+
+        async function renderDashboard() {
+            if (USE_FIREBASE_API) {
+                try {
+                    const stats = await adminAPI.getStats();
+                    document.getElementById('stat-total-products').textContent = stats.totalProducts;
+                    document.getElementById('stat-total-users').textContent = stats.totalUsers;
+                    document.getElementById('stat-total-orders').textContent = stats.totalOrders;
+                    document.getElementById('stat-revenue').textContent = `GH₵ ${stats.totalRevenue.toFixed(2)}`;
+                } catch (error) {
+                    console.error('Error fetching stats:', error);
+                    Toast.error('Failed to load dashboard stats');
+                }
+            } else {
+                const products = storageService.getProducts();
+                const orders = storageService.getOrders();
+                const users = storageService.getUsers();
+                const revenue = orders.reduce((sum, o) => sum + o.price, 0);
+
+                document.getElementById('stat-total-products').textContent = products.length;
+                document.getElementById('stat-total-users').textContent = users.length;
+                document.getElementById('stat-total-orders').textContent = orders.length;
+                document.getElementById('stat-revenue').textContent = `GH₵ ${revenue.toFixed(2)}`;
+            }
+
+            renderTable();
+        }
+
+        async function renderTable() {
+            const container = document.getElementById('table-container');
+            if (currentTab === 'products') {
+                if (USE_FIREBASE_API) {
+                    try {
+                        const result = await adminAPI.getProducts();
+                        const products = result.products || [];
+                        renderProductsTable(container, products);
+                    } catch (error) {
+                        console.error('Error fetching products:', error);
+                        container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-error);">Failed to load products</p>';
+                    }
+                } else {
+                    const products = storageService.getProducts();
+                    renderProductsTable(container, products);
+                }
+            } else if (currentTab === 'orders') {
+                if (USE_FIREBASE_API) {
+                    try {
+                        const result = await adminAPI.getOrders();
+                        const orders = result.orders || [];
+                        renderOrdersTable(container, orders);
+                    } catch (error) {
+                        console.error('Error fetching orders:', error);
+                        container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-error);">Failed to load orders</p>';
+                    }
+                } else {
+                    const orders = storageService.getOrders();
+                    const users = storageService.getUsers();
+                    renderOrdersTable(container, orders, users);
+                }
+            } else if (currentTab === 'users') {
+                if (USE_FIREBASE_API) {
+                    try {
+                        const result = await adminAPI.getUsers();
+                        const users = result.users || [];
+                        renderUsersTable(container, users);
+                    } catch (error) {
+                        console.error('Error fetching users:', error);
+                        container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-error);">Failed to load users</p>';
+                    }
+                } else {
+                    const users = storageService.getUsers();
+                    renderUsersTable(container, users);
+                }
+            } else if (currentTab === 'next-drop') {
+                renderNextDropConfig();
+            } else if (currentTab === 'hero-section') {
+                renderHeroSectionConfig();
+            }
+        }
+
+        function renderProductsTable(container, products) {
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NAME</th>
+                            <th>CATEGORY</th>
+                            <th>PRICE</th>
+                            <th>STOCK</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(p => `
+                            <tr>
+                                <td>${p.id}</td>
+                                <td>${p.name}</td>
+                                <td>${p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : 'N/A'}</td>
+                                <td>GH₵ ${(p.price || 0).toFixed(2)}</td>
+                                <td>${p.stock || 0}</td>
+                                <td>
+                                    <button class="action-btn" onclick="editProduct('${p.id}')">Edit</button>
+                                    <button class="action-btn danger-btn" onclick="deleteProduct('${p.id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function renderOrdersTable(container, orders, users = null) {
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; opacity: 0.6;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin-bottom: 1rem;">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <h3 style="margin-bottom: 0.5rem;">NO ORDERS YET</h3>
+                        <p>Orders will appear here when customers make purchases</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ORDER ID</th>
+                                <th>CUSTOMER</th>
+                                <th>PRODUCT</th>
+                                <th>AMOUNT</th>
+                                <th>STATUS</th>
+                                <th>DATE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(o => {
+                    const user = users ? users.find(u => u.id === o.userId) : null;
+                    const orderDate = o.createdAt ? new Date(o.createdAt._seconds ? o.createdAt._seconds * 1000 : o.createdAt).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : (o.timestamp ? new Date(o.timestamp).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : 'N/A');
+
+                    // Handle both Firebase and localStorage order formats
+                    const productName = o.productName || (o.items && o.items[0]?.name) || 'N/A';
+                    const productImage = o.productImage || (o.items && o.items[0]?.image) || '';
+                    const total = o.total || o.price || 0;
+                    const customerName = o.customerInfo?.name || (user ? user.name : 'Guest');
+                    const customerEmail = o.customerInfo?.email || (o.shipping?.email || (user ? user.email : ''));
+
+                    return `
+                                    <tr>
+                                        <td><strong>${o.orderNumber || o.id}</strong></td>
+                                        <td>
+                                            <div>${customerName}</div>
+                                            <div style="font-size: 0.75rem; opacity: 0.6;">${customerEmail}</div>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                ${productImage ? `<img src="${productImage}" alt="${productName}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">` : ''}
+                                                <div>
+                                                    <div>${productName}</div>
+                                                    ${o.items && o.items.length > 1 ? `<div style="font-size: 0.7rem; opacity: 0.6;">+${o.items.length - 1} more items</div>` : ''}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>GH₵ ${total.toFixed(2)}</td>
+                                        <td><span class="status-badge status-${(o.status || 'pending').toLowerCase()}">${(o.status || 'pending').toUpperCase()}</span></td>
+                                        <td>${orderDate}</td>
+                                        <td>
+                                            <button class="action-btn" onclick="viewOrderDetails('${o.id}')">View</button>
+                                            <select onchange="updateOrderStatus('${o.orderNumber || o.id}', this.value)" style="padding: 0.4rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                                                <option value="">Update Status</option>
+                                                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                                                <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                                <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                `;
+                }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function renderUsersTable(container, users) {
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>USER ID</th>
+                            <th>NAME</th>
+                            <th>EMAIL</th>
+                            <th>VIP</th>
+                            <th>ADMIN</th>
+                            <th>JOINED</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(u => {
+                const joinDate = u.createdAt ? new Date(u.createdAt._seconds ? u.createdAt._seconds * 1000 : u.createdAt).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }) : 'N/A';
+                return `
+                                <tr>
+                                    <td>${u.id}</td>
+                                    <td>${u.name || 'N/A'}</td>
+                                    <td>${u.email}</td>
+                                    <td>${u.isVIP ? '<span style="color: var(--accent-color);">✓ VIP</span>' : '-'}</td>
+                                    <td>${u.isAdmin ? '<span style="color: #4CAF50;">✓ Admin</span>' : '-'}</td>
+                                    <td>${joinDate}</td>
+                                </tr>
+                            `;
+            }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function renderNextDropConfig() {
+            const container = document.getElementById('table-container');
+            const nextDrop = JSON.parse(localStorage.getItem('glitchgarb_next_drop') || 'null');
+
+            let products = [];
+            if (USE_FIREBASE_API) {
+                try {
+                    const result = await adminAPI.getProducts();
+                    products = result.products || [];
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                    container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--color-error);">Failed to load products</p>';
+                    return;
+                }
+            } else {
+                products = storageService.getProducts();
+            }
+
+            container.innerHTML = `
+                <div class="next-drop-config">
+                    <div class="next-drop-status">
+                        <div class="status-indicator ${nextDrop && nextDrop.enabled ? 'active' : 'inactive'}">
+                            <i class="fas fa-${nextDrop && nextDrop.enabled ? 'check-circle' : 'times-circle'}"></i>
+                        </div>
+                        <div class="status-text">
+                            <h4>${nextDrop && nextDrop.enabled ? 'Next Drop Active' : 'No Active Drop'}</h4>
+                            <p>${nextDrop && nextDrop.enabled ? 'The next drop is currently visible on the landing page' : 'Configure a drop to make it visible on the landing page'}</p>
+                        </div>
+                    </div>
+
+                    <div class="next-drop-form">
+                        <div class="form-group">
+                            <label>Enable Next Drop</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="nd-enabled" ${nextDrop && nextDrop.enabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Product</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select id="nd-product" style="flex: 1; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                                    <option value="">Select a product...</option>
+                                    ${products.map(p => `
+                                        <option value="${p.id}" ${nextDrop && nextDrop.productId === p.id ? 'selected' : ''}>${p.name} - GH₵ ${p.price.toFixed(2)}</option>
+                                    `).join('')}
+                                </select>
+                                <button type="button" class="btn btn-outline" onclick="openProductModal(); setTimeout(() => { const observer = new MutationObserver(() => { renderNextDropConfig(); observer.disconnect(); }); observer.observe(document.getElementById('table-container'), { childList: true }); }, 500)" style="padding: 0.75rem; white-space: nowrap;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    NEW
+                                </button>
+                            </div>
+                            ${products.length === 0 ? '<p style="font-size: 0.75rem; color: var(--accent-color); margin-top: 0.5rem;">No products yet. Click NEW to add your first product.</p>' : ''}
+                        </div>
+
+                        <div class="form-group">
+                            <label>Drop Date & Time</label>
+                            <input type="datetime-local" id="nd-datetime" 
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);"
+                                value="${nextDrop && nextDrop.dropDate ? nextDrop.dropDate : ''}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Drop Title</label>
+                            <input type="text" id="nd-title" placeholder="e.g., SUMMER COLLECTION DROP"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);"
+                                value="${nextDrop && nextDrop.title ? nextDrop.title : ''}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="nd-description" rows="3" placeholder="Describe the upcoming drop..."
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color); resize: vertical;">${nextDrop && nextDrop.description ? nextDrop.description : ''}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Banner Image</label>
+                            <div id="nd-banner-upload-area" style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 0.75rem;">
+                                <input type="file" id="nd-banner-file" accept="image/*" style="display: none;">
+                                <div id="nd-banner-placeholder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="margin: 0 auto 0.5rem; opacity: 0.5;">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <p style="margin: 0; color: #888; font-size: 0.85rem;">Click to upload banner image</p>
+                                </div>
+                                <div id="nd-banner-preview-container" style="display: none;">
+                                    <img id="nd-banner-preview" src="" alt="Banner Preview" style="max-width: 100%; max-height: 120px; border-radius: 4px; margin-bottom: 0.5rem;">
+                                    <button type="button" id="nd-banner-remove" class="btn btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">Remove</button>
+                                </div>
+                            </div>
+                            <input type="text" id="nd-banner" placeholder="Or enter image URL..."
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);"
+                                value="${nextDrop && nextDrop.bannerImage ? nextDrop.bannerImage : ''}">
+                        </div>
+
+                        <div class="next-drop-actions">
+                            <button class="btn" onclick="saveNextDrop()">Save Configuration</button>
+                            ${nextDrop && nextDrop.enabled ? '<button class="btn btn-outline" onclick="disableNextDrop()">Disable Drop</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${nextDrop && nextDrop.enabled ? `
+                    <div class="next-drop-preview">
+                        <h4>Preview</h4>
+                        <div class="preview-card">
+                            <div class="preview-banner" style="background-image: url('${nextDrop.bannerImage || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=800'}')">
+                                <div class="preview-overlay">
+                                    <span class="preview-badge">COMING SOON</span>
+                                </div>
+                            </div>
+                            <div class="preview-content">
+                                <h3>${nextDrop.title || 'Next Drop'}</h3>
+                                <p>${nextDrop.description || 'No description'}</p>
+                                <div class="preview-date">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${new Date(nextDrop.dropDate).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function saveNextDrop() {
+            const enabled = document.getElementById('nd-enabled').checked;
+            const productId = document.getElementById('nd-product').value;
+            const dropDate = document.getElementById('nd-datetime').value;
+            const title = document.getElementById('nd-title').value.trim();
+            const description = document.getElementById('nd-description').value.trim();
+            const bannerImage = document.getElementById('nd-banner').value.trim();
+
+            if (enabled && !productId) {
+                Toast.error('Please select a product');
+                return;
+            }
+
+            if (enabled && !dropDate) {
+                Toast.error('Please set a drop date and time');
+                return;
+            }
+
+            if (enabled && !title) {
+                Toast.error('Please enter a drop title');
+                return;
+            }
+
+            const nextDrop = {
+                enabled,
+                productId,
+                dropDate,
+                title,
+                description,
+                bannerImage
+            };
+
+            localStorage.setItem('glitchgarb_next_drop', JSON.stringify(nextDrop));
+            Toast.success('Next drop configuration saved');
+            renderNextDropConfig();
+        }
+
+        function disableNextDrop() {
+            if (confirm('Are you sure you want to disable the next drop?')) {
+                const nextDrop = JSON.parse(localStorage.getItem('glitchgarb_next_drop') || '{}');
+                nextDrop.enabled = false;
+                localStorage.setItem('glitchgarb_next_drop', JSON.stringify(nextDrop));
+                Toast.success('Next drop disabled');
+                renderNextDropConfig();
+            }
+        }
+
+        // ============================================
+        // HERO SECTION MANAGEMENT
+        // ============================================
+
+        function renderHeroSectionConfig() {
+            const container = document.getElementById('table-container');
+
+            // Default slides
+            const defaultSlides = [
+                {
+                    id: 1,
+                    image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=1587',
+                    title: 'GLITCH<br>CORE',
+                    subtitle: 'THE FOUNDATION COLLECTION. LIMITED NUMBERS.',
+                    cta: 'Secure the Drop',
+                    link: 'shop.html',
+                    enabled: true
+                },
+                {
+                    id: 2,
+                    image: 'https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?auto=format&fit=crop&q=80&w=1740',
+                    title: 'URBAN<br>UTILITY',
+                    subtitle: 'ENGINEERED FOR THE STREETS. GHANA PRIDE.',
+                    cta: 'View Collection',
+                    link: 'shop.html',
+                    enabled: true
+                }
+            ];
+
+            // Load from localStorage or use defaults
+            let heroSlides = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || 'null');
+            if (!heroSlides) {
+                heroSlides = defaultSlides;
+                // Save defaults to localStorage
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(defaultSlides));
+            }
+
+            container.innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <p style="font-size: 0.85rem; opacity: 0.6; margin-bottom: 1rem;">
+                        Manage the hero slider on the homepage. Add, edit, or remove slides to customize the landing page appearance.
+                    </p>
+                </div>
+
+                <div class="hero-slides-container" style="display: grid; gap: 1.5rem;">
+                    ${heroSlides.map((slide, index) => `
+                        <div class="hero-slide-card" style="background: var(--secondary-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden;">
+                            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem;">
+                                <div class="slide-preview" style="background-image: url('${slide.image}'); background-size: cover; background-position: center; min-height: 150px; position: relative;">
+                                    <div style="position: absolute; top: 0.75rem; left: 0.75rem;">
+                                        <span style="background: ${slide.enabled ? 'var(--accent-color)' : '#666'}; color: #fff; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.65rem; font-weight: 700;">
+                                            SLIDE ${index + 1} ${slide.enabled ? '' : '(DISABLED)'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="padding: 1rem 1rem 1rem 0;">
+                                    <h4 style="font-size: 1rem; margin-bottom: 0.5rem;">${slide.title.replace('<br>', ' ')}</h4>
+                                    <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 0.75rem;">${slide.subtitle}</p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <button class="action-btn" onclick="editHeroSlide(${slide.id})">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="action-btn" onclick="toggleHeroSlide(${slide.id})">
+                                            <i class="fas fa-${slide.enabled ? 'eye-slash' : 'eye'}"></i> ${slide.enabled ? 'Disable' : 'Enable'}
+                                        </button>
+                                        <button class="action-btn danger-btn" onclick="deleteHeroSlide(${slide.id})">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="btn" onclick="openHeroSlideModal()">
+                        <i class="fas fa-plus"></i> ADD NEW SLIDE
+                    </button>
+                </div>
+            `;
+        }
+
+        function openHeroSlideModal(slideId = null) {
+            const heroSlides = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || 'null') || [];
+            const slide = slideId ? heroSlides.find(s => s.id === slideId) : null;
+
+            const modalHtml = `
+                <div id="hero-slide-modal" class="modal" style="display: flex;">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <h3 style="margin-bottom: 2rem;">${slide ? 'EDIT SLIDE' : 'ADD NEW SLIDE'}</h3>
+                        <input type="hidden" id="hs-id" value="${slide ? slide.id : ''}">
+                        
+                        <div class="form-group">
+                            <label>Slide Title</label>
+                            <input type="text" id="hs-title" placeholder="e.g., GLITCH CORE" 
+                                value="${slide ? slide.title.replace(/<br>/g, ' ') : ''}"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                            <p style="font-size: 0.75rem; opacity: 0.5; margin-top: 0.5rem;">Use spaces to create line breaks (e.g., "GLITCH CORE" becomes "GLITCH<br>CORE")</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Subtitle</label>
+                            <input type="text" id="hs-subtitle" placeholder="e.g., THE FOUNDATION COLLECTION. LIMITED NUMBERS."
+                                value="${slide ? slide.subtitle : ''}"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div class="form-group">
+                            <label>CTA Button Text</label>
+                            <input type="text" id="hs-cta" placeholder="e.g., Secure the Drop"
+                                value="${slide ? slide.cta : ''}"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div class="form-group">
+                            <label>CTA Link</label>
+                            <input type="text" id="hs-link" placeholder="e.g., shop.html"
+                                value="${slide ? slide.link : 'shop.html'}"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Background Image</label>
+                            <div id="hs-image-upload-area" style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 0.75rem;">
+                                <input type="file" id="hs-image-file" accept="image/*" style="display: none;">
+                                <div id="hs-image-placeholder">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                                        style="margin: 0 auto 1rem; opacity: 0.5;">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <p style="margin: 0; color: #888;">Click to select an image</p>
+                                    <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #666;">or drag and drop</p>
+                                </div>
+                                <div id="hs-image-selected-info" style="display: none;">
+                                    <img id="hs-image-preview" src="" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 8px; margin-bottom: 1rem;">
+                                    <p id="hs-file-name" style="margin: 0 0 1rem; color: #fff; font-size: 0.9rem;"></p>
+                                    <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                                        <button type="button" id="hs-confirm-upload-btn" class="btn" style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.25rem;">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            USE IMAGE
+                                        </button>
+                                        <button type="button" id="hs-cancel-upload-btn" class="btn btn-outline" style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.25rem;">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="hs-image-preview-group" style="display: ${slide && slide.image ? 'block' : 'none'};">
+                            <label>Current Image</label>
+                            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                                <img id="hs-confirmed-image-preview" src="${slide ? slide.image : ''}" alt="Preview" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                <div style="flex: 1;">
+                                    <p id="hs-confirmed-file-name" style="margin: 0; color: #fff; font-size: 0.9rem;">${slide && slide.image ? 'Current image' : ''}</p>
+                                </div>
+                                <button type="button" id="hs-remove-image-btn" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem;">REMOVE</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Or Image URL</label>
+                            <input type="text" id="hs-image-url" placeholder="https://example.com/image.jpg"
+                                value="${slide ? slide.image : ''}"
+                                style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                        </div>
+
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button class="btn" style="flex: 1;" onclick="saveHeroSlide()">SAVE SLIDE</button>
+                            <button class="btn btn-outline" style="flex: 1;" onclick="closeHeroSlideModal()">CANCEL</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove existing modal if any
+            const existingModal = document.getElementById('hero-slide-modal');
+            if (existingModal) existingModal.remove();
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Initialize file upload handlers
+            initHeroSlideFileUpload();
+        }
+
+        function initHeroSlideFileUpload() {
+            const uploadArea = document.getElementById('hs-image-upload-area');
+            const fileInput = document.getElementById('hs-image-file');
+            const placeholder = document.getElementById('hs-image-placeholder');
+            const selectedInfo = document.getElementById('hs-image-selected-info');
+            const preview = document.getElementById('hs-image-preview');
+            const fileName = document.getElementById('hs-file-name');
+            const confirmBtn = document.getElementById('hs-confirm-upload-btn');
+            const cancelBtn = document.getElementById('hs-cancel-upload-btn');
+            const previewGroup = document.getElementById('hs-image-preview-group');
+            const confirmedPreview = document.getElementById('hs-confirmed-image-preview');
+            const confirmedFileName = document.getElementById('hs-confirmed-file-name');
+            const removeBtn = document.getElementById('hs-remove-image-btn');
+            const urlInput = document.getElementById('hs-image-url');
+
+            let currentImageData = null;
+
+            // Click to upload
+            uploadArea.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'BUTTON') {
+                    fileInput.click();
+                }
+            });
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--accent-color)';
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'var(--border-color)';
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--border-color)';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleFileSelect(file);
+                }
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFileSelect(file);
+                }
+            });
+
+            function handleFileSelect(file) {
+                const img = new Image();
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                    img.onload = function () {
+                        // Compress image for hero slides
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Hero slides need larger dimensions
+                        const MAX_WIDTH = 1920;
+                        const MAX_HEIGHT = 1080;
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Calculate new dimensions
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height = Math.round(height * MAX_WIDTH / width);
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width = Math.round(width * MAX_HEIGHT / height);
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        currentImageData = canvas.toDataURL('image/jpeg', 0.9);
+                        preview.src = currentImageData;
+                        fileName.textContent = file.name + ` (${(currentImageData.length / 1024).toFixed(1)}KB)`;
+                        placeholder.style.display = 'none';
+                        selectedInfo.style.display = 'block';
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Confirm upload
+            confirmBtn.addEventListener('click', () => {
+                if (currentImageData) {
+                    urlInput.value = currentImageData;
+                    confirmedPreview.src = currentImageData;
+                    confirmedFileName.textContent = 'Image ready to save';
+                    previewGroup.style.display = 'block';
+                    resetUploadUI();
+                }
+            });
+
+            // Cancel upload
+            cancelBtn.addEventListener('click', () => {
+                resetUploadUI();
+            });
+
+            // Remove image
+            removeBtn.addEventListener('click', () => {
+                urlInput.value = '';
+                previewGroup.style.display = 'none';
+                currentImageData = null;
+            });
+
+            function resetUploadUI() {
+                placeholder.style.display = 'block';
+                selectedInfo.style.display = 'none';
+                fileInput.value = '';
+                currentImageData = null;
+            }
+        }
+
+        function closeHeroSlideModal() {
+            const modal = document.getElementById('hero-slide-modal');
+            if (modal) modal.remove();
+        }
+
+        function saveHeroSlide() {
+            const id = document.getElementById('hs-id').value;
+            const title = document.getElementById('hs-title').value.trim();
+            const subtitle = document.getElementById('hs-subtitle').value.trim();
+            const cta = document.getElementById('hs-cta').value.trim();
+            const link = document.getElementById('hs-link').value.trim();
+            const image = document.getElementById('hs-image-url').value.trim();
+
+            if (!title || !subtitle || !cta || !image) {
+                Toast.error('Please fill in all required fields including image');
+                return;
+            }
+
+            // Convert spaces in title to <br> for display
+            const formattedTitle = title.split(' ').slice(0, 2).join('<br>') + (title.split(' ').length > 2 ? '<br>' + title.split(' ').slice(2).join(' ') : '');
+
+            let heroSlides = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || 'null') || [
+                {
+                    id: 1,
+                    image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=1587',
+                    title: 'GLITCH<br>CORE',
+                    subtitle: 'THE FOUNDATION COLLECTION. LIMITED NUMBERS.',
+                    cta: 'Secure the Drop',
+                    link: 'shop.html',
+                    enabled: true
+                },
+                {
+                    id: 2,
+                    image: 'https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?auto=format&fit=crop&q=80&w=1740',
+                    title: 'URBAN<br>UTILITY',
+                    subtitle: 'ENGINEERED FOR THE STREETS. GHANA PRIDE.',
+                    cta: 'View Collection',
+                    link: 'shop.html',
+                    enabled: true
+                }
+            ];
+
+            if (id) {
+                // Update existing slide
+                const index = heroSlides.findIndex(s => s.id === parseInt(id));
+                if (index !== -1) {
+                    heroSlides[index] = {
+                        ...heroSlides[index],
+                        title: formattedTitle,
+                        subtitle,
+                        cta,
+                        link: link || 'shop.html',
+                        image
+                    };
+                }
+                Toast.success('Slide updated successfully');
+            } else {
+                // Add new slide
+                const newSlide = {
+                    id: Date.now(),
+                    title: formattedTitle,
+                    subtitle,
+                    cta,
+                    link: link || 'shop.html',
+                    image,
+                    enabled: true
+                };
+                heroSlides.push(newSlide);
+                Toast.success('Slide added successfully');
+            }
+
+            localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(heroSlides));
+            closeHeroSlideModal();
+            renderHeroSectionConfig();
+        }
+
+        function editHeroSlide(slideId) {
+            openHeroSlideModal(slideId);
+        }
+
+        function toggleHeroSlide(slideId) {
+            let heroSlides = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || 'null') || [];
+            const index = heroSlides.findIndex(s => s.id === parseInt(slideId) || s.id === slideId);
+            if (index !== -1) {
+                heroSlides[index].enabled = !heroSlides[index].enabled;
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(heroSlides));
+                Toast.success(`Slide ${heroSlides[index].enabled ? 'enabled' : 'disabled'}`);
+                renderHeroSectionConfig();
+            } else {
+                Toast.error('Slide not found');
+            }
+        }
+
+        function deleteHeroSlide(slideId) {
+            if (confirm('Are you sure you want to delete this slide?')) {
+                let heroSlides = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || 'null') || [];
+                heroSlides = heroSlides.filter(s => s.id !== parseInt(slideId) && s.id !== slideId);
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(heroSlides));
+                Toast.success('Slide deleted');
+                renderHeroSectionConfig();
+            }
+        }
+
+        async function openProductModal(productId = null) {
+            // Reset form
+            document.getElementById('p-id').value = '';
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-stock').value = '';
+            document.getElementById('p-release-date').value = '';
+            document.getElementById('p-category').value = 'tshirt';
+            document.getElementById('p-image-url').value = '';
+            document.getElementById('modal-title').textContent = 'ADD NEW DROP';
+
+            // Reset color selection
+            resetColorSelection();
+
+            // Reset file upload UI
+            resetFileUpload();
+            document.getElementById('image-preview-group').style.display = 'none';
+            document.getElementById('confirmed-image-preview').src = '';
+
+            // Reset gallery images
+            resetGalleryImages();
+
+            // If editing, populate form
+            if (productId) {
+                let product = null;
+
+                if (USE_FIREBASE_API) {
+                    try {
+                        const result = await adminAPI.getProducts();
+                        const products = result.products || [];
+                        product = products.find(p => p.id === productId);
+                    } catch (error) {
+                        console.error('Error fetching product:', error);
+                        Toast.error('Failed to load product data');
+                        return;
+                    }
+                } else {
+                    const products = storageService.getProducts();
+                    product = products.find(p => p.id === productId);
+                }
+
+                if (product) {
+                    document.getElementById('p-id').value = product.id;
+                    document.getElementById('p-name').value = product.name;
+                    document.getElementById('p-price').value = product.price;
+                    document.getElementById('p-stock').value = product.stock;
+                    // Set release date if exists
+                    if (product.releaseDate) {
+                        const date = new Date(product.releaseDate);
+                        // Format for datetime-local input: YYYY-MM-DDTHH:MM
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const hours = String(date.getHours()).padStart(2, '0');
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        document.getElementById('p-release-date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    }
+                    document.getElementById('p-category').value = product.category || 'tshirt';
+                    document.getElementById('p-image-url').value = product.image || '';
+                    // Set color selection if product has colors
+                    if (product.colors && product.colors.length > 0) {
+                        setColorSelection(product.colors);
+                    }
+                    if (product.image) {
+                        document.getElementById('confirmed-image-preview').src = product.image;
+                        document.getElementById('confirmed-file-name').textContent = 'Existing image';
+                        document.getElementById('image-preview-group').style.display = 'block';
+                    }
+                    // Load gallery images if they exist
+                    if (product.images && product.images.length > 0) {
+                        loadGalleryImages(product.images);
+                    }
+                    document.getElementById('modal-title').textContent = 'EDIT DROP';
+                }
+            }
+
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        // Gallery Images Management
+        let galleryImageCounter = 0;
+
+        function resetGalleryImages() {
+            galleryImageCounter = 0;
+            document.getElementById('gallery-images-container').innerHTML = '';
+        }
+
+        function addGalleryImage(imageUrl = '', label = '') {
+            galleryImageCounter++;
+            const container = document.getElementById('gallery-images-container');
+            const imageRow = document.createElement('div');
+            imageRow.className = 'gallery-image-row';
+            imageRow.dataset.index = galleryImageCounter;
+            imageRow.style.cssText = 'display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 0.5rem;';
+
+            imageRow.innerHTML = `
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <input type="text" class="gallery-image-url" placeholder="Image URL" value="${imageUrl}"
+                        style="flex: 1; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <input type="text" class="gallery-image-label" placeholder="Label (e.g., Front, Back)" value="${label}"
+                        style="width: 130px; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <button type="button" onclick="removeGalleryImage(this)" style="background: none; border: 1px solid var(--color-error); color: var(--color-error); padding: 0.5rem 0.75rem; border-radius: 4px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-size: 0.75rem; color: #888;">Or upload:</span>
+                    <label class="gallery-upload-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Choose File
+                        <input type="file" accept="image/*" onchange="handleGalleryImageUpload(this)" style="display: none;">
+                    </label>
+                    <span class="gallery-file-name" style="font-size: 0.75rem; color: #888;"></span>
+                </div>
+            `;
+
+            container.appendChild(imageRow);
+        }
+
+        function handleGalleryImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const row = input.closest('.gallery-image-row');
+            const urlInput = row.querySelector('.gallery-image-url');
+            const fileNameSpan = row.querySelector('.gallery-file-name');
+
+            // Show loading state
+            fileNameSpan.textContent = 'Processing...';
+            fileNameSpan.style.color = 'var(--accent-color)';
+
+            // Read and compress the image
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    // Create canvas for compression
+                    const canvas = document.createElement('canvas');
+                    const maxSize = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions
+                    if (width > height && width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    } else if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to base64 with compression
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                    // Update the URL input with base64 data
+                    urlInput.value = base64;
+                    fileNameSpan.textContent = file.name + ' (uploaded)';
+                    fileNameSpan.style.color = '#4CAF50';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeGalleryImage(button) {
+            const row = button.closest('.gallery-image-row');
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function loadGalleryImages(images) {
+            resetGalleryImages();
+            images.forEach(img => {
+                addGalleryImage(img.url, img.label);
+            });
+        }
+
+        function getGalleryImages() {
+            const rows = document.querySelectorAll('.gallery-image-row');
+            const images = [];
+            rows.forEach(row => {
+                const url = row.querySelector('.gallery-image-url').value.trim();
+                const label = row.querySelector('.gallery-image-label').value.trim() || 'View';
+                if (url) {
+                    images.push({ url, label });
+                }
+            });
+            return images;
+        }
+
+        // Color selection functions
+        function toggleColor(element) {
+            element.classList.toggle('selected');
+            element.style.borderColor = element.classList.contains('selected') ? 'var(--accent-color)' : 'var(--border-color)';
+            element.style.boxShadow = element.classList.contains('selected') ? '0 0 10px rgba(255, 62, 0, 0.5)' : 'none';
+            updateSelectedColorsDisplay();
+        }
+
+        function getSelectedColors() {
+            const selected = document.querySelectorAll('.color-option.selected');
+            const colors = [];
+            selected.forEach(el => {
+                colors.push({
+                    name: el.dataset.color,
+                    hex: el.dataset.hex
+                });
+            });
+            return colors;
+        }
+
+        function updateSelectedColorsDisplay() {
+            const colors = getSelectedColors();
+            const display = document.getElementById('selected-colors-display');
+            if (colors.length === 0) {
+                display.textContent = 'Click colors to select/deselect';
+            } else {
+                display.textContent = 'Selected: ' + colors.map(c => c.name).join(', ');
+            }
+        }
+
+        function resetColorSelection() {
+            document.querySelectorAll('.color-option').forEach(el => {
+                el.classList.remove('selected');
+                el.style.borderColor = 'var(--border-color)';
+                el.style.boxShadow = 'none';
+            });
+            updateSelectedColorsDisplay();
+        }
+
+        function setColorSelection(colors) {
+            resetColorSelection();
+            if (colors && colors.length > 0) {
+                colors.forEach(color => {
+                    const el = document.querySelector(`.color-option[data-color="${color.name}"]`);
+                    if (el) {
+                        el.classList.add('selected');
+                        el.style.borderColor = 'var(--accent-color)';
+                        el.style.boxShadow = '0 0 10px rgba(255, 62, 0, 0.5)';
+                    }
+                });
+            }
+            updateSelectedColorsDisplay();
+        }
+
+        async function saveProduct() {
+            const id = document.getElementById('p-id').value;
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const stock = document.getElementById('p-stock').value;
+            const releaseDateInput = document.getElementById('p-release-date').value;
+            const imageUrl = document.getElementById('p-image-url').value;
+            const category = document.getElementById('p-category').value;
+            const colors = getSelectedColors();
+            const galleryImages = getGalleryImages();
+
+            if (!name || !price || !stock) {
+                Toast.error('Please fill in all required fields');
+                return;
+            }
+
+            // If no release date set, product is available immediately
+            const releaseDate = releaseDateInput ? new Date(releaseDateInput).toISOString() : new Date().toISOString();
+
+            const pData = {
+                name: name,
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                releaseDate: releaseDate,
+                isExclusive: false, // All products are now standard
+                category: category,
+                colors: colors,
+                image: imageUrl || 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300',
+                images: galleryImages.length > 0 ? galleryImages : undefined
+            };
+
+            if (USE_FIREBASE_API) {
+                try {
+                    const token = getAuthToken();
+                    if (!token) {
+                        Toast.error('Authentication required');
+                        return;
+                    }
+
+                    if (id) {
+                        // Update existing product via API
+                        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(pData)
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            Toast.success('Product updated successfully');
+                        } else {
+                            Toast.error(result.message || 'Failed to update product');
+                            return;
+                        }
+                    } else {
+                        // Add new product via API
+                        const response = await fetch(`${API_BASE_URL}/products`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(pData)
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            Toast.success('Product added successfully');
+                            // If we're on the Next Drop tab, refresh and select the new product
+                            if (currentTab === 'next-drop' && result.product) {
+                                setTimeout(() => {
+                                    renderNextDropConfig();
+                                    setTimeout(() => {
+                                        const productSelect = document.getElementById('nd-product');
+                                        if (productSelect && result.product.id) {
+                                            productSelect.value = result.product.id;
+                                        }
+                                    }, 100);
+                                }, 100);
+                            }
+                        } else {
+                            Toast.error(result.message || 'Failed to add product');
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    Toast.error('Failed to save product. Please try again.');
+                    return;
+                }
+            } else {
+                // Fallback to localStorage
+                if (id) {
+                    pData.id = id;
+                    storageService.updateProduct(id, pData);
+                    Toast.success('Product updated successfully');
+                } else {
+                    const result = storageService.addProduct(pData);
+                    Toast.success('Product added successfully');
+                    if (currentTab === 'next-drop' && result.success && result.product) {
+                        setTimeout(() => {
+                            renderNextDropConfig();
+                            setTimeout(() => {
+                                const productSelect = document.getElementById('nd-product');
+                                if (productSelect && result.product.id) {
+                                    productSelect.value = result.product.id;
+                                }
+                            }, 100);
+                        }, 100);
+                    }
+                }
+            }
+
+            closeModal();
+            renderDashboard();
+        }
+
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            if (USE_FIREBASE_API) {
+                try {
+                    const token = getAuthToken();
+                    if (!token) {
+                        Toast.error('Authentication required');
+                        return;
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        Toast.success('Product deleted');
+                    } else {
+                        Toast.error(result.message || 'Failed to delete product');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    Toast.error('Failed to delete product. Please try again.');
+                    return;
+                }
+            } else {
+                storageService.deleteProduct(id);
+                Toast.success('Product deleted');
+            }
+
+            renderDashboard();
+        }
+
+        async function updateOrderStatus(orderIdOrNumber, status) {
+            if (!status) return;
+
+            console.log('updateOrderStatus called with:', { orderIdOrNumber, status });
+
+            if (USE_FIREBASE_API) {
+                try {
+                    // Use adminAPI method which properly clears the cache
+                    const result = await adminAPI.updateOrderStatus(orderIdOrNumber, status);
+                    console.log('Update result:', result);
+                    if (result.success) {
+                        Toast.success(`Order status updated to ${status}`);
+                        renderDashboard();
+                    } else {
+                        Toast.error(result.message || 'Failed to update order status');
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    Toast.error('Failed to update order status');
+                }
+            } else {
+                const result = storageService.updateOrderStatus(orderIdOrNumber, status);
+                if (result.success) {
+                    Toast.success(`Order status updated to ${status}`);
+                } else {
+                    Toast.error('Failed to update order status');
+                }
+            }
+        }
+
+        async function viewOrderDetails(orderId) {
+            let order = null;
+
+            if (USE_FIREBASE_API) {
+                try {
+                    const result = await adminAPI.getOrders();
+                    const orders = result.orders || [];
+                    order = orders.find(o => o.id === orderId);
+                } catch (error) {
+                    console.error('Error fetching order:', error);
+                    Toast.error('Failed to load order details');
+                    return;
+                }
+            } else {
+                const orders = storageService.getOrders();
+                order = orders.find(o => o.id === orderId);
+            }
+
+            if (!order) {
+                Toast.error('Order not found');
+                return;
+            }
+
+            const shipping = order.shipping || order.shippingAddress || {};
+            const customerInfo = order.customerInfo || {};
+            const items = order.items || [];
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 style="margin: 0;">ORDER DETAILS</h3>
+                        <button onclick="this.closest('.modal').remove()" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                    </div>
+                    
+                    <div style="display: grid; gap: 1.5rem;">
+                        <!-- Order Info -->
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.5rem;">ORDER ID</div>
+                            <div style="font-weight: bold;">${order.orderNumber || order.id}</div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.75rem;">PRODUCTS</div>
+                            ${items.length > 0 ? items.map(item => `
+                                <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.75rem;">
+                                    <img src="${item.image || ''}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: bold;">${item.name}</div>
+                                        <div style="opacity: 0.6; font-size: 0.85rem;">Size: ${item.size || 'N/A'}${item.color ? ' | Color: ' + item.color : ''}</div>
+                                        <div style="opacity: 0.6; font-size: 0.85rem;">Qty: ${item.quantity || 1}</div>
+                                    </div>
+                                    <div style="color: var(--accent-color); font-weight: bold;">GH₵ ${(item.price * (item.quantity || 1)).toFixed(2)}</div>
+                                </div>
+                            `).join('') : `
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <img src="${order.productImage || ''}" alt="${order.productName || 'Product'}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                    <div>
+                                        <div style="font-weight: bold; font-size: 1.1rem;">${order.productName || 'N/A'}</div>
+                                        <div style="opacity: 0.6; font-size: 0.85rem;">Size: ${order.size || 'N/A'}${order.color ? ' | Color: ' + order.color : ''}</div>
+                                        <div style="color: var(--accent-color); font-weight: bold; margin-top: 0.25rem;">GH₵ ${(order.price || order.total || 0).toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+
+                        <!-- Customer Info -->
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.75rem;">CUSTOMER</div>
+                            <div style="display: grid; gap: 0.5rem;">
+                                <div><strong>${customerInfo.name || shipping.name || 'Guest Customer'}</strong></div>
+                                <div style="display: flex; gap: 1rem; font-size: 0.9rem; flex-wrap: wrap;">
+                                    <span>📧 ${customerInfo.email || shipping.email || 'N/A'}</span>
+                                    <span>📱 ${customerInfo.phone || shipping.phone || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.75rem;">SHIPPING ADDRESS</div>
+                            <div>
+                                ${shipping.address ? `
+                                    <div>${shipping.address}</div>
+                                    <div>${shipping.city || ''}${shipping.region ? ', ' + shipping.region : ''}${shipping.country ? ', ' + shipping.country : ''}</div>
+                                    ${shipping.postalCode ? `<div>Postal: ${shipping.postalCode}</div>` : ''}
+                                    ${shipping.instructions ? `<div style="margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7;">📝 ${shipping.instructions}</div>` : ''}
+                                ` : 'No shipping address provided'}
+                            </div>
+                        </div>
+
+                        <!-- Payment Info -->
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 0.75rem;">PAYMENT</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 0.9rem;">${order.paymentMethod || 'Paystack'}</div>
+                                    ${order.paymentReference ? `<div style="font-size: 0.75rem; opacity: 0.6;">Ref: ${order.paymentReference}</div>` : ''}
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.7rem; opacity: 0.6;">Status</div>
+                                    <div style="color: var(--color-success); font-weight: bold;">PAID</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Date -->
+                        <div style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <div>
+                                <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6;">ORDER DATE</div>
+                                <div>${new Date(order.timestamp).toLocaleString()}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.7rem; letter-spacing: 0.1em; opacity: 0.6;">STATUS</div>
+                                <div style="color: var(--accent-color); font-weight: bold;">${order.status}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn" style="flex: 1;" onclick="window.print()">PRINT ORDER</button>
+                        <button class="btn btn-outline" style="flex: 1;" onclick="this.closest('.modal').remove()">CLOSE</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Image upload handlers - initialized after DOM is ready
+        let selectedFile = null;
+        let selectedFileBase64 = null;
+        let fileUploadArea, fileInput, fileUploadPlaceholder, fileSelectedInfo, imagePreviewGroup;
+
+        function initFileUploadHandlers() {
+            fileUploadArea = document.getElementById('file-upload-area');
+            fileInput = document.getElementById('p-image');
+            fileUploadPlaceholder = document.getElementById('file-upload-placeholder');
+            fileSelectedInfo = document.getElementById('file-selected-info');
+            imagePreviewGroup = document.getElementById('image-preview-group');
+
+            if (!fileUploadArea || !fileInput) return;
+
+            // Click to open file selector
+            fileUploadArea.addEventListener('click', function (e) {
+                if (e.target.closest('#confirm-upload-btn') || e.target.closest('#cancel-upload-btn')) {
+                    return;
+                }
+                if (!imagePreviewGroup.style.display || imagePreviewGroup.style.display === 'none') {
+                    fileInput.click();
+                }
+            });
+
+            // Drag and drop handlers
+            fileUploadArea.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '#fff';
+                fileUploadArea.style.background = 'rgba(255,255,255,0.05)';
+            });
+
+            fileUploadArea.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = 'var(--border-color)';
+                fileUploadArea.style.background = 'transparent';
+            });
+
+            fileUploadArea.addEventListener('drop', function (e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = 'var(--border-color)';
+                fileUploadArea.style.background = 'transparent';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    handleFileSelection(files[0]);
+                }
+            });
+
+            // File input change handler
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFileSelection(file);
+                }
+            });
+
+            // Confirm upload button
+            document.getElementById('confirm-upload-btn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (selectedFileBase64) {
+                    document.getElementById('p-image-url').value = selectedFileBase64;
+                    document.getElementById('confirmed-image-preview').src = selectedFileBase64;
+                    document.getElementById('confirmed-file-name').textContent = selectedFile.name;
+                    imagePreviewGroup.style.display = 'block';
+                    fileUploadPlaceholder.style.display = 'block';
+                    fileSelectedInfo.style.display = 'none';
+                    Toast.success('Image uploaded successfully');
+                }
+            });
+
+            // Cancel upload button
+            document.getElementById('cancel-upload-btn').addEventListener('click', function (e) {
+                e.stopPropagation();
+                resetFileUpload();
+            });
+
+            // Remove uploaded image button
+            document.getElementById('remove-image-btn').addEventListener('click', function () {
+                document.getElementById('p-image-url').value = '';
+                imagePreviewGroup.style.display = 'none';
+                resetFileUpload();
+            });
+        }
+
+        function handleFileSelection(file) {
+            selectedFile = file;
+
+            // Check file size - warn if too large
+            const maxSizeMB = 5;
+            if (file.size > maxSizeMB * 1024 * 1024) {
+                Toast.warning(`Large file detected (${(file.size / 1024 / 1024).toFixed(1)}MB). Optimizing...`);
+            }
+
+            // Create an image to compress
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                img.src = event.target.result;
+                img.onload = function () {
+                    // Compress image while maintaining quality
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set maximum dimensions for product images
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new dimensions while maintaining aspect ratio
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round(height * MAX_WIDTH / width);
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round(width * MAX_HEIGHT / height);
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // Set canvas dimensions
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Use high-quality image smoothing
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+
+                    // Draw the resized image
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to high-quality JPEG (0.9 quality = 90% quality)
+                    selectedFileBase64 = canvas.toDataURL('image/jpeg', 0.9);
+
+                    // Update preview
+                    document.getElementById('p-image-preview').src = selectedFileBase64;
+                    document.getElementById('file-name').textContent = file.name + ` (${(selectedFileBase64.length / 1024).toFixed(1)}KB optimized)`;
+                    fileUploadPlaceholder.style.display = 'none';
+                    fileSelectedInfo.style.display = 'block';
+
+                    console.log('Image optimized:', {
+                        originalSize: (file.size / 1024).toFixed(1) + 'KB',
+                        newSize: (selectedFileBase64.length / 1024).toFixed(1) + 'KB',
+                        dimensions: width + 'x' + height
+                    });
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetFileUpload() {
+            selectedFile = null;
+            selectedFileBase64 = null;
+            if (fileInput) fileInput.value = '';
+            if (fileUploadPlaceholder) fileUploadPlaceholder.style.display = 'block';
+            if (fileSelectedInfo) fileSelectedInfo.style.display = 'none';
+        }
+
+        // Banner image upload handlers for Next Drop
+        function initBannerUpload() {
+            const bannerUploadArea = document.getElementById('nd-banner-upload-area');
+            const bannerFileInput = document.getElementById('nd-banner-file');
+            const bannerPlaceholder = document.getElementById('nd-banner-placeholder');
+            const bannerPreviewContainer = document.getElementById('nd-banner-preview-container');
+            const bannerPreview = document.getElementById('nd-banner-preview');
+            const bannerRemove = document.getElementById('nd-banner-remove');
+            const bannerUrlInput = document.getElementById('nd-banner');
+
+            if (!bannerUploadArea) return; // Not on next drop tab
+
+            // Load existing banner if any
+            const nextDrop = JSON.parse(localStorage.getItem('glitchgarb_next_drop') || 'null');
+            if (nextDrop && nextDrop.bannerImage) {
+                bannerPreview.src = nextDrop.bannerImage;
+                bannerPlaceholder.style.display = 'none';
+                bannerPreviewContainer.style.display = 'block';
+            }
+
+            // Click to upload
+            bannerUploadArea.addEventListener('click', function (e) {
+                if (e.target.closest('#nd-banner-remove')) return;
+                bannerFileInput.click();
+            });
+
+            // File selected
+            bannerFileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Compress banner image
+                    const img = new Image();
+                    const reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        img.src = event.target.result;
+                        img.onload = function () {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+
+                            // Banner dimensions
+                            const MAX_WIDTH = 1920;
+                            const MAX_HEIGHT = 600;
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) {
+                                    height = Math.round(height * MAX_WIDTH / width);
+                                    width = MAX_WIDTH;
+                                }
+                            } else {
+                                if (height > MAX_HEIGHT) {
+                                    width = Math.round(width * MAX_HEIGHT / height);
+                                    height = MAX_HEIGHT;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.imageSmoothingEnabled = true;
+                            ctx.imageSmoothingQuality = 'high';
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            const base64 = canvas.toDataURL('image/jpeg', 0.9);
+                            bannerPreview.src = base64;
+                            bannerUrlInput.value = base64;
+                            bannerPlaceholder.style.display = 'none';
+                            bannerPreviewContainer.style.display = 'block';
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Remove banner
+            bannerRemove.addEventListener('click', function (e) {
+                e.stopPropagation();
+                bannerFileInput.value = '';
+                bannerUrlInput.value = '';
+                bannerPreview.src = '';
+                bannerPlaceholder.style.display = 'block';
+                bannerPreviewContainer.style.display = 'none';
+            });
+        }
+
+        // Initialize banner upload when Next Drop tab is shown
+        const originalRenderNextDropConfig = renderNextDropConfig;
+        renderNextDropConfig = async function () {
+            await originalRenderNextDropConfig();
+            setTimeout(initBannerUpload, 100);
+        };
+    </script>
+</body>
+
+</html>

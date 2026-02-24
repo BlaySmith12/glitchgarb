@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORDER SECURED | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        .success-hero {
+            padding: 8rem 0;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .order-card {
+            max-width: 500px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            margin: 2rem auto;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid #000;
+        }
+
+        .qr-code canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="success-hero fade-in">
+            <div class="success-icon">✓</div>
+            <h1 style="font-size: 3rem; letter-spacing: -0.05em; margin-bottom: 1rem;">ORDER SECURED</h1>
+            <p style="opacity: 0.6; margin-bottom: 4rem;">Your drop has been successfully authenticated and reserved.
+            </p>
+
+            <div class="order-card">
+                <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">ORDER ID</div>
+                <div id="order-id-display" style="font-family: monospace; font-size: 1.2rem; margin-bottom: 2rem;">
+                    ORD-XXXXXXXXXX</div>
+
+                <div id="payment-ref-container" style="display: none; margin-bottom: 2rem;">
+                    <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">PAYMENT REFERENCE</div>
+                    <div id="payment-ref-display"
+                        style="font-family: monospace; font-size: 0.9rem; color: var(--accent-color);"></div>
+                </div>
+
+                <div
+                    style="display: flex; gap: 1rem; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                    <img id="p-img" src="" style="width: 60px; height: 60px; object-fit: cover;">
+                    <div>
+                        <div id="p-name" style="font-weight: bold;">Product Name</div>
+                        <div id="p-size" style="font-size: 0.8rem; opacity: 0.6;">Size: M</div>
+                        <div id="p-color" style="font-size: 0.8rem; opacity: 0.6;">Color: Black</div>
+                    </div>
+                </div>
+
+                <div id="shipping-details-container"
+                    style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                    <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 1rem;">SHIPPING DETAILS</div>
+                    <div id="shipping-details-content"></div>
+                </div>
+
+                <div class="qr-code" id="qr-code-container">
+                    <!-- QR Code will be generated here -->
+                </div>
+                <div style="text-align: center; font-size: 0.6rem; opacity: 0.4; letter-spacing: 0.2em;">SCAN TO TRACK
+                    SHIPMENT</div>
+            </div>
+
+            <div class="btn-group">
+                <a href="shop.html" class="btn"
+                    style="background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color);">CONTINUE
+                    SHOPPING</a>
+                <a href="profile.html" id="view-history-btn" class="btn">VIEW DROP HISTORY</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('orderId');
+
+            const orders = storageService.getOrders();
+            const order = orders.find(o => o.id === orderId);
+
+            if (!order) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Use orderNumber if available, otherwise use id
+            const displayId = order.orderNumber || order.id;
+            document.getElementById('order-id-display').textContent = displayId;
+            document.getElementById('p-name').textContent = order.productName;
+            document.getElementById('p-size').textContent = `Size: ${order.size}`;
+            document.getElementById('p-color').textContent = `Color: ${order.color || 'Black'}`;
+            document.getElementById('p-img').src = order.productImage;
+
+            // Display payment reference if available (Paystack)
+            if (order.paymentReference) {
+                document.getElementById('payment-ref-container').style.display = 'block';
+                document.getElementById('payment-ref-display').textContent = order.paymentReference;
+            }
+
+            // Display shipping details
+            if (order.shipping) {
+                const shipping = order.shipping;
+                let shippingHtml = `
+                    <div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 0.5rem;">${shipping.name}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${shipping.phone}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${shipping.email}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${shipping.address}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${shipping.city}, ${shipping.region}</div>
+                `;
+
+                if (shipping.postalCode) {
+                    shippingHtml += `<div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.3rem;">${shipping.postalCode}</div>`;
+                }
+
+                if (shipping.instructions) {
+                    shippingHtml += `<div style="font-size: 0.7rem; opacity: 0.5; margin-top: 0.5rem; font-style: italic;">Note: ${shipping.instructions}</div>`;
+                }
+
+                document.getElementById('shipping-details-content').innerHTML = shippingHtml;
+            }
+
+            // Generate real QR code for order tracking
+            const trackingUrl = `${window.location.origin}${window.location.pathname.replace('order-success.html', 'track-order.html')}?order=${displayId}`;
+
+            // Use QR code image URL as fallback if library fails
+            const qrContainer = document.getElementById('qr-code-container');
+
+            try {
+                if (typeof QRCode !== 'undefined') {
+                    QRCode.toCanvas(trackingUrl, {
+                        width: 140,
+                        margin: 1,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff'
+                        }
+                    }, function (error, canvas) {
+                        if (error) {
+                            console.error('QR Code error:', error);
+                            // Fallback to image URL
+                            const img = document.createElement('img');
+                            img.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(trackingUrl)}`;
+                            img.style.width = '140px';
+                            img.style.height = '140px';
+                            qrContainer.appendChild(img);
+                            return;
+                        }
+                        qrContainer.appendChild(canvas);
+                    });
+                } else {
+                    // Fallback to image URL if library not loaded
+                    const img = document.createElement('img');
+                    img.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(trackingUrl)}`;
+                    img.style.width = '140px';
+                    img.style.height = '140px';
+                    qrContainer.appendChild(img);
+                }
+            } catch (e) {
+                console.error('QR Code generation failed:', e);
+                // Fallback to image URL
+                const img = document.createElement('img');
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(trackingUrl)}`;
+                img.style.width = '140px';
+                img.style.height = '140px';
+                qrContainer.appendChild(img);
+            }
+
+            // Hide "VIEW DROP HISTORY" button for guest orders
+            const viewHistoryBtn = document.getElementById('view-history-btn');
+            if (order.isGuestOrder) {
+                viewHistoryBtn.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

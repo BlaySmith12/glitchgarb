@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHECKOUT | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .checkout-section {
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .checkout-section h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            opacity: 0.6;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 1rem;
+            font-family: inherit;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pay-method {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            opacity: 0.5;
+        }
+
+        .pay-method.active {
+            border-color: var(--accent-color);
+            opacity: 1;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .product-preview {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin-top: 2rem;
+            }
+
+            .order-summary {
+                position: relative;
+                top: 0;
+                order: -1;
+            }
+
+            .checkout-section {
+                padding: 1.5rem;
+            }
+
+            .payment-methods {
+                flex-direction: column;
+            }
+
+            .pay-method {
+                padding: 1.5rem 1rem;
+            }
+
+            .product-preview {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .product-preview img {
+                width: 100%;
+                max-width: 120px;
+                height: auto;
+                aspect-ratio: 1;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.875rem;
+                font-size: 16px;
+                /* Prevents zoom on iOS */
+            }
+
+            .summary-item {
+                font-size: 0.85rem;
+            }
+
+            .summary-total {
+                font-size: 1.1rem;
+            }
+
+            #place-order-btn {
+                width: 100%;
+                padding: 1.25rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-section {
+                padding: 1rem;
+            }
+
+            .checkout-section h2 {
+                font-size: 0.7rem;
+            }
+
+            .form-group label {
+                font-size: 0.65rem;
+            }
+
+            .pay-method {
+                padding: 1rem;
+            }
+
+            .pay-method svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <div style="font-size: 0.7rem; opacity: 0.5;">SECURE CHECKOUT</div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="checkout-container fade-in">
+            <div id="checkout-form">
+                <div class="checkout-section">
+                    <h2>SHIPPING DETAILS</h2>
+                    <div class="form-group">
+                        <label>FULL NAME</label>
+                        <input type="text" id="ship-name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>PHONE NUMBER</label>
+                        <input type="tel" id="ship-phone" placeholder="024 XXX XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>EMAIL ADDRESS</label>
+                        <input type="email" id="ship-email" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>STREET ADDRESS</label>
+                        <input type="text" id="ship-address" placeholder="House number, street name">
+                    </div>
+                    <div class="form-group">
+                        <label>COUNTRY</label>
+                        <select id="ship-country">
+                            <option value="">Select Country</option>
+                            <option value="Ghana" selected>Ghana</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>CITY</label>
+                            <input type="text" id="ship-city" placeholder="Accra">
+                        </div>
+                        <div class="form-group">
+                            <label>REGION/STATE</label>
+                            <select id="ship-region">
+                                <option value="">Select Region</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="postal-label">POSTAL CODE (OPTIONAL)</label>
+                        <input type="text" id="ship-postal" placeholder="GA-XXX-XXX">
+                    </div>
+                    <div class="form-group">
+                        <label>DELIVERY INSTRUCTIONS (OPTIONAL)</label>
+                        <input type="text" id="ship-instructions" placeholder="Landmark, gate code, etc.">
+                    </div>
+                </div>
+
+                <div class="checkout-section">
+                    <h2>PAYMENT METHOD</h2>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; opacity: 0.7;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg>
+                        <span>Secured by Paystack</span>
+                    </div>
+
+                    <div class="payment-methods">
+                        <div class="pay-method active" data-method="card">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-bottom: 0.5rem;">
+                                <rect x="2" y="5" width="20" height="14" rx="2" />
+                                <line x1="2" y1="10" x2="22" y2="10" />
+                            </svg>
+                            <div style="font-size: 0.7rem;">CARD</div>
+                        </div>
+                        <div class="pay-method" data-method="momo">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-bottom: 0.5rem;">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                            <div style="font-size: 0.7rem;">MOBILE MONEY</div>
+                        </div>
+                        <div class="pay-method" data-method="bank">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" style="margin-bottom: 0.5rem;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            <div style="font-size: 0.7rem;">BANK TRANSFER</div>
+                        </div>
+                    </div>
+
+                    <div id="payment-fields">
+                        <!-- Card Payment Fields -->
+                        <div id="card-fields" class="payment-field-group">
+                            <div class="form-group">
+                                <label>CARDHOLDER NAME</label>
+                                <input type="text" id="card-name" placeholder="Name on card">
+                            </div>
+                            <div class="form-group">
+                                <label>CARD NUMBER</label>
+                                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{4})(?=\d)/g, '$1 ')">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>EXPIRY DATE</label>
+                                    <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{2})(?=\d)/, '$1/')">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>CVV</label>
+                                    <input type="text" id="card-cvv" placeholder="123" maxlength="4"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Money Fields -->
+                        <div id="momo-fields" class="payment-field-group" style="display: none;">
+                            <div class="form-group">
+                                <label>MOBILE NETWORK</label>
+                                <select id="momo-provider">
+                                    <option value="mtn">MTN Mobile Money</option>
+                                    <option value="vod">Vodafone Cash</option>
+                                    <option value="tgo">AirtelTigo Money</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>MOBILE NUMBER</label>
+                                <input type="tel" id="momo-number" placeholder="024 XXX XXXX">
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer Fields -->
+                        <div id="bank-fields" class="payment-field-group" style="display: none;">
+                            <div class="form-group">
+                                <label>BANK NAME</label>
+                                <select id="bank-name">
+                                    <option value="gcb">GCB Bank</option>
+                                    <option value="ecobank">Ecobank Ghana</option>
+                                    <option value="stanbic">Stanbic Bank</option>
+                                    <option value="absa">Absa Bank Ghana</option>
+                                    <option value="calbank">CalBank</option>
+                                    <option value="fid">Fidelity Bank</option>
+                                    <option value="zenith">Zenith Bank</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ACCOUNT NUMBER</label>
+                                <input type="text" id="bank-account" placeholder="Enter account number">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" id="finish-checkout" style="width: 100%; padding: 1.5rem;">AUTHORIZE
+                    PAYMENT</button>
+            </div>
+
+            <div class="order-summary">
+                <div class="checkout-section">
+                    <h2>ORDER SUMMARY</h2>
+                    <div id="summary-content">
+                        <!-- Loaded from URL params -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Paystack Configuration
+        // Set to true to use demo mode (simulates payments without Paystack)
+        const DEMO_MODE = true;
+
+        // Set to true to use test mode, false for live mode
+        const PAYSTACK_TEST_MODE = true;
+
+        // Test Public Key - Get from Paystack Dashboard > Settings > API Keys
+        const PAYSTACK_TEST_KEY = 'pk_test_8ef252c43db48707bc7346f613f2559c311bcbd1';
+
+        // Live Public Key - Your production key
+        const PAYSTACK_LIVE_KEY = 'pk_live_9471075f7c9d421f61c6f29beb32851db72fd451';
+
+        // Select key based on mode
+        const PAYSTACK_PUBLIC_KEY = PAYSTACK_TEST_MODE ? PAYSTACK_TEST_KEY : PAYSTACK_LIVE_KEY;
+
+        console.log('Demo mode:', DEMO_MODE);
+        console.log('Payment mode:', PAYSTACK_TEST_MODE ? 'TEST' : 'LIVE');
+        console.log('Using key:', PAYSTACK_PUBLIC_KEY.substring(0, 15) + '...');
+
+        // Country-specific regions/states and city placeholders
+        const countryData = {
+            'Ghana': {
+                regions: ['Greater Accra', 'Ashanti', 'Eastern', 'Western', 'Central', 'Volta', 'Northern', 'Upper East', 'Upper West', 'Bono', 'Bono East', 'Ahafo', 'Oti', 'North East', 'Savannah'],
+                cityPlaceholder: 'Accra',
+                postalPlaceholder: 'GA-XXX-XXX',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            },
+            'Nigeria': {
+                regions: ['Lagos', 'Abuja FCT', 'Rivers', 'Kano', 'Oyo', 'Kaduna', 'Enugu', 'Anambra', 'Delta', 'Edo', 'Ogun', 'Osun', 'Ondo', 'Ekiti', 'Kwara', 'Benue', 'Plateau', 'Bauchi', 'Borno', 'Sokoto'],
+                cityPlaceholder: 'Lagos',
+                postalPlaceholder: '100001',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            },
+            'Kenya': {
+                regions: ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Uasin Gishu', 'Kiambu', 'Machakos', 'Kajiado', 'Kilifi', 'Kakamega', 'Nyeri', 'Meru', 'Narok', 'Bungoma', 'Trans Nzoia'],
+                cityPlaceholder: 'Nairobi',
+                postalPlaceholder: '00100',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            },
+            'South Africa': {
+                regions: ['Gauteng', 'Western Cape', 'Eastern Cape', 'KwaZulu-Natal', 'Free State', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape'],
+                cityPlaceholder: 'Johannesburg',
+                postalPlaceholder: '2000',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            },
+            'United States': {
+                regions: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'],
+                cityPlaceholder: 'New York',
+                postalPlaceholder: '10001',
+                postalLabel: 'ZIP CODE (OPTIONAL)'
+            },
+            'United Kingdom': {
+                regions: ['England', 'Scotland', 'Wales', 'Northern Ireland', 'London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Glasgow', 'Edinburgh', 'Bristol', 'Sheffield', 'Newcastle', 'Belfast'],
+                cityPlaceholder: 'London',
+                postalPlaceholder: 'SW1A 1AA',
+                postalLabel: 'POSTCODE (OPTIONAL)'
+            },
+            'Canada': {
+                regions: ['Ontario', 'Quebec', 'British Columbia', 'Alberta', 'Manitoba', 'Saskatchewan', 'Nova Scotia', 'New Brunswick', 'Newfoundland and Labrador', 'Prince Edward Island', 'Yukon', 'Northwest Territories', 'Nunavut'],
+                cityPlaceholder: 'Toronto',
+                postalPlaceholder: 'M5V 3L9',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            },
+            'Germany': {
+                regions: ['Bavaria', 'Baden-Württemberg', 'North Rhine-Westphalia', 'Hesse', 'Lower Saxony', 'Saxony', 'Berlin', 'Hamburg', 'Rhineland-Palatinate', 'Schleswig-Holstein', 'Brandenburg', 'Saxony-Anhalt', 'Thuringia', 'Mecklenburg-Vorpommern', 'Saarland', 'Bremen'],
+                cityPlaceholder: 'Berlin',
+                postalPlaceholder: '10115',
+                postalLabel: 'POSTLEITZAHL (OPTIONAL)'
+            },
+            'France': {
+                regions: ['Île-de-France', 'Auvergne-Rhône-Alpes', 'Nouvelle-Aquitaine', 'Occitanie', 'Hauts-de-France', 'Provence-Alpes-Côte d\'Azur', 'Grand Est', 'Pays de la Loire', 'Bretagne', 'Normandie', 'Bourgogne-Franche-Comté', 'Centre-Val de Loire', 'Corse'],
+                cityPlaceholder: 'Paris',
+                postalPlaceholder: '75001',
+                postalLabel: 'CODE POSTAL (OPTIONAL)'
+            },
+            'Australia': {
+                regions: ['New South Wales', 'Victoria', 'Queensland', 'Western Australia', 'South Australia', 'Tasmania', 'Australian Capital Territory', 'Northern Territory'],
+                cityPlaceholder: 'Sydney',
+                postalPlaceholder: '2000',
+                postalLabel: 'POSTCODE (OPTIONAL)'
+            },
+            'Other': {
+                regions: [],
+                cityPlaceholder: 'Enter your city',
+                postalPlaceholder: 'Enter postal code',
+                postalLabel: 'POSTAL CODE (OPTIONAL)'
+            }
+        };
+
+        // Function to update regions based on selected country
+        function updateRegions(country) {
+            const regionSelect = document.getElementById('ship-region');
+            const cityInput = document.getElementById('ship-city');
+            const postalInput = document.getElementById('ship-postal');
+            const postalLabel = document.getElementById('postal-label');
+
+            // Clear existing options
+            regionSelect.innerHTML = '<option value="">Select Region</option>';
+
+            if (country && countryData[country]) {
+                const data = countryData[country];
+
+                // Add regions for selected country
+                data.regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region;
+                    option.textContent = region;
+                    regionSelect.appendChild(option);
+                });
+
+                // Update city placeholder
+                cityInput.placeholder = data.cityPlaceholder;
+
+                // Update postal code placeholder and label
+                postalInput.placeholder = data.postalPlaceholder;
+                if (postalLabel) {
+                    postalLabel.textContent = data.postalLabel;
+                }
+            } else {
+                cityInput.placeholder = 'Enter your city';
+                postalInput.placeholder = 'Enter postal code';
+                if (postalLabel) {
+                    postalLabel.textContent = 'POSTAL CODE (OPTIONAL)';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const isCartCheckout = params.get('cart') === 'true';
+            const productId = params.get('id');
+            const size = params.get('size');
+
+            // Check if this is a cart checkout or single product checkout
+            let checkoutItems = [];
+            let checkoutTotal = 0;
+
+            if (isCartCheckout) {
+                // Cart checkout
+                const cart = storageService.getCart();
+                if (cart.length === 0) {
+                    Toast.error('Your cart is empty');
+                    setTimeout(() => {
+                        window.location.href = 'cart.html';
+                    }, 1500);
+                    return;
+                }
+                checkoutItems = cart;
+                checkoutTotal = storageService.getCartTotal();
+            } else {
+                // Single product checkout
+                const product = await storageService.getProduct(productId);
+                if (!product || !size) {
+                    Toast.error('Invalid product or size selected');
+                    setTimeout(() => {
+                        window.location.href = 'shop.html';
+                    }, 1500);
+                    return;
+                }
+                const color = params.get('color') || 'Black';
+                checkoutItems = [{
+                    id: 'single',
+                    productId: productId,
+                    productName: product.name,
+                    productImage: product.image,
+                    price: product.price,
+                    size: size,
+                    color: color,
+                    quantity: 1
+                }];
+                checkoutTotal = product.price;
+            }
+
+            const user = storageService.getCurrentUser();
+            // Guest checkout is now allowed - no redirect needed
+
+            // Initialize regions for default country (Ghana)
+            updateRegions('Ghana');
+
+            // Country change handler
+            document.getElementById('ship-country').addEventListener('change', function () {
+                updateRegions(this.value);
+            });
+
+            // Render summary
+            const summaryContent = document.getElementById('summary-content');
+
+            if (isCartCheckout) {
+                // Render multiple items
+                summaryContent.innerHTML = `
+                    ${checkoutItems.map(item => `
+                        <div class="product-preview" style="margin-bottom: 1rem;">
+                            <img src="${item.productImage}" alt="${item.productName}">
+                            <div>
+                                <div style="font-weight: bold;">${item.productName}</div>
+                                <div style="opacity: 0.6; font-size: 0.8rem;">COLOR: ${item.color} | SIZE: ${item.size} | QTY: ${item.quantity}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div class="summary-item">
+                        <span>Subtotal (${checkoutItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                        <span>GH₵ ${checkoutTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping</span>
+                        <span>FREE</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>GH₵ ${checkoutTotal.toFixed(2)}</span>
+                    </div>
+                `;
+            } else {
+                // Render single item
+                const item = checkoutItems[0];
+                summaryContent.innerHTML = `
+                    <div class="product-preview">
+                        <img src="${item.productImage}" alt="${item.productName}">
+                        <div>
+                            <div style="font-weight: bold;">${item.productName}</div>
+                            <div style="opacity: 0.6; font-size: 0.8rem;">COLOR: ${item.color} | SIZE: ${item.size}</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <span>Subtotal</span>
+                        <span>GH₵ ${checkoutTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping</span>
+                        <span>FREE</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>GH₵ ${checkoutTotal.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            // Payment method toggle
+            const payMethods = document.querySelectorAll('.pay-method');
+            const paymentFieldGroups = document.querySelectorAll('.payment-field-group');
+            let selectedMethod = 'card';
+
+            payMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    payMethods.forEach(m => m.classList.remove('active'));
+                    method.classList.add('active');
+                    selectedMethod = method.dataset.method;
+
+                    // Show/hide payment fields based on selection
+                    paymentFieldGroups.forEach(group => group.style.display = 'none');
+                    document.getElementById(`${selectedMethod}-fields`).style.display = 'block';
+                });
+            });
+
+            // Paystack Payment Handler
+            function payWithPaystack(email, amount, metadata, paymentMethod) {
+                // Demo mode - simulates successful payment without Paystack
+                if (DEMO_MODE) {
+                    console.log('Demo mode - simulating payment...');
+                    Toast.info('Processing payment (Demo Mode)...');
+
+                    setTimeout(async () => {
+                        const demoRef = 'DEMO-' + Date.now();
+                        let orderResult;
+
+                        if (isCartCheckout) {
+                            orderResult = await storageService.createOrderFromCart({
+                                shipping: metadata.shipping,
+                                paymentMethod: `Demo - ${paymentMethod}`,
+                                paymentReference: demoRef
+                            });
+                        } else {
+                            orderResult = await storageService.createOrder({
+                                productId,
+                                size,
+                                color: params.get('color') || 'Black',
+                                shipping: metadata.shipping,
+                                paymentMethod: `Demo - ${paymentMethod}`,
+                                paymentReference: demoRef
+                            });
+                        }
+
+                        if (orderResult.success) {
+                            Toast.success('Payment successful! Order placed.');
+                            setTimeout(() => {
+                                const orderId = isCartCheckout ? orderResult.orders[0].id : orderResult.order.id;
+                                window.location.href = `order-success.html?orderId=${orderId}`;
+                            }, 1000);
+                        } else {
+                            Toast.error(orderResult.message);
+                            const finishBtn = document.getElementById('finish-checkout');
+                            finishBtn.classList.remove('loading');
+                            finishBtn.disabled = false;
+                        }
+                    }, 2000);
+                    return;
+                }
+
+                try {
+                    // Check if Paystack is available
+                    if (typeof PaystackPop === 'undefined') {
+                        console.error('PaystackPop not loaded');
+                        Toast.error('Payment system not loaded. Please refresh and try again.');
+                        const finishBtn = document.getElementById('finish-checkout');
+                        finishBtn.classList.remove('loading');
+                        finishBtn.disabled = false;
+                        return;
+                    }
+
+                    console.log('Initializing Paystack payment...');
+                    console.log('Email:', email);
+                    console.log('Amount:', amount);
+                    console.log('Key:', PAYSTACK_PUBLIC_KEY.substring(0, 10) + '...');
+
+                    const paystackConfig = {
+                        key: PAYSTACK_PUBLIC_KEY,
+                        email: email,
+                        amount: Math.round(amount * 100), // Paystack expects amount in kobo (cents)
+                        currency: 'GHS',
+                        metadata: metadata,
+                        ref: 'GG-' + Date.now() + '-' + Math.floor(Math.random() * 1000000),
+                        callback: async function (response) {
+                            console.log('Payment callback:', response);
+                            // Payment successful
+                            let orderResult;
+
+                            if (isCartCheckout) {
+                                // Create orders from cart
+                                orderResult = await storageService.createOrderFromCart({
+                                    shipping: metadata.shipping,
+                                    paymentMethod: `Paystack - ${paymentMethod}`,
+                                    paymentReference: response.reference
+                                });
+                            } else {
+                                // Create single product order
+                                orderResult = await storageService.createOrder({
+                                    productId,
+                                    size,
+                                    color: params.get('color') || 'Black',
+                                    shipping: metadata.shipping,
+                                    paymentMethod: `Paystack - ${paymentMethod}`,
+                                    paymentReference: response.reference
+                                });
+                            }
+
+                            if (orderResult.success) {
+                                Toast.success('Payment successful! Order placed.');
+                                setTimeout(() => {
+                                    const orderId = isCartCheckout ? orderResult.orders[0].id : orderResult.order.id;
+                                    window.location.href = `order-success.html?orderId=${orderId}`;
+                                }, 1000);
+                            } else {
+                                Toast.error(orderResult.message);
+                                const finishBtn = document.getElementById('finish-checkout');
+                                finishBtn.classList.remove('loading');
+                                finishBtn.disabled = false;
+                            }
+                        },
+                        onClose: function () {
+                            // Payment modal closed
+                            Toast.warning('Payment cancelled');
+                            const finishBtn = document.getElementById('finish-checkout');
+                            finishBtn.classList.remove('loading');
+                            finishBtn.disabled = false;
+                        }
+                    };
+
+                    // Add payment method specific configuration
+                    if (paymentMethod === 'card') {
+                        // Card payment - Paystack handles card details in iframe
+                    } else if (paymentMethod === 'momo') {
+                        // Mobile Money configuration
+                        paystackConfig.channels = ['mobile_money'];
+                    } else if (paymentMethod === 'bank') {
+                        // Bank transfer configuration
+                        paystackConfig.channels = ['bank'];
+                    }
+
+                    const handler = PaystackPop.setup(paystackConfig);
+                    handler.openIframe();
+                } catch (error) {
+                    console.error('Paystack error:', error);
+                    Toast.error('Payment initialization failed. Please try again.');
+                    const finishBtn = document.getElementById('finish-checkout');
+                    finishBtn.classList.remove('loading');
+                    finishBtn.disabled = false;
+                }
+            }
+
+            // Finish checkout
+            document.getElementById('finish-checkout').addEventListener('click', () => {
+                const shipping = {
+                    name: document.getElementById('ship-name').value,
+                    phone: document.getElementById('ship-phone').value,
+                    email: document.getElementById('ship-email').value,
+                    address: document.getElementById('ship-address').value,
+                    country: document.getElementById('ship-country').value,
+                    city: document.getElementById('ship-city').value,
+                    region: document.getElementById('ship-region').value,
+                    postalCode: document.getElementById('ship-postal').value,
+                    instructions: document.getElementById('ship-instructions').value
+                };
+
+                // Validate required shipping fields
+                if (!shipping.name) {
+                    Toast.error('Please enter your full name');
+                    return;
+                }
+                if (!shipping.phone) {
+                    Toast.error('Please enter your phone number');
+                    return;
+                }
+                if (!shipping.email) {
+                    Toast.error('Please enter your email address');
+                    return;
+                }
+                if (!shipping.address) {
+                    Toast.error('Please enter your street address');
+                    return;
+                }
+                if (!shipping.country) {
+                    Toast.error('Please select your country');
+                    return;
+                }
+                if (!shipping.city) {
+                    Toast.error('Please enter your city');
+                    return;
+                }
+                if (!shipping.region) {
+                    Toast.error('Please select your region');
+                    return;
+                }
+
+                // Validate payment fields based on selected method
+                if (selectedMethod === 'card') {
+                    const cardName = document.getElementById('card-name').value;
+                    const cardNumber = document.getElementById('card-number').value;
+                    const cardExpiry = document.getElementById('card-expiry').value;
+                    const cardCvv = document.getElementById('card-cvv').value;
+
+                    if (!cardName) {
+                        Toast.error('Please enter cardholder name');
+                        return;
+                    }
+                    if (!cardNumber || cardNumber.replace(/\s/g, '').length < 16) {
+                        Toast.error('Please enter a valid card number');
+                        return;
+                    }
+                    if (!cardExpiry || cardExpiry.length < 5) {
+                        Toast.error('Please enter a valid expiry date (MM/YY)');
+                        return;
+                    }
+                    if (!cardCvv || cardCvv.length < 3) {
+                        Toast.error('Please enter a valid CVV');
+                        return;
+                    }
+                } else if (selectedMethod === 'momo') {
+                    const momoNumber = document.getElementById('momo-number').value;
+                    if (!momoNumber) {
+                        Toast.error('Please enter mobile number');
+                        return;
+                    }
+                } else if (selectedMethod === 'bank') {
+                    const bankAccount = document.getElementById('bank-account').value;
+                    if (!bankAccount) {
+                        Toast.error('Please enter account number');
+                        return;
+                    }
+                }
+
+                const finishBtn = document.getElementById('finish-checkout');
+                finishBtn.classList.add('loading');
+                finishBtn.disabled = true;
+
+                // Prepare metadata with payment details
+                const metadata = {
+                    shipping: shipping,
+                    userId: user ? user.id : 'guest',
+                    isGuestCheckout: !user,
+                    paymentMethod: selectedMethod,
+                    isCartCheckout: isCartCheckout,
+                    items: checkoutItems
+                };
+
+                // Add payment method specific details to metadata
+                if (selectedMethod === 'card') {
+                    metadata.cardName = document.getElementById('card-name').value;
+                } else if (selectedMethod === 'momo') {
+                    metadata.momoProvider = document.getElementById('momo-provider').value;
+                    metadata.momoNumber = document.getElementById('momo-number').value;
+                } else if (selectedMethod === 'bank') {
+                    metadata.bankName = document.getElementById('bank-name').value;
+                    metadata.bankAccount = document.getElementById('bank-account').value;
+                }
+
+                // Initiate Paystack payment
+                payWithPaystack(shipping.email, checkoutTotal, metadata, selectedMethod);
+            });
+        });
+    </script>
+</body>
+
+</html>

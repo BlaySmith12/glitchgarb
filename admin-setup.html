@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .admin-login-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            padding: 3rem;
+        }
+
+        .admin-login-box h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .admin-login-box p {
+            text-align: center;
+            opacity: 0.6;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--main-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            color: var(--color-error);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            text-align: center;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: #fff;
+            opacity: 0.6;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .back-link a:hover {
+            opacity: 1;
+        }
+
+        .mode-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .mode-toggle span {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .mode-toggle button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-login-container">
+        <div class="admin-login-box">
+            <h1>ADMIN ACCESS</h1>
+            <p>Enter your admin credentials to continue</p>
+
+            <div id="error-message" class="error-message"></div>
+
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="admin-email" required placeholder="admin@glitchgarb.com">
+                </div>
+                <div class="form-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="admin-password" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="login-btn" id="login-btn">LOGIN TO DASHBOARD</button>
+            </form>
+
+            <div class="mode-toggle">
+                <span>Using: <strong id="mode-label">Firebase API</strong></span>
+                <button type="button" onclick="toggleMode()">Switch to LocalStorage</button>
+            </div>
+
+            <div class="back-link">
+                <a href="index.html">← Back to Store</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-service.js"></script>
+    <script src="toast.js"></script>
+    <script src="admin-api.js"></script>
+    <script>
+        let useFirebase = true;
+
+        function toggleMode() {
+            useFirebase = !useFirebase;
+            document.getElementById('mode-label').textContent = useFirebase ? 'Firebase API' : 'LocalStorage';
+            document.querySelector('button[onclick="toggleMode()"]').textContent =
+                useFirebase ? 'Switch to LocalStorage' : 'Switch to Firebase API';
+        }
+
+        // Function to setup admin user
+        async function setupAdminUser(email, password) {
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/setup-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        name: 'Admin User',
+                        setupKey: 'glitchgarb-admin-setup-2024'
+                    })
+                });
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Setup admin error:', error);
+                return { success: false, message: error.message };
+            }
+        }
+
+        document.getElementById('admin-login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const errorDiv = document.getElementById('error-message');
+
+            // Clear previous errors
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+
+            // Disable button
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'AUTHENTICATING...';
+
+            try {
+                if (useFirebase) {
+                    // Firebase API login
+                    let result = await adminAPI.login(email, password);
+
+                    // If login fails due to user not found, try to setup admin first
+                    if (!result.success && result.message === 'Invalid email or password') {
+                        // Try to create admin user
+                        const setupResult = await setupAdminUser(email, password);
+                        if (setupResult.success) {
+                            // Try login again
+                            result = await adminAPI.login(email, password);
+                        }
+                    }
+
+                    if (result.success && result.user && result.user.isAdmin) {
+                        // Store the UID as the token for API requests
+                        // The backend will verify the user via the token
+                        adminAPI.setToken(result.uid);
+                        // Also store user info
+                        localStorage.setItem('admin_user', JSON.stringify(result.user));
+                        Toast.success('Login successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 1000);
+                    } else {
+                        throw new Error('Access denied. Admin privileges required.');
+                    }
+                } else {
+                    // LocalStorage login
+                    const users = storageService.getUsers();
+                    const user = users.find(u => u.email === email && u.password === password);
+
+                    if (user && user.isAdmin) {
+                        storageService.setCurrentUser(user);
+                        Toast.success('Login successful! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 1000);
+                    } else {
+                        throw new Error('Invalid credentials or not an admin.');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = error.message || 'Login failed. Please try again.';
+                errorDiv.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'LOGIN TO DASHBOARD';
+            }
+        });
+
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = adminAPI.getStoredToken();
+            const localUser = storageService.getCurrentUser();
+
+            if (token || (localUser && localUser.isAdmin)) {
+                // Already logged in, redirect to admin
+                window.location.href = 'admin.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

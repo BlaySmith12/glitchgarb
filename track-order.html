@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRACK ORDER | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .track-hero {
+            padding: 8rem 0;
+            text-align: center;
+        }
+
+        .track-card {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-timeline {
+            margin: 2rem 0;
+            padding-left: 2rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .status-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .status-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .status-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            border: 2px solid #000;
+        }
+
+        .status-item.active::before {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .status-item.completed::before {
+            background: #00ff00;
+        }
+
+        .status-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .status-date {
+            font-size: 0.75rem;
+            opacity: 0.5;
+        }
+
+        .order-summary {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .order-summary img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 0.75rem;
+            background: #000;
+            color: #fff;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="track-hero fade-in">
+            <h1 style="font-size: 3rem; letter-spacing: -0.05em; margin-bottom: 1rem;">TRACK YOUR ORDER</h1>
+            <p style="opacity: 0.6; margin-bottom: 3rem;">Enter your order number to check the status of your shipment.
+            </p>
+
+            <div class="track-card">
+                <div class="search-form">
+                    <input type="text" id="order-search" placeholder="Enter order number (e.g., GG-XXXXXX)">
+                    <button class="btn" onclick="searchOrder()">TRACK</button>
+                </div>
+
+                <div id="order-details" style="display: none;">
+                    <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">ORDER NUMBER</div>
+                    <div id="order-number-display"
+                        style="font-family: monospace; font-size: 1.2rem; margin-bottom: 1.5rem;"></div>
+
+                    <div class="order-summary">
+                        <img id="product-image" src="" alt="Product">
+                        <div>
+                            <div id="product-name" style="font-weight: bold;"></div>
+                            <div id="product-size" style="font-size: 0.8rem; opacity: 0.6;"></div>
+                            <div id="product-color" style="font-size: 0.8rem; opacity: 0.6;"></div>
+                        </div>
+                    </div>
+
+                    <div class="status-timeline" id="status-timeline">
+                        <!-- Status items will be inserted here -->
+                    </div>
+
+                    <div id="tracking-info"
+                        style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(0, 255, 255, 0.1); border: 1px solid var(--accent-color);">
+                        <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">TRACKING NUMBER</div>
+                        <div id="tracking-number" style="font-family: monospace; color: var(--accent-color);"></div>
+                    </div>
+                </div>
+
+                <div id="not-found" style="display: none; text-align: center; padding: 2rem;">
+                    <p style="opacity: 0.6;">Order not found. Please check your order number and try again.</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="index.html" class="btn" style="background: none; border: 1px solid var(--border-color);">BACK
+                    TO HOME</a>
+                <a href="shop.html" class="btn">CONTINUE SHOPPING</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script>
+        const statusFlow = [
+            { key: 'pending', label: 'Order Placed', description: 'Your order has been received' },
+            { key: 'confirmed', label: 'Order Confirmed', description: 'Payment verified' },
+            { key: 'processing', label: 'Processing', description: 'Your order is being prepared' },
+            { key: 'shipped', label: 'Shipped', description: 'Your order is on the way' },
+            { key: 'delivered', label: 'Delivered', description: 'Package delivered' }
+        ];
+
+        function searchOrder() {
+            const searchInput = document.getElementById('order-search').value.trim();
+            if (!searchInput) {
+                alert('Please enter an order number');
+                return;
+            }
+
+            const orders = storageService.getOrders();
+            // Search by orderNumber or id
+            const order = orders.find(o =>
+                (o.orderNumber && o.orderNumber.toLowerCase() === searchInput.toLowerCase()) ||
+                o.id.toLowerCase() === searchInput.toLowerCase()
+            );
+
+            if (order) {
+                displayOrder(order);
+            } else {
+                document.getElementById('order-details').style.display = 'none';
+                document.getElementById('not-found').style.display = 'block';
+            }
+        }
+
+        function displayOrder(order) {
+            document.getElementById('order-details').style.display = 'block';
+            document.getElementById('not-found').style.display = 'none';
+
+            document.getElementById('order-number-display').textContent = order.orderNumber || order.id;
+            document.getElementById('product-name').textContent = order.productName;
+            document.getElementById('product-size').textContent = `Size: ${order.size}`;
+            document.getElementById('product-color').textContent = `Color: ${order.color || 'Black'}`;
+            document.getElementById('product-image').src = order.productImage;
+
+            // Build status timeline
+            const currentStatus = order.status || 'Secured';
+            const statusMap = {
+                'Secured': 'confirmed',
+                'pending': 'pending',
+                'confirmed': 'confirmed',
+                'processing': 'processing',
+                'shipped': 'shipped',
+                'delivered': 'delivered'
+            };
+
+            const currentStatusIndex = statusFlow.findIndex(s => s.key === (statusMap[currentStatus] || 'confirmed'));
+
+            let timelineHtml = '';
+            statusFlow.forEach((status, index) => {
+                let statusClass = '';
+                if (index < currentStatusIndex) {
+                    statusClass = 'completed';
+                } else if (index === currentStatusIndex) {
+                    statusClass = 'active';
+                }
+                timelineHtml += `
+                    <div class="status-item ${statusClass}">
+                        <div class="status-title">${status.label}</div>
+                        <div class="status-date">${status.description}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('status-timeline').innerHTML = timelineHtml;
+
+            // Show tracking info if available
+            if (order.trackingNumber) {
+                document.getElementById('tracking-info').style.display = 'block';
+                document.getElementById('tracking-number').textContent = order.trackingNumber;
+            } else {
+                document.getElementById('tracking-info').style.display = 'none';
+            }
+        }
+
+        // Check URL params for order number
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const orderNumber = params.get('order');
+            if (orderNumber) {
+                document.getElementById('order-search').value = orderNumber;
+                searchOrder();
+            }
+        });
+    </script>
+</body>
+
+</html>

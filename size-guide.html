@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Size Guide | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.85rem;
+        }
+
+        .size-table th,
+        .size-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .size-table th {
+            background: var(--secondary-bg);
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .size-table td {
+            opacity: 0.8;
+        }
+
+        .size-table tr:hover td {
+            background: rgba(255, 62, 0, 0.05);
+        }
+
+        .measurement-guide {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .measurement-item {
+            padding: 1.5rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .measurement-item h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+
+        .measurement-item p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+
+        .size-tip {
+            background: rgba(255, 62, 0, 0.1);
+            border-left: 3px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .size-tip h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-color);
+        }
+
+        .size-tip ul {
+            opacity: 0.7;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .measurement-guide {
+                grid-template-columns: 1fr;
+            }
+
+            .size-table {
+                font-size: 0.75rem;
+            }
+
+            .size-table th,
+            .size-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="collections.html">Collections</a>
+                <a href="login.html" id="auth-link">Login</a>
+                <a href="profile.html" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="collections.html">Collections</a>
+        <a href="login.html" id="mobile-auth-link">Login</a>
+        <a href="profile.html" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top: 4rem; max-width: 1000px;">
+        <h1 style="margin-bottom: 1rem;">Size Guide</h1>
+        <p style="margin-bottom: 3rem; opacity: 0.7;">Find your perfect fit with our comprehensive sizing charts.</p>
+
+        <div class="size-tip">
+            <h4>PRO TIP</h4>
+            <ul>
+                <li>If you're between sizes, we recommend sizing up for a more relaxed fit</li>
+                <li>All measurements are in centimeters (cm)</li>
+                <li>For the most accurate fit, measure yourself wearing light clothing</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">T-SHIRTS</h2>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>SIZE</th>
+                        <th>CHEST</th>
+                        <th>LENGTH</th>
+                        <th>SHOULDER</th>
+                        <th>SLEEVE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>S</strong></td>
+                        <td>96-100</td>
+                        <td>68</td>
+                        <td>42</td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M</strong></td>
+                        <td>100-104</td>
+                        <td>71</td>
+                        <td>44</td>
+                        <td>21</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L</strong></td>
+                        <td>104-108</td>
+                        <td>74</td>
+                        <td>46</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XL</strong></td>
+                        <td>108-112</td>
+                        <td>77</td>
+                        <td>48</td>
+                        <td>23</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XXL</strong></td>
+                        <td>112-116</td>
+                        <td>80</td>
+                        <td>50</td>
+                        <td>24</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">HOODIES</h2>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>SIZE</th>
+                        <th>CHEST</th>
+                        <th>LENGTH</th>
+                        <th>SHOULDER</th>
+                        <th>SLEEVE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>S</strong></td>
+                        <td>100-104</td>
+                        <td>66</td>
+                        <td>44</td>
+                        <td>62</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M</strong></td>
+                        <td>104-108</td>
+                        <td>69</td>
+                        <td>46</td>
+                        <td>64</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L</strong></td>
+                        <td>108-112</td>
+                        <td>72</td>
+                        <td>48</td>
+                        <td>66</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XL</strong></td>
+                        <td>112-116</td>
+                        <td>75</td>
+                        <td>50</td>
+                        <td>68</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XXL</strong></td>
+                        <td>116-120</td>
+                        <td>78</td>
+                        <td>52</td>
+                        <td>70</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">SHORTS</h2>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>SIZE</th>
+                        <th>WAIST</th>
+                        <th>HIP</th>
+                        <th>LENGTH</th>
+                        <th>INSEAM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>S</strong></td>
+                        <td>72-76</td>
+                        <td>96</td>
+                        <td>48</td>
+                        <td>22</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M</strong></td>
+                        <td>76-80</td>
+                        <td>100</td>
+                        <td>50</td>
+                        <td>24</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L</strong></td>
+                        <td>80-84</td>
+                        <td>104</td>
+                        <td>52</td>
+                        <td>26</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XL</strong></td>
+                        <td>84-88</td>
+                        <td>108</td>
+                        <td>54</td>
+                        <td>28</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XXL</strong></td>
+                        <td>88-92</td>
+                        <td>112</td>
+                        <td>56</td>
+                        <td>30</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">PANTS</h2>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>SIZE</th>
+                        <th>WAIST</th>
+                        <th>HIP</th>
+                        <th>LENGTH</th>
+                        <th>INSEAM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>S</strong></td>
+                        <td>72-76</td>
+                        <td>96</td>
+                        <td>100</td>
+                        <td>76</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M</strong></td>
+                        <td>76-80</td>
+                        <td>100</td>
+                        <td>102</td>
+                        <td>78</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L</strong></td>
+                        <td>80-84</td>
+                        <td>104</td>
+                        <td>104</td>
+                        <td>80</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XL</strong></td>
+                        <td>84-88</td>
+                        <td>108</td>
+                        <td>106</td>
+                        <td>82</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XXL</strong></td>
+                        <td>88-92</td>
+                        <td>112</td>
+                        <td>108</td>
+                        <td>84</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">CAPS</h2>
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>SIZE</th>
+                        <th>HEAD CIRCUMFERENCE</th>
+                        <th>BRIM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>S/M</strong></td>
+                        <td>54-58</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L/XL</strong></td>
+                        <td>58-62</td>
+                        <td>7</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">HOW TO MEASURE</h2>
+            <div class="measurement-guide">
+                <div class="measurement-item">
+                    <h4>CHEST</h4>
+                    <p>Measure around the fullest part of your chest, under your arms, keeping the tape horizontal.</p>
+                </div>
+                <div class="measurement-item">
+                    <h4>WAIST</h4>
+                    <p>Measure around your natural waistline, keeping the tape comfortably loose.</p>
+                </div>
+                <div class="measurement-item">
+                    <h4>HIP</h4>
+                    <p>Measure around the fullest part of your hips, keeping the tape horizontal.</p>
+                </div>
+                <div class="measurement-item">
+                    <h4>LENGTH</h4>
+                    <p>Measure from the highest point of the shoulder to the bottom hem.</p>
+                </div>
+                <div class="measurement-item">
+                    <h4>SHOULDER</h4>
+                    <p>Measure from shoulder seam to shoulder seam across the back.</p>
+                </div>
+                <div class="measurement-item">
+                    <h4>SLEEVE</h4>
+                    <p>Measure from the shoulder seam to the end of the cuff.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 2rem; border-top: 1px solid var(--border-color); margin-top: 3rem;">
+            <p style="opacity: 0.7; margin-bottom: 1rem;">Still unsure about your size?</p>
+            <a href="contact.html" class="btn btn-primary" style="display: inline-block;">Contact Us</a>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Sync mobile menu auth links
+        const authLink = document.getElementById('auth-link');
+        const profileLink = document.getElementById('profile-link');
+        const mobileAuthLink = document.getElementById('mobile-auth-link');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+        function updateAuthLinks() {
+            const user = storageService.getCurrentUser();
+            if (user) {
+                authLink.style.display = 'none';
+                profileLink.style.display = 'inline-block';
+                mobileAuthLink.style.display = 'none';
+                mobileProfileLink.style.display = 'block';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+            } else {
+                authLink.style.display = 'inline-block';
+                profileLink.style.display = 'none';
+                mobileAuthLink.style.display = 'block';
+                mobileProfileLink.style.display = 'none';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+            }
+        }
+
+        updateAuthLinks();
+        window.addEventListener('storage', updateAuthLinks);
+
+        if (mobileLogoutLink) {
+            mobileLogoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                storageService.logout();
+                Toast.info('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+
+</html>

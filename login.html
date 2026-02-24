@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container fade-in">
+            <h2 style="margin-bottom: 2rem;">Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="â¢â¢â¢â¢â¢â¢â¢â¢">
+                </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="#" id="forgot-password-link"
+                        style="color: var(--accent-color); text-decoration: none; font-size: 0.8rem;">Forgot
+                        Password?</a>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Enter</button>
+            </form>
+
+            <!-- Forgot Password Modal -->
+            <div id="forgot-password-modal"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+                <div
+                    style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; max-width: 400px; width: 90%; border: 1px solid var(--border-color);">
+                    <h3 style="margin-bottom: 1rem;">Reset Password</h3>
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 1.5rem;">Enter your email address and
+                        we'll send you a link to reset your password.</p>
+                    <form id="forgot-password-form">
+                        <div class="form-group">
+                            <label for="reset-email">Email Address</label>
+                            <input type="email" id="reset-email" required placeholder="name@example.com">
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="button" id="cancel-reset" class="btn btn-secondary"
+                                style="flex: 1;">Cancel</button>
+                            <button type="submit" class="btn" style="flex: 1;">Send Reset Link</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+                Don't have an account? <a href="signup.html"
+                    style="color: var(--accent-color); text-decoration: none;">Join the Club</a>
+            </div>
+
+            <div class="social-auth">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                    <span style="font-size: 0.7rem; opacity: 0.5;">OR CONTINUE WITH</span>
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                </div>
+                <button class="btn-social" id="google-login">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" width="16"> Google
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Other Scripts -->
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+
+    <script>
+        // Initialize Firebase
+        firebaseService.init();
+
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Show loading state
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use Firebase Authentication
+                const result = await firebaseService.signIn(email, password);
+
+                if (result.success) {
+                    // Fetch user data from Firestore to get admin status
+                    const user = result.user;
+                    let isAdmin = false;
+                    let isVIP = false;
+
+                    try {
+                        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            isAdmin = userData.isAdmin || false;
+                            isVIP = userData.isVIP || false;
+                        }
+                    } catch (e) {
+                        console.log('Could not fetch user data:', e);
+                    }
+
+                    // Get the ID token for API authentication
+                    const idToken = await user.getIdToken();
+                    localStorage.setItem('gg_user_token', idToken);
+
+                    // Store user info in localStorage for compatibility
+                    // Use gg_user key to match what storageService.getCurrentUser() expects
+                    localStorage.setItem('gg_user', JSON.stringify({
+                        id: user.uid,
+                        email: user.email,
+                        name: user.displayName || user.email.split('@')[0],
+                        isAdmin: isAdmin,
+                        isVIP: isVIP
+                    }));
+
+                    Toast.success('Welcome back! Redirecting...', { duration: 2000 });
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    Toast.error(result.error || 'Invalid credentials');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                Toast.error('An error occurred. Please try again.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Google Sign In
+        document.getElementById('google-login').onclick = async () => {
+            try {
+                Toast.info('Connecting to Google...');
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+                // Force account selection every time
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+                const result = await firebase.auth().signInWithPopup(provider);
+                const user = result.user;
+
+                // Create/update user document
+                await firebase.firestore().collection('users').doc(user.uid).set({
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    isAdmin: false,
+                    isVIP: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                // Fetch user data to get admin status
+                let isAdmin = false;
+                let isVIP = false;
+                try {
+                    const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        isAdmin = userData.isAdmin || false;
+                        isVIP = userData.isVIP || false;
+                    }
+                } catch (e) {
+                    console.log('Could not fetch user data:', e);
+                }
+
+                // Get the ID token for API authentication
+                const idToken = await user.getIdToken();
+                localStorage.setItem('gg_user_token', idToken);
+
+                localStorage.setItem('gg_user', JSON.stringify({
+                    id: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    photoURL: user.photoURL,
+                    isAdmin: isAdmin,
+                    isVIP: isVIP
+                }));
+
+                Toast.success('Welcome! Redirecting...', { duration: 2000 });
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Google login error:', error);
+                console.error('Error code:', error.code);
+                let errorMsg = 'Google login failed. Please try again.';
+                if (error.code === 'auth/unauthorized-domain') {
+                    errorMsg = 'This domain is not authorized. Please add it in Firebase Console > Authentication > Settings > Authorized domains.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMsg = 'Popup was blocked. Please allow popups for this site.';
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    errorMsg = 'Sign-in was cancelled.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMsg = 'Google sign-in is not enabled. Please enable it in Firebase Console > Authentication > Sign-in method.';
+                }
+                Toast.error(errorMsg);
+            }
+        };
+
+        // Forgot Password functionality
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const forgotPasswordModal = document.getElementById('forgot-password-modal');
+        const forgotPasswordForm = document.getElementById('forgot-password-form');
+        const cancelResetBtn = document.getElementById('cancel-reset');
+
+        // Open modal
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Pre-fill email if entered
+            const loginEmail = document.getElementById('email').value;
+            if (loginEmail) {
+                document.getElementById('reset-email').value = loginEmail;
+            }
+            forgotPasswordModal.style.display = 'flex';
+        });
+
+        // Close modal
+        cancelResetBtn.addEventListener('click', () => {
+            forgotPasswordModal.style.display = 'none';
+        });
+
+        // Close modal on outside click
+        forgotPasswordModal.addEventListener('click', (e) => {
+            if (e.target === forgotPasswordModal) {
+                forgotPasswordModal.style.display = 'none';
+            }
+        });
+
+        // Handle password reset
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                Toast.success('Password reset email sent! Check your inbox.');
+                forgotPasswordModal.style.display = 'none';
+            } catch (error) {
+                console.error('Password reset error:', error);
+                let errorMsg = 'Failed to send reset email. Please try again.';
+                if (error.code === 'auth/user-not-found') {
+                    errorMsg = 'No account found with this email address.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = 'Please enter a valid email address.';
+                }
+                Toast.error(errorMsg);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

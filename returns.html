@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns & Exchanges | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .returns-step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            opacity: 0.7;
+            line-height: 1.7;
+        }
+
+        .highlight-box {
+            background: rgba(255, 62, 0, 0.1);
+            border-left: 3px solid var(--accent-color);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .highlight-box h3 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-color);
+        }
+
+        .highlight-box ul {
+            opacity: 0.7;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="collections.html">Collections</a>
+                <a href="login.html" id="auth-link">Login</a>
+                <a href="profile.html" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="collections.html">Collections</a>
+        <a href="login.html" id="mobile-auth-link">Login</a>
+        <a href="profile.html" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top: 4rem; max-width: 900px;">
+        <h1 style="margin-bottom: 1rem;">Returns & Exchanges</h1>
+        <p style="margin-bottom: 3rem; opacity: 0.7;">Not quite right? We'll help you sort it out.</p>
+
+        <div style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">RETURN POLICY</h2>
+            <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 1rem;">
+                We want you to love your GLITCHGARB pieces. If you're not completely satisfied, you can return your
+                order within <strong>14 days of delivery</strong> for a full refund or exchange.
+            </p>
+            <p style="opacity: 0.7; line-height: 1.7;">
+                Items must be in their original condition: unworn, unwashed, with all tags attached, and in the original
+                packaging.
+            </p>
+        </div>
+
+        <div class="highlight-box">
+            <h3>ITEMS ELIGIBLE FOR RETURN</h3>
+            <ul>
+                <li>Items in original condition with tags attached</li>
+                <li>Items unworn and unwashed</li>
+                <li>Items returned within 14 days of delivery</li>
+                <li>Items with original receipt or proof of purchase</li>
+            </ul>
+        </div>
+
+        <div class="highlight-box" style="background: rgba(255, 0, 0, 0.1); border-left-color: #ff4444;">
+            <h3 style="color: #ff4444;">ITEMS NOT ELIGIBLE FOR RETURN</h3>
+            <ul>
+                <li>Items worn, washed, or damaged</li>
+                <li>Items without original tags</li>
+                <li>Items returned after 14 days</li>
+                <li>Final sale or clearance items</li>
+                <li>Underwear and swimwear (for hygiene reasons)</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">HOW TO INITIATE A RETURN
+            </h2>
+
+            <div class="returns-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Contact Us</h3>
+                    <p>Email us at <a href="mailto:support@glitchgarb.com"
+                            style="color: var(--accent-color);">support@glitchgarb.com</a> with your order number and
+                        reason for return. You can also use our <a href="contact.html"
+                            style="color: var(--accent-color);">contact form</a>.</p>
+                </div>
+            </div>
+
+            <div class="returns-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Get Approval</h3>
+                    <p>We'll review your request and send you a return authorization within 24-48 hours, along with
+                        return shipping instructions.</p>
+                </div>
+            </div>
+
+            <div class="returns-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Ship Your Return</h3>
+                    <p>Pack your items securely with all original tags and packaging. Ship to the address provided in
+                        your return authorization.</p>
+                </div>
+            </div>
+
+            <div class="returns-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Receive Refund</h3>
+                    <p>Once we receive and inspect your return, we'll process your refund within 5-7 business days.
+                        You'll receive an email confirmation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">EXCHANGES</h2>
+            <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 1rem;">
+                Need a different size or color? We're happy to exchange your item, subject to availability.
+            </p>
+            <p style="opacity: 0.7; line-height: 1.7;">
+                Follow the same return process above, and mention the size/color you'd like instead. If the item is
+                unavailable, we'll issue a full refund.
+            </p>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">REFUND POLICY</h2>
+            <ul style="opacity: 0.7; line-height: 2;">
+                <li>Refunds are processed to the original payment method</li>
+                <li>Shipping costs are non-refundable unless the return is due to our error</li>
+                <li>Refunds typically appear within 5-10 business days after processing</li>
+                <li>Mobile Money refunds are processed within 24 hours</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">DAMAGED OR INCORRECT ITEMS
+            </h2>
+            <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 1rem;">
+                Received a damaged or incorrect item? We're so sorry! Please contact us immediately at <a
+                    href="mailto:support@glitchgarb.com" style="color: var(--accent-color);">support@glitchgarb.com</a>
+                with:
+            </p>
+            <ul style="opacity: 0.7; line-height: 2;">
+                <li>Your order number</li>
+                <li>Photos of the damage or incorrect item</li>
+                <li>Description of the issue</li>
+            </ul>
+            <p style="opacity: 0.7; line-height: 1.7; margin-top: 1rem;">
+                We'll arrange a free return and send you the correct item right away.
+            </p>
+        </div>
+
+        <div style="text-align: center; padding: 2rem; border-top: 1px solid var(--border-color); margin-top: 3rem;">
+            <p style="opacity: 0.7; margin-bottom: 1rem;">Need help with a return?</p>
+            <a href="contact.html" class="btn btn-primary" style="display: inline-block;">Contact Us</a>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Sync mobile menu auth links
+        const authLink = document.getElementById('auth-link');
+        const profileLink = document.getElementById('profile-link');
+        const mobileAuthLink = document.getElementById('mobile-auth-link');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+        function updateAuthLinks() {
+            const user = storageService.getCurrentUser();
+            if (user) {
+                authLink.style.display = 'none';
+                profileLink.style.display = 'inline-block';
+                mobileAuthLink.style.display = 'none';
+                mobileProfileLink.style.display = 'block';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+            } else {
+                authLink.style.display = 'inline-block';
+                profileLink.style.display = 'none';
+                mobileAuthLink.style.display = 'block';
+                mobileProfileLink.style.display = 'none';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+            }
+        }
+
+        updateAuthLinks();
+        window.addEventListener('storage', updateAuthLinks);
+
+        if (mobileLogoutLink) {
+            mobileLogoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                storageService.logout();
+                Toast.info('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+
+</html>

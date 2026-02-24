@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="collections.html">Collections</a>
+                <a href="login.html" id="auth-link">Login</a>
+                <a href="profile.html" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="collections.html">Collections</a>
+        <a href="login.html" id="mobile-auth-link">Login</a>
+        <a href="profile.html" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top: 4rem; max-width: 900px;">
+        <h1 style="margin-bottom: 1rem;">Frequently Asked Questions</h1>
+        <p style="margin-bottom: 3rem; opacity: 0.7;">Find answers to common questions about GLITCHGARB.</p>
+
+        <div class="faq-section" style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">ORDERS & SHIPPING</h2>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">How do I track my order?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Once your order ships, you'll receive a tracking number via
+                    email. You can also track your order in your account under "Order History".</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">How long does shipping take?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Within Ghana: 2-5 business days. International shipping: 7-14
+                    business days depending on location.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Do you ship internationally?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Yes! We ship to select countries worldwide. Shipping rates
+                    and delivery times vary by location.</p>
+            </div>
+        </div>
+
+        <div class="faq-section" style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">RETURNS & EXCHANGES</h2>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">What is your return policy?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">We accept returns within 14 days of delivery. Items must be
+                    unworn, unwashed, and with original tags attached.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">How do I initiate a return?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Contact our support team at support@glitchgarb.com with your
+                    order number and reason for return. We'll guide you through the process.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Can I exchange for a different size?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Yes, exchanges are subject to availability. Contact us within
+                    14 days of delivery to request an exchange.</p>
+            </div>
+        </div>
+
+        <div class="faq-section" style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">PRODUCTS & SIZING</h2>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">How do I find my size?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Check our <a href="size-guide.html"
+                        style="color: var(--accent-color);">Size Guide</a> for detailed measurements. If you're between
+                    sizes, we recommend sizing up for a relaxed fit.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Are your products limited edition?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Many of our drops are limited edition and won't be restocked
+                    once sold out. Follow us on social media to stay updated on new releases.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">How should I care for my GLITCHGARB items?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Machine wash cold with similar colors. Tumble dry low or hang
+                    dry. Do not bleach. Iron on low heat if needed.</p>
+            </div>
+        </div>
+
+        <div class="faq-section" style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">PAYMENT & ACCOUNT</h2>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">What payment methods do you accept?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">We accept MTN Mobile Money, Vodafone Cash, Visa, Mastercard,
+                    Apple Pay, and Google Pay.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Is my payment information secure?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">Absolutely. We use Paystack for secure payment processing.
+                    Your payment information is encrypted and never stored on our servers.</p>
+            </div>
+
+            <div class="faq-item" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Do I need an account to shop?</h3>
+                <p style="opacity: 0.7; line-height: 1.7;">You can checkout as a guest, but creating an account gives
+                    you access to order history, faster checkout, and exclusive member drops.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 2rem; border-top: 1px solid var(--border-color); margin-top: 3rem;">
+            <p style="opacity: 0.7; margin-bottom: 1rem;">Still have questions?</p>
+            <a href="contact.html" class="btn btn-primary" style="display: inline-block;">Contact Us</a>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Sync mobile menu auth links
+        const authLink = document.getElementById('auth-link');
+        const profileLink = document.getElementById('profile-link');
+        const mobileAuthLink = document.getElementById('mobile-auth-link');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+        function updateAuthLinks() {
+            const user = storageService.getCurrentUser();
+            if (user) {
+                authLink.style.display = 'none';
+                profileLink.style.display = 'inline-block';
+                mobileAuthLink.style.display = 'none';
+                mobileProfileLink.style.display = 'block';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+            } else {
+                authLink.style.display = 'inline-block';
+                profileLink.style.display = 'none';
+                mobileAuthLink.style.display = 'block';
+                mobileProfileLink.style.display = 'none';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+            }
+        }
+
+        updateAuthLinks();
+        window.addEventListener('storage', updateAuthLinks);
+
+        if (mobileLogoutLink) {
+            mobileLogoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                storageService.logout();
+                Toast.info('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+
+</html>

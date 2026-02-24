@@ -1,0 +1,931 @@
+/**
+ * Hybrid Storage Service for GlitchGarb
+ * Works with both API backend (when available) and LocalStorage (fallback)
+ * This ensures the site works even without running the backend server
+ */
+
+class HybridStorageService {
+    constructor() {
+        // API base URL - auto-detect based on environment
+        // For production: Set window.GG_API_URL before loading this script, 
+        // or it will auto-detect based on hostname
+        this.API_URL = this.getApiUrl();
+        this.TOKEN_KEY = 'gg_token';
+        this.USER_KEY = 'gg_user';
+        this.USERS_KEY = 'gg_users';
+        this.PRODUCTS_KEY = 'gg_products';
+        this.ORDERS_KEY = 'gg_orders';
+        this.CART_KEY = 'gg_cart';
+
+        // Track if API is available
+        this.apiAvailable = false;
+        this.apiChecked = false;
+
+        // Initialize
+        this.init();
+    }
+
+    /**
+     * Get the API URL based on environment
+     * Priority:
+     * 1. window.GG_API_URL (set in HTML before loading this script)
+     * 2. Production URL if hostname is not localhost
+     * 3. Local development URL
+     */
+    getApiUrl() {
+        // Check for explicit override
+        if (window.GG_API_URL) {
+            console.log(`🔗 Using configured API URL: ${window.GG_API_URL}`);
+            return window.GG_API_URL;
+        }
+
+        // Auto-detect based on hostname
+        const hostname = window.location.hostname;
+
+        // If not localhost, assume production
+        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+            // Production: Use the same origin (if backend is served from same domain)
+            // Or use a specific backend URL
+            const prodUrl = window.GG_BACKEND_URL || 'https://glitchgarb-backend.onrender.com/api';
+            console.log(`🔗 Production environment detected, using: ${prodUrl}`);
+            return prodUrl;
+        }
+
+        // Local development
+        const devUrl = 'http://localhost:5000/api';
+        console.log(`🔗 Development environment detected, using: ${devUrl}`);
+        return devUrl;
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    init() {
+        // Initialize users in localStorage
+        if (!localStorage.getItem(this.USERS_KEY)) {
+            localStorage.setItem(this.USERS_KEY, JSON.stringify([]));
+        }
+
+        // Check if admin user exists, create if not
+        const users = this.getLocalUsers();
+        const adminExists = users.some(user => user.email === 'admin@glitchgarb.com');
+        if (!adminExists) {
+            const adminUser = {
+                id: 'admin-' + Date.now().toString(),
+                name: 'Admin User',
+                email: 'admin@glitchgarb.com',
+                password: 'admin123',
+                isAdmin: true,
+                isVIP: true,
+                purchaseHistory: [],
+                createdAt: new Date().toISOString()
+            };
+            users.push(adminUser);
+            localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+        }
+
+        // Only seed products if none exist
+        const existingProducts = localStorage.getItem(this.PRODUCTS_KEY);
+        if (!existingProducts || JSON.parse(existingProducts).length === 0) {
+            this.seedProducts();
+        }
+
+        // Check API availability in background
+        this.checkAPI();
+    }
+
+    async checkAPI() {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const response = await fetch(`${this.API_URL}/health`, {
+                method: 'GET',
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+            this.apiAvailable = response.ok;
+            console.log(`🔗 API ${this.apiAvailable ? 'connected' : 'unavailable'} - using ${this.apiAvailable ? 'API' : 'LocalStorage'} mode`);
+        } catch (error) {
+            this.apiAvailable = false;
+            console.log('🔗 API unavailable - using LocalStorage mode');
+        }
+        this.apiChecked = true;
+    }
+
+    // ============================================
+    // HELPER METHODS
+    // ============================================
+
+    getAuthHeaders() {
+        const token = localStorage.getItem(this.TOKEN_KEY);
+        return {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        };
+    }
+
+    async apiRequest(endpoint, options = {}) {
+        const url = `${this.API_URL}${endpoint}`;
+        const config = {
+            headers: this.getAuthHeaders(),
+            ...options
+        };
+
+        const response = await fetch(url, config);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'API request failed');
+        }
+
+        return data;
+    }
+
+    // ============================================
+    // LOCAL STORAGE METHODS (Fallback)
+    // ============================================
+
+    getLocalUsers() {
+        return JSON.parse(localStorage.getItem(this.USERS_KEY)) || [];
+    }
+
+    getLocalProducts() {
+        return JSON.parse(localStorage.getItem(this.PRODUCTS_KEY)) || [];
+    }
+
+    getCurrentUser() {
+        const userStr = localStorage.getItem(this.USER_KEY);
+        return userStr ? JSON.parse(userStr) : null;
+    }
+
+    seedProducts() {
+        const products = [
+            {
+                id: 'p1',
+                name: 'Urban Utility Cargo',
+                price: 450.00,
+                image: 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 25,
+                isExclusive: false,
+                category: 'pants',
+                description: 'Heavyweight cargo trousers with reinforced knee panels and utility straps. Built for urban exploration.',
+                sizes: ['S', 'M', 'L', 'XL']
+            },
+            {
+                id: 'p2',
+                name: 'Glitch Oversized Tee',
+                price: 250.00,
+                image: 'https://images.unsplash.com/photo-1554568218-0f1715e72254?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 5,
+                isExclusive: false,
+                category: 'tshirt',
+                description: 'Signature oversized fit with 3D glitch embroidered logo. 300GSM premium cotton.',
+                sizes: ['M', 'L', 'XL']
+            },
+            {
+                id: 'p3',
+                name: 'Cyberpunk Hoodie',
+                price: 550.00,
+                image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 15,
+                isExclusive: false,
+                category: 'hoodie',
+                description: 'Futuristic hoodie with cyberpunk-inspired design. Premium comfort fit.',
+                sizes: ['S', 'M', 'L', 'XL']
+            },
+            {
+                id: 'p4',
+                name: 'Distressed Denim Jacket',
+                price: 750.00,
+                image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 10,
+                isExclusive: false,
+                category: 'jacket',
+                description: 'Vintage-wash denim jacket with distressed details. Classic streetwear essential.',
+                sizes: ['S', 'M', 'L', 'XL']
+            },
+            {
+                id: 'p5',
+                name: 'Street Logo Cap',
+                price: 150.00,
+                image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 30,
+                isExclusive: false,
+                category: 'cap',
+                description: 'Adjustable snapback with embroidered logo. One size fits all.',
+                sizes: ['One Size']
+            },
+            {
+                id: 'p6',
+                name: 'Tech Shorts',
+                price: 320.00,
+                image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&q=80&w=300',
+                releaseDate: new Date().toISOString(),
+                stock: 20,
+                isExclusive: false,
+                category: 'shorts',
+                description: 'Lightweight technical shorts with hidden pockets. Perfect for summer.',
+                sizes: ['S', 'M', 'L', 'XL']
+            }
+        ];
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+    }
+
+    // ============================================
+    // AUTHENTICATION METHODS
+    // ============================================
+
+    async registerUser(userData) {
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest('/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.success) {
+                    localStorage.setItem(this.TOKEN_KEY, response.token);
+                    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+                }
+                return response;
+            } catch (error) {
+                console.warn('API register failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        const users = this.getLocalUsers();
+        if (users.find(u => u.email === userData.email)) {
+            return { success: false, message: 'User already exists' };
+        }
+
+        const newUser = {
+            id: Date.now().toString(),
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            isAdmin: false,
+            isVIP: false,
+            purchaseHistory: [],
+            createdAt: new Date().toISOString()
+        };
+
+        users.push(newUser);
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+        // Auto login
+        const sessionUser = { ...newUser };
+        delete sessionUser.password;
+        localStorage.setItem(this.USER_KEY, JSON.stringify(sessionUser));
+
+        return { success: true, user: sessionUser };
+    }
+
+    async loginUser(email, password) {
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.success) {
+                    localStorage.setItem(this.TOKEN_KEY, response.token);
+                    localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
+                }
+                return response;
+            } catch (error) {
+                console.warn('API login failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        const users = this.getLocalUsers();
+        const user = users.find(u => u.email === email && u.password === password);
+
+        if (user) {
+            const sessionUser = { ...user };
+            delete sessionUser.password;
+            localStorage.setItem(this.USER_KEY, JSON.stringify(sessionUser));
+            return { success: true, user: sessionUser };
+        }
+
+        return { success: false, message: 'Invalid email or password' };
+    }
+
+    logout() {
+        localStorage.removeItem(this.TOKEN_KEY);
+        localStorage.removeItem(this.USER_KEY);
+        window.location.href = 'index.html';
+    }
+
+    // ============================================
+    // PRODUCT METHODS
+    // ============================================
+
+    // Cache helper functions
+    getCachedData(key, maxAge = 5 * 60 * 1000) {
+        const cached = localStorage.getItem(key);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < maxAge) {
+                return data;
+            }
+        }
+        return null;
+    }
+
+    setCachedData(key, data) {
+        localStorage.setItem(key, JSON.stringify({
+            data,
+            timestamp: Date.now()
+        }));
+    }
+
+    async getProducts() {
+        // Check cache first
+        const cacheKey = 'gg_products_cache';
+        const cached = this.getCachedData(cacheKey);
+        if (cached) {
+            console.log('Using cached products');
+            return cached;
+        }
+
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest('/products');
+                // Normalize product data - map dropDate to releaseDate for frontend compatibility
+                const products = (response.products || []).map(p => ({
+                    ...p,
+                    releaseDate: p.releaseDate || p.dropDate || new Date().toISOString(),
+                    image: p.image || (p.images && p.images[0]) || 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300'
+                }));
+                // Cache the results
+                this.setCachedData(cacheKey, products);
+                return products;
+            } catch (error) {
+                console.warn('API getProducts failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        return this.getLocalProducts();
+    }
+
+    async getProduct(id) {
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest(`/products/${id}`);
+                if (response.product) {
+                    // Normalize product data - map dropDate to releaseDate for frontend compatibility
+                    const product = response.product;
+                    return {
+                        ...product,
+                        releaseDate: product.releaseDate || product.dropDate || new Date().toISOString(),
+                        image: product.image || (product.images && product.images[0]) || 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300',
+                        // Handle images array - convert string URLs to objects with url and label
+                        images: product.images ? product.images.map((img, index) => {
+                            if (typeof img === 'string') {
+                                return { url: img, label: index === 0 ? 'Front' : `View ${index + 1}` };
+                            }
+                            return img;
+                        }) : [{ url: product.image || 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300', label: 'Front' }]
+                    };
+                }
+                return response.product;
+            } catch (error) {
+                console.warn('API getProduct failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        const products = this.getLocalProducts();
+        return products.find(p => p.id === id);
+    }
+
+    // ============================================
+    // ORDER METHODS
+    // ============================================
+
+    async createOrder(orderData) {
+        // Get products - use API if available, otherwise localStorage
+        let products;
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest('/products');
+                products = response.products || [];
+            } catch (error) {
+                console.warn('API getProducts failed, falling back to local:', error.message);
+                products = this.getLocalProducts();
+            }
+        } else {
+            products = this.getLocalProducts();
+        }
+
+        const productIndex = products.findIndex(p => p.id === orderData.productId);
+
+        if (productIndex === -1 || products[productIndex].stock <= 0) {
+            return { success: false, message: 'Product is no longer available' };
+        }
+
+        const user = this.getCurrentUser();
+        const product = products[productIndex];
+
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                // Format order data for API
+                const apiOrderData = {
+                    items: [{
+                        productId: orderData.productId,
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                        size: orderData.size,
+                        color: orderData.color || 'Black',
+                        image: product.image
+                    }],
+                    shippingAddress: {
+                        name: orderData.shipping.name,
+                        phone: orderData.shipping.phone,
+                        email: orderData.shipping.email,
+                        address: orderData.shipping.address,
+                        city: orderData.shipping.city,
+                        region: orderData.shipping.region,
+                        country: orderData.shipping.country,
+                        postalCode: orderData.shipping.postalCode || '',
+                        instructions: orderData.shipping.instructions || ''
+                    },
+                    customerInfo: {
+                        name: orderData.shipping.name,
+                        email: orderData.shipping.email,
+                        phone: orderData.shipping.phone
+                    },
+                    paymentMethod: orderData.paymentMethod,
+                    userId: user ? user.id : null,
+                    subtotal: product.price,
+                    shipping: 0,
+                    tax: 0,
+                    total: product.price
+                };
+
+                const response = await this.apiRequest('/orders', {
+                    method: 'POST',
+                    body: JSON.stringify(apiOrderData)
+                });
+
+                if (response.success) {
+                    // Also save to localStorage for local tracking
+                    const localOrder = {
+                        id: response.order.id,
+                        orderNumber: response.order.orderNumber,
+                        userId: user ? user.id : 'guest',
+                        isGuestOrder: !user,
+                        guestEmail: orderData.shipping ? orderData.shipping.email : null,
+                        productId: orderData.productId,
+                        productName: product.name,
+                        productImage: product.image,
+                        price: product.price,
+                        size: orderData.size,
+                        color: orderData.color || null,
+                        shipping: orderData.shipping,
+                        paymentMethod: orderData.paymentMethod,
+                        paymentReference: orderData.paymentReference || null,
+                        timestamp: new Date().toISOString(),
+                        status: 'processing'
+                    };
+                    const orders = JSON.parse(localStorage.getItem(this.ORDERS_KEY)) || [];
+                    orders.push(localOrder);
+                    localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+
+                    return { success: true, order: localOrder };
+                }
+            } catch (error) {
+                console.warn('API createOrder failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        // Decrement stock
+        products[productIndex].stock -= 1;
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+
+        // Create order
+        const newOrder = {
+            id: `ORD-${Date.now()}`,
+            orderNumber: `GG-${Date.now().toString(36).toUpperCase()}`,
+            userId: user ? user.id : 'guest',
+            isGuestOrder: !user,
+            guestEmail: orderData.shipping ? orderData.shipping.email : null,
+            productId: orderData.productId,
+            productName: product.name,
+            productImage: product.image,
+            price: product.price,
+            size: orderData.size,
+            color: orderData.color || null,
+            shipping: orderData.shipping,
+            paymentMethod: orderData.paymentMethod,
+            paymentReference: orderData.paymentReference || null,
+            timestamp: new Date().toISOString(),
+            status: 'processing'
+        };
+
+        const orders = JSON.parse(localStorage.getItem(this.ORDERS_KEY)) || [];
+        orders.push(newOrder);
+        localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+
+        // Update user history
+        if (user) {
+            this.updateUser({
+                purchaseHistory: [...(user.purchaseHistory || []), newOrder.id]
+            });
+        }
+
+        return { success: true, order: newOrder };
+    }
+
+    getOrders() {
+        return JSON.parse(localStorage.getItem(this.ORDERS_KEY)) || [];
+    }
+
+    getUserOrders(userId) {
+        return this.getOrders().filter(o => o.userId === userId);
+    }
+
+    // ============================================
+    // USER METHODS
+    // ============================================
+
+    updateUser(updatedData) {
+        const currentUser = this.getCurrentUser();
+        if (!currentUser) return;
+
+        const users = this.getLocalUsers();
+        const index = users.findIndex(u => u.email === currentUser.email);
+
+        if (index !== -1) {
+            users[index] = { ...users[index], ...updatedData };
+            localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+            const sessionUser = { ...users[index] };
+            delete sessionUser.password;
+            localStorage.setItem(this.USER_KEY, JSON.stringify(sessionUser));
+        }
+    }
+
+    upgradeToVIP() {
+        const user = this.getCurrentUser();
+        if (!user) return { success: false, message: 'Login required' };
+
+        this.updateUser({ isVIP: true });
+        return { success: true };
+    }
+
+    // ============================================
+    // CART METHODS
+    // ============================================
+
+    getCart() {
+        return JSON.parse(localStorage.getItem(this.CART_KEY)) || [];
+    }
+
+    async addToCart(item) {
+        const cart = this.getCart();
+
+        // Get product from API or localStorage
+        let product = null;
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest(`/products/${item.productId}`);
+                if (response.product) {
+                    product = response.product;
+                    // Normalize product data
+                    product.image = product.image || (product.images && product.images[0]) || 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300';
+                }
+            } catch (error) {
+                console.warn('API getProduct failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        if (!product) {
+            product = this.getLocalProducts().find(p => p.id === item.productId);
+        }
+
+        if (!product) {
+            return { success: false, message: 'Product not found' };
+        }
+
+        if (product.stock <= 0) {
+            return { success: false, message: 'Product is sold out' };
+        }
+
+        const existingIndex = cart.findIndex(
+            c => c.productId === item.productId &&
+                c.size === item.size &&
+                c.color === item.color
+        );
+
+        if (existingIndex > -1) {
+            cart[existingIndex].quantity += item.quantity || 1;
+        } else {
+            cart.push({
+                id: `cart-${Date.now()}`,
+                productId: item.productId,
+                productName: product.name,
+                productImage: product.image,
+                price: product.price,
+                size: item.size,
+                color: item.color || 'Black',
+                quantity: item.quantity || 1,
+                addedAt: new Date().toISOString()
+            });
+        }
+
+        localStorage.setItem(this.CART_KEY, JSON.stringify(cart));
+        return { success: true, cart };
+    }
+
+    updateCartItem(cartItemId, updates) {
+        const cart = this.getCart();
+        const index = cart.findIndex(item => item.id === cartItemId);
+
+        if (index === -1) {
+            return { success: false, message: 'Cart item not found' };
+        }
+
+        cart[index] = { ...cart[index], ...updates };
+        localStorage.setItem(this.CART_KEY, JSON.stringify(cart));
+        return { success: true, cart };
+    }
+
+    removeFromCart(cartItemId) {
+        const cart = this.getCart();
+        const filtered = cart.filter(item => item.id !== cartItemId);
+        localStorage.setItem(this.CART_KEY, JSON.stringify(filtered));
+        return { success: true, cart: filtered };
+    }
+
+    clearCart() {
+        localStorage.removeItem(this.CART_KEY);
+        return { success: true };
+    }
+
+    getCartTotal() {
+        const cart = this.getCart();
+        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    getCartCount() {
+        const cart = this.getCart();
+        return cart.reduce((count, item) => count + item.quantity, 0);
+    }
+
+    // ============================================
+    // ADDITIONAL METHODS
+    // ============================================
+
+    toggleWatchlist(productId) {
+        const user = this.getCurrentUser();
+        if (!user) return { success: false, message: 'Login required' };
+
+        const watchlist = user.watchlist || [];
+        const index = watchlist.indexOf(productId);
+
+        let newWatchlist;
+        if (index > -1) {
+            newWatchlist = watchlist.filter(id => id !== productId);
+        } else {
+            newWatchlist = [...watchlist, productId];
+        }
+
+        this.updateUser({ watchlist: newWatchlist });
+        return { success: true, watching: index === -1 };
+    }
+
+    purchaseProduct(productId) {
+        const products = this.getLocalProducts();
+        const productIndex = products.findIndex(p => p.id === productId);
+
+        if (productIndex !== -1 && products[productIndex].stock > 0) {
+            products[productIndex].stock -= 1;
+            localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+            return { success: true, product: products[productIndex] };
+        }
+        return { success: false, message: 'Product unavailable or sold out' };
+    }
+
+    addProduct(productData) {
+        const products = this.getLocalProducts();
+        const newProduct = {
+            id: `p-${Date.now()}`,
+            ...productData,
+            releaseDate: productData.releaseDate || new Date().toISOString(),
+            stock: parseInt(productData.stock) || 0,
+            isExclusive: productData.isExclusive || false
+        };
+        products.push(newProduct);
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+        return { success: true, product: newProduct };
+    }
+
+    updateProduct(id, updatedData) {
+        const products = this.getLocalProducts();
+        const index = products.findIndex(p => p.id === id);
+        if (index === -1) return { success: false, message: 'Product not found' };
+
+        products[index] = { ...products[index], ...updatedData };
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+        return { success: true, product: products[index] };
+    }
+
+    deleteProduct(id) {
+        const products = this.getLocalProducts();
+        const filtered = products.filter(p => p.id !== id);
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(filtered));
+        return { success: true };
+    }
+
+    updateOrderStatus(orderId, status) {
+        const orders = this.getOrders();
+        const index = orders.findIndex(o => o.id === orderId);
+        if (index === -1) return { success: false, message: 'Order not found' };
+
+        orders[index].status = status;
+        localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+        return { success: true, order: orders[index] };
+    }
+
+    async createOrderFromCart(orderData) {
+        const user = this.getCurrentUser();
+        const cart = this.getCart();
+        if (cart.length === 0) {
+            return { success: false, message: 'Cart is empty' };
+        }
+
+        // Get products - use API if available, otherwise localStorage
+        let products;
+        if (this.apiAvailable) {
+            try {
+                const response = await this.apiRequest('/products');
+                products = response.products || [];
+            } catch (error) {
+                console.warn('API getProducts failed, falling back to local:', error.message);
+                products = this.getLocalProducts();
+            }
+        } else {
+            products = this.getLocalProducts();
+        }
+
+        // Validate stock
+        for (const cartItem of cart) {
+            const productIndex = products.findIndex(p => p.id === cartItem.productId);
+            if (productIndex === -1 || products[productIndex].stock < cartItem.quantity) {
+                return { success: false, message: `${cartItem.productName} is no longer available in requested quantity` };
+            }
+        }
+
+        // Try API first
+        if (this.apiAvailable) {
+            try {
+                // Calculate totals
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Format order data for API
+                const apiOrderData = {
+                    items: cart.map(item => ({
+                        productId: item.productId,
+                        name: item.productName,
+                        price: item.price,
+                        quantity: item.quantity,
+                        size: item.size,
+                        color: item.color || 'Black',
+                        image: item.productImage
+                    })),
+                    shippingAddress: {
+                        name: orderData.shipping.name,
+                        phone: orderData.shipping.phone,
+                        email: orderData.shipping.email,
+                        address: orderData.shipping.address,
+                        city: orderData.shipping.city,
+                        region: orderData.shipping.region,
+                        country: orderData.shipping.country,
+                        postalCode: orderData.shipping.postalCode || '',
+                        instructions: orderData.shipping.instructions || ''
+                    },
+                    customerInfo: {
+                        name: orderData.shipping.name,
+                        email: orderData.shipping.email,
+                        phone: orderData.shipping.phone
+                    },
+                    paymentMethod: orderData.paymentMethod,
+                    userId: user ? user.id : null,
+                    subtotal: subtotal,
+                    shipping: 0,
+                    tax: 0,
+                    total: subtotal
+                };
+
+                const response = await this.apiRequest('/orders', {
+                    method: 'POST',
+                    body: JSON.stringify(apiOrderData)
+                });
+
+                if (response.success) {
+                    // Save to localStorage for local tracking
+                    const newOrders = cart.map(cartItem => ({
+                        id: response.order.id,
+                        orderNumber: response.order.orderNumber,
+                        userId: user ? user.id : 'guest',
+                        isGuestOrder: !user,
+                        guestEmail: orderData.shipping ? orderData.shipping.email : null,
+                        productId: cartItem.productId,
+                        productName: cartItem.productName,
+                        productImage: cartItem.productImage,
+                        price: cartItem.price,
+                        quantity: cartItem.quantity,
+                        size: cartItem.size,
+                        color: cartItem.color,
+                        shipping: orderData.shipping,
+                        paymentMethod: orderData.paymentMethod,
+                        paymentReference: orderData.paymentReference || null,
+                        timestamp: new Date().toISOString(),
+                        status: 'processing'
+                    }));
+
+                    const orders = this.getOrders();
+                    orders.push(...newOrders);
+                    localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+
+                    this.clearCart();
+                    return { success: true, orders: newOrders };
+                }
+            } catch (error) {
+                console.warn('API createOrderFromCart failed, falling back to local:', error.message);
+            }
+        }
+
+        // Fallback to localStorage
+        const orders = this.getOrders();
+        const newOrders = [];
+
+        for (const cartItem of cart) {
+            const productIndex = products.findIndex(p => p.id === cartItem.productId);
+
+            products[productIndex].stock -= cartItem.quantity;
+
+            const newOrder = {
+                id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                orderNumber: `GG-${Date.now().toString(36).toUpperCase()}`,
+                userId: user ? user.id : 'guest',
+                isGuestOrder: !user,
+                guestEmail: orderData.shipping ? orderData.shipping.email : null,
+                productId: cartItem.productId,
+                productName: cartItem.productName,
+                productImage: cartItem.productImage,
+                price: cartItem.price,
+                quantity: cartItem.quantity,
+                size: cartItem.size,
+                color: cartItem.color,
+                shipping: orderData.shipping,
+                paymentMethod: orderData.paymentMethod,
+                paymentReference: orderData.paymentReference || null,
+                timestamp: new Date().toISOString(),
+                status: 'processing'
+            };
+
+            orders.push(newOrder);
+            newOrders.push(newOrder);
+        }
+
+        localStorage.setItem(this.PRODUCTS_KEY, JSON.stringify(products));
+        localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders));
+
+        if (user) {
+            this.updateUser({
+                purchaseHistory: [...(user.purchaseHistory || []), ...newOrders.map(o => o.id)]
+            });
+        }
+
+        this.clearCart();
+        return { success: true, orders: newOrders };
+    }
+}
+
+// Create singleton instance
+window.storageService = new HybridStorageService();
+
+// Also expose as apiService for compatibility
+window.apiService = window.storageService;

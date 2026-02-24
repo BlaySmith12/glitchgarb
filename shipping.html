@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Info | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .shipping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .shipping-table th,
+        .shipping-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .shipping-table th {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+
+        .shipping-table td {
+            font-size: 0.9rem;
+        }
+
+        .shipping-zone {
+            margin-bottom: 3rem;
+        }
+
+        .shipping-zone h2 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="collections.html">Collections</a>
+                <a href="login.html" id="auth-link">Login</a>
+                <a href="profile.html" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="collections.html">Collections</a>
+        <a href="login.html" id="mobile-auth-link">Login</a>
+        <a href="profile.html" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top: 4rem; max-width: 900px;">
+        <h1 style="margin-bottom: 1rem;">Shipping Information</h1>
+        <p style="margin-bottom: 3rem; opacity: 0.7;">Everything you need to know about getting your GLITCHGARB order.
+        </p>
+
+        <div class="shipping-zone">
+            <h2>GHANA (LOCAL SHIPPING)</h2>
+            <table class="shipping-table">
+                <thead>
+                    <tr>
+                        <th>REGION</th>
+                        <th>DELIVERY TIME</th>
+                        <th>COST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Greater Accra</td>
+                        <td>1-2 business days</td>
+                        <td>FREE</td>
+                    </tr>
+                    <tr>
+                        <td>Other Regions</td>
+                        <td>3-5 business days</td>
+                        <td>FREE</td>
+                    </tr>
+                    <tr>
+                        <td>Remote Areas</td>
+                        <td>5-7 business days</td>
+                        <td>GH₵ 20</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="shipping-zone">
+            <h2>INTERNATIONAL SHIPPING</h2>
+            <table class="shipping-table">
+                <thead>
+                    <tr>
+                        <th>REGION</th>
+                        <th>DELIVERY TIME</th>
+                        <th>COST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>West Africa</td>
+                        <td>5-10 business days</td>
+                        <td>GH₵ 50</td>
+                    </tr>
+                    <tr>
+                        <td>Rest of Africa</td>
+                        <td>7-14 business days</td>
+                        <td>GH₵ 80</td>
+                    </tr>
+                    <tr>
+                        <td>Europe</td>
+                        <td>10-14 business days</td>
+                        <td>GH₵ 120</td>
+                    </tr>
+                    <tr>
+                        <td>North America</td>
+                        <td>10-21 business days</td>
+                        <td>GH₵ 150</td>
+                    </tr>
+                    <tr>
+                        <td>Rest of World</td>
+                        <td>14-28 business days</td>
+                        <td>GH₵ 180</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">SHIPPING PARTNERS</h2>
+            <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 1rem;">
+                We work with trusted delivery partners to ensure your order arrives safely:
+            </p>
+            <ul style="opacity: 0.7; line-height: 2;">
+                <li>Ghana Post - Local deliveries</li>
+                <li>DHL - International express</li>
+                <li>FedEx - International standard</li>
+                <li>Local courier services for Accra metro area</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">TRACKING YOUR ORDER</h2>
+            <p style="opacity: 0.7; line-height: 1.7; margin-bottom: 1rem;">
+                Once your order ships, you'll receive:
+            </p>
+            <ul style="opacity: 0.7; line-height: 2;">
+                <li>Email confirmation with tracking number</li>
+                <li>SMS notification (Ghana only)</li>
+                <li>Real-time tracking updates</li>
+            </ul>
+            <p style="opacity: 0.7; line-height: 1.7; margin-top: 1rem;">
+                You can also track your order in your account under <a href="profile.html"
+                    style="color: var(--accent-color);">Order History</a>.
+            </p>
+        </div>
+
+        <div style="margin-top: 3rem;">
+            <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color);">IMPORTANT NOTES</h2>
+            <ul style="opacity: 0.7; line-height: 2;">
+                <li>Delivery times are estimates and may vary during peak periods</li>
+                <li>Signature may be required upon delivery</li>
+                <li>We are not responsible for delays caused by customs or local postal services</li>
+                <li>Please ensure your shipping address is complete and accurate</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; padding: 2rem; border-top: 1px solid var(--border-color); margin-top: 3rem;">
+            <p style="opacity: 0.7; margin-bottom: 1rem;">Questions about shipping?</p>
+            <a href="contact.html" class="btn btn-primary" style="display: inline-block;">Contact Us</a>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Sync mobile menu auth links
+        const authLink = document.getElementById('auth-link');
+        const profileLink = document.getElementById('profile-link');
+        const mobileAuthLink = document.getElementById('mobile-auth-link');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+        function updateAuthLinks() {
+            const user = storageService.getCurrentUser();
+            if (user) {
+                authLink.style.display = 'none';
+                profileLink.style.display = 'inline-block';
+                mobileAuthLink.style.display = 'none';
+                mobileProfileLink.style.display = 'block';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+            } else {
+                authLink.style.display = 'inline-block';
+                profileLink.style.display = 'none';
+                mobileAuthLink.style.display = 'block';
+                mobileProfileLink.style.display = 'none';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+            }
+        }
+
+        updateAuthLinks();
+        window.addEventListener('storage', updateAuthLinks);
+
+        if (mobileLogoutLink) {
+            mobileLogoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                storageService.logout();
+                Toast.info('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+
+</html>

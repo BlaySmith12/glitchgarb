@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Careers | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .career-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .career-intro p {
+            opacity: 0.7;
+            line-height: 1.8;
+        }
+
+        .perks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .perk-item {
+            padding: 1.5rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .perk-item h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .perk-item p {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .job-listing {
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .job-listing:hover {
+            border-color: var(--accent-color);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .job-header h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .job-meta span {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .job-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-tag {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 62, 0, 0.1);
+            color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .job-description {
+            opacity: 0.7;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-jobs {
+            text-align: center;
+            padding: 4rem 2rem;
+            border: 1px dashed var(--border-color);
+        }
+
+        .no-jobs p {
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .perks-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="index.html" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav id="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="collections.html">Collections</a>
+                <a href="login.html" id="auth-link">Login</a>
+                <a href="profile.html" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+        </button>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="collections.html">Collections</a>
+        <a href="login.html" id="mobile-auth-link">Login</a>
+        <a href="profile.html" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container" style="padding-top: 4rem; max-width: 900px;">
+        <h1 style="margin-bottom: 1rem;">Careers</h1>
+
+        <div class="career-intro">
+            <p style="margin-bottom: 1rem;">
+                Join the GLITCHGARB team and help shape the future of African streetwear. We're always looking for
+                passionate, creative individuals who share our vision.
+            </p>
+            <p>
+                We believe in building a diverse team where everyone's voice matters. If you're ready to make an impact,
+                we want to hear from you.
+            </p>
+        </div>
+
+        <h2 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--accent-color); letter-spacing: 0.1em;">WHY JOIN
+            US</h2>
+        <div class="perks-grid">
+            <div class="perk-item">
+                <h4>Competitive Pay</h4>
+                <p>We value your skills and compensate accordingly</p>
+            </div>
+            <div class="perk-item">
+                <h4>Flexible Work</h4>
+                <p>Remote-friendly with flexible hours</p>
+            </div>
+            <div class="perk-item">
+                <h4>Growth Opportunities</h4>
+                <p>Learn and grow with a fast-paced brand</p>
+            </div>
+            <div class="perk-item">
+                <h4>Product Perks</h4>
+                <p>Free gear and early access to drops</p>
+            </div>
+            <div class="perk-item">
+                <h4>Creative Freedom</h4>
+                <p>Your ideas matter here</p>
+            </div>
+            <div class="perk-item">
+                <h4>Great Team</h4>
+                <p>Work with passionate, talented people</p>
+            </div>
+        </div>
+
+        <h2 style="font-size: 1rem; margin: 3rem 0 1.5rem; color: var(--accent-color); letter-spacing: 0.1em;">OPEN
+            POSITIONS</h2>
+
+        <div class="job-listing">
+            <div class="job-header">
+                <div>
+                    <h3>Graphic Designer</h3>
+                    <div class="job-meta">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Accra, Ghana (Hybrid)
+                        </span>
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Full-time
+                        </span>
+                    </div>
+                </div>
+                <a href="mailto:careers@glitchgarb.com?subject=Application: Graphic Designer" class="btn btn-primary"
+                    style="font-size: 0.8rem; padding: 0.5rem 1rem;">Apply Now</a>
+            </div>
+            <div class="job-tags">
+                <span class="job-tag">Design</span>
+                <span class="job-tag">Adobe Suite</span>
+                <span class="job-tag">Streetwear</span>
+            </div>
+            <p class="job-description">
+                We're looking for a talented graphic designer to join our creative team. You'll work on everything from
+                product designs to marketing materials, helping shape the visual identity of GLITCHGARB.
+            </p>
+        </div>
+
+        <div class="job-listing">
+            <div class="job-header">
+                <div>
+                    <h3>Social Media Manager</h3>
+                    <div class="job-meta">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Remote
+                        </span>
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Full-time
+                        </span>
+                    </div>
+                </div>
+                <a href="mailto:careers@glitchgarb.com?subject=Application: Social Media Manager"
+                    class="btn btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Apply Now</a>
+            </div>
+            <div class="job-tags">
+                <span class="job-tag">Social Media</span>
+                <span class="job-tag">Content</span>
+                <span class="job-tag">Marketing</span>
+            </div>
+            <p class="job-description">
+                Drive our social media presence across Instagram, TikTok, Twitter, and more. You'll create engaging
+                content, build community, and help grow our audience of nomads worldwide.
+            </p>
+        </div>
+
+        <div class="job-listing">
+            <div class="job-header">
+                <div>
+                    <h3>Customer Support Specialist</h3>
+                    <div class="job-meta">
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Accra, Ghana
+                        </span>
+                        <span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Full-time
+                        </span>
+                    </div>
+                </div>
+                <a href="mailto:careers@glitchgarb.com?subject=Application: Customer Support Specialist"
+                    class="btn btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Apply Now</a>
+            </div>
+            <div class="job-tags">
+                <span class="job-tag">Support</span>
+                <span class="job-tag">Communication</span>
+                <span class="job-tag">E-commerce</span>
+            </div>
+            <p class="job-description">
+                Be the voice of GLITCHGARB! Help our customers with orders, returns, and product questions. We're
+                looking for someone friendly, patient, and passionate about great customer experiences.
+            </p>
+        </div>
+
+        <div
+            style="margin-top: 4rem; padding: 2rem; background: var(--secondary-bg); border: 1px solid var(--border-color); text-align: center;">
+            <h3 style="font-size: 1rem; margin-bottom: 1rem;">Don't see a role that fits?</h3>
+            <p style="opacity: 0.7; margin-bottom: 1.5rem;">We're always interested in hearing from talented
+                individuals. Send your resume and tell us how you could contribute to the team.</p>
+            <a href="mailto:careers@glitchgarb.com?subject=General Application" class="btn btn-outline"
+                style="display: inline-block;">Send General Application</a>
+        </div>
+    </main>
+
+    <script src="api-service.js"></script>
+    <script src="components.js"></script>
+    <script src="toast.js"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', openMobileMenu);
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Sync mobile menu auth links
+        const authLink = document.getElementById('auth-link');
+        const profileLink = document.getElementById('profile-link');
+        const mobileAuthLink = document.getElementById('mobile-auth-link');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+        function updateAuthLinks() {
+            const user = storageService.getCurrentUser();
+            if (user) {
+                authLink.style.display = 'none';
+                profileLink.style.display = 'inline-block';
+                mobileAuthLink.style.display = 'none';
+                mobileProfileLink.style.display = 'block';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+            } else {
+                authLink.style.display = 'inline-block';
+                profileLink.style.display = 'none';
+                mobileAuthLink.style.display = 'block';
+                mobileProfileLink.style.display = 'none';
+                if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+            }
+        }
+
+        updateAuthLinks();
+        window.addEventListener('storage', updateAuthLinks);
+
+        if (mobileLogoutLink) {
+            mobileLogoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                storageService.logout();
+                Toast.info('Logged out successfully');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+
+</html>

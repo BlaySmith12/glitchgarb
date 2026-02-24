@@ -1,0 +1,117 @@
+# Render Blueprint for GlitchGarb
+# This file defines the infrastructure for deploying to Render
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ============================================
+  # Backend API - Node.js Web Service
+  # ============================================
+  - type: web
+    name: glitchgarb-backend
+    env: node
+    region: oregon # or oregon, frankfurt, singapore, etc.
+    plan: free # Starter plan (free) - upgrades to starter for $7/mo
+    branch: main # Git branch to deploy
+    rootDir: backend
+    
+    # Build configuration
+    buildCommand: npm install
+    startCommand: npm start
+    
+    # Health check
+    healthCheckPath: /api/health
+    
+    # Auto-deploy on git push
+    autoDeploy: true
+    
+    # Environment variables
+    # IMPORTANT: Set these in Render Dashboard or use the CLI
+    envVars:
+      - key: NODE_ENV
+        value: production
+      
+      - key: PORT
+        # Render automatically sets PORT, but we can reference it
+        # value: 10000 # Render assigns this automatically
+      
+      - key: FIREBASE_PROJECT_ID
+        # Set this in Render Dashboard - get from Firebase Console
+        value: glitchgarb-ed70d
+      
+      - key: FIREBASE_DATABASE_URL
+        value: https://glitchgarb-ed70d-default-rtdb.firebaseio.com
+      
+      - key: FIREBASE_CLIENT_EMAIL
+        # IMPORTANT: Set this in Render Dashboard
+        # Get from Firebase Console > Project Settings > Service Accounts
+        # Example: firebase-adminsdk-xxxxx@glitchgarb-ed70d.iam.gserviceaccount.com
+        sync: false # Requires manual setting in dashboard
+      
+      - key: FIREBASE_PRIVATE_KEY
+        # IMPORTANT: Set this in Render Dashboard
+        # Get from Firebase Console > Project Settings > Service Accounts > Generate Private Key
+        # Paste the entire private_key value including \n characters
+        sync: false # Requires manual setting in dashboard
+
+  # ============================================
+  # Frontend - Static Site
+  # ============================================
+  - type: web
+    name: glitchgarb-frontend
+    env: static
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: .
+    
+    # Static site configuration
+    # No build needed - just serve the HTML/CSS/JS files
+    buildCommand: echo "No build required for static site"
+    staticPublishPath: .
+    
+    # Auto-deploy on git push
+    autoDeploy: true
+    
+    # Redirect all routes to index.html for SPA support (optional)
+    # routes:
+    #   - type: rewrite
+    #     source: /*
+    #     destination: /index.html
+    
+    # Custom headers for security
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    
+    # Environment variables for frontend (injected at build time)
+    envVars:
+      - key: GG_BACKEND_URL
+        # Reference the backend service URL
+        value: https://glitchgarb-backend.onrender.com
+
+# ============================================
+# Optional: Custom Domains
+# ============================================
+# After deployment, you can add custom domains in the Render Dashboard:
+# - Backend: api.glitchgarb.com
+# - Frontend: www.glitchgarb.com
+
+# ============================================
+# Deployment Instructions
+# ============================================
+# 1. Push this file to your repository root
+# 2. Go to https://dashboard.render.com
+# 3. Click "New" > "Blueprint"
+# 4. Connect your repository
+# 5. Render will detect this render.yaml file
+# 6. Set the required environment variables:
+#    - FIREBASE_CLIENT_EMAIL
+#    - FIREBASE_PRIVATE_KEY
+# 7. Click "Apply" to deploy
