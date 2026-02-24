@@ -46,7 +46,7 @@ class HybridStorageService {
         if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
             // Production: Use the same origin (if backend is served from same domain)
             // Or use a specific backend URL
-            const prodUrl = window.GG_BACKEND_URL || 'https://glitchgarb-backend.onrender.com/api';
+            const prodUrl = window.GG_BACKEND_URL || 'https://glitchgarb-backend1.onrender.com/api';
             console.log(`🔗 Production environment detected, using: ${prodUrl}`);
             return prodUrl;
         }

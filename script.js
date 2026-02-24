@@ -21,7 +21,7 @@ function getApiBaseUrl() {
     const hostname = window.location.hostname;
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
         // Production - update this to your Render backend URL
-        return 'https://glitchgarb-backend.onrender.com/api';
+        return 'https://glitchgarb-backend1.onrender.com/api';
     }
 
     // Local development
