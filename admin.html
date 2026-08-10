@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" value="0">
+    <title>ADMIN DASHBOARD | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .admin-sidebar {
+            background: var(--secondary-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .admin-content {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.75rem 0;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+
+        .admin-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--secondary-bg);
+            padding: 1.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+        }
+
+        .orders-table-wrapper {
+             overflow: auto;
+             -webkit-overflow-scrolling: touch;
+         }
+
+         table {
+             width: 100%;
+             border-collapse: collapse;
+             margin-top: 1rem;
+             min-width: 900px;
+         }
+
+         th {
+             text-align: left;
+             font-size: 0.7rem;
+             opacity: 0.4;
+             padding: 1rem;
+             border-bottom: 2px solid var(--border-color);
+             white-space: nowrap;
+         }
+
+         td {
+             padding: 1rem;
+             border-bottom: 1px solid var(--border-color);
+             font-size: 0.8rem;
+             white-space: nowrap;
+         }
+
+        .status-badge {
+            padding: 0.2rem 0.6rem;
+            font-size: 0.6rem;
+            font-weight: bold;
+            background: #222;
+            display: inline-block;
+        }
+
+        .status-secured {
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .status-cancelled {
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--secondary-bg);
+            padding: 2.5rem;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Next Drop Styles */
+        .next-drop-config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .next-drop-status {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-indicator {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .status-indicator.active {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--color-success);
+        }
+
+        .status-indicator.inactive {
+            background: rgba(255, 68, 68, 0.15);
+            color: var(--color-error);
+        }
+
+        .status-text h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .status-text p {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin: 0;
+        }
+
+        .next-drop-form {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .next-drop-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .next-drop-form .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .next-drop-form input,
+        .next-drop-form select,
+        .next-drop-form textarea {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .next-drop-form input:focus,
+        .next-drop-form select:focus,
+        .next-drop-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .next-drop-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .next-drop-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .next-drop-actions .btn {
+            flex: 1;
+        }
+
+        .next-drop-preview {
+            grid-column: 1 / -1;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .next-drop-preview h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .preview-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-banner {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .preview-badge {
+            background: var(--accent-color);
+            color: #fff;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .preview-content {
+            padding: 1.5rem;
+        }
+
+        .preview-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .preview-content p {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        .preview-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #fff;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: var(--accent-color);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+.color-option.selected {
+             border-color: var(--accent-color) !important;
+             box-shadow: 0 0 10px rgba(255, 62, 0, 0.5) !important;
+         }
+
+.size-option.selected {
+             border-color: var(--accent-color) !important;
+             box-shadow: 0 0 10px rgba(255, 62, 0, 0.5) !important;
+             background: var(--accent-color) !important;
+             color: #000 !important;
+         }
+
+         .hero-slides-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 6px;
+         }
+         .hero-slides-container::-webkit-scrollbar {
+            width: 5px;
+         }
+         .hero-slides-container::-webkit-scrollbar-track {
+            background: transparent;
+         }
+         .hero-slides-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.12);
+            border-radius: 3px;
+         }
+         .hero-slides-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.25);
+         }
+         .hero-slide-card {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+         }
+         .hero-slide-card img {
+            width: 160px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+         }
+         .hero-slide-card .slide-info {
+            flex: 1;
+            min-width: 0;
+         }
+         .hero-slide-card .slide-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+         }
+         .hero-slide-card .slide-info p {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-bottom: 0.5rem;
+         }
+         .hero-slide-card .slide-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+         }
+
+         /* Admin Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .admin-layout {
+                padding-top: 60px;
+            }
+
+            .admin-content {
+                padding: 1rem;
+            }
+
+            .admin-content header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .admin-content header h2 {
+                font-size: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            th,
+            td {
+                padding: 0.5rem;
+            }
+
+            .action-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                background: transparent;
+                color: var(--accent-color);
+                border: 1px solid var(--border-color);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 600;
+                letter-spacing: 0.05em;
+                font-family: var(--font-main);
+                text-transform: uppercase;
+                border-radius: 6px;
+            }
+            .action-btn:hover {
+                background: var(--accent-color);
+                color: #fff;
+                border-color: var(--accent-color);
+            }
+            .action-btn.danger-btn {
+                color: var(--color-error);
+                border-color: var(--color-error);
+            }
+            .action-btn.danger-btn:hover {
+                background: var(--color-error);
+                color: #fff;
+            }
+            .action-btn.edit-btn {
+                color: var(--color-info);
+                border-color: var(--color-info);
+            }
+            .action-btn.edit-btn:hover {
+                background: var(--color-info);
+                color: #fff;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                width: 95vw;
+            }
+
+            .form-group label {
+                font-size: 0.7rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            #add-product-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-content header h2 {
+                font-size: 1.1rem;
+            }
+
+table {
+                 display: block;
+                 overflow-x: auto;
+                 white-space: nowrap;
+             }
+         }
+         @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+     <link rel="icon" type="image/png" href="favicon.png">
+ </head>
+
+<body>
+    <!-- Mobile Admin Header -->
+    <div class="admin-mobile-header"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--secondary-bg); border-bottom: 1px solid var(--border-color); z-index: 1000; padding: 0 1rem; align-items: center; justify-content: space-between;">
+        <h1 class="logo" style="font-size: 1rem;"><img src="logo.png" alt="GG ADMIN" style="height: 30px;"></h1>
+        <button id="admin-mobile-menu-toggle"
+            style="background: none; border: none; color: #fff; cursor: pointer; padding: 0.5rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Admin Menu Overlay -->
+    <div id="admin-mobile-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1001; opacity: 0; transition: opacity 0.3s;">
+    </div>
+
+    <!-- Mobile Admin Menu -->
+    <div id="admin-mobile-menu"
+        style="display: none; position: fixed; top: 0; left: -280px; width: 280px; height: 100vh; background: var(--secondary-bg); z-index: 1002; transition: left 0.3s; padding: 2rem; border-right: 1px solid var(--border-color);">
+        <button id="admin-mobile-close"
+            style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #fff; cursor: pointer; padding: 0.5rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <nav style="margin-top: 2rem;">
+            <a href="#" class="sidebar-link active"
+                onclick="showTab('products'); closeAdminMobileMenu(); return false;">PRODUCTS</a>
+            <a href="#" class="sidebar-link"
+                onclick="showTab('orders'); closeAdminMobileMenu(); return false;">ORDERS</a>
+            <a href="#" class="sidebar-link" onclick="showTab('users'); closeAdminMobileMenu(); return false;">USERS</a>
+            <a href="#" class="sidebar-link" onclick="showTab('next-drop'); closeAdminMobileMenu(); return false;">NEXT
+                DROP</a>
+            <a href="#" class="sidebar-link"
+                onclick="showTab('hero-section'); closeAdminMobileMenu(); return false;">HERO SECTION</a>
+            <a href="#" class="sidebar-link"
+                onclick="showTab('telegram'); closeAdminMobileMenu(); return false;">TELEGRAM</a>
+            <a href="/" class="sidebar-link" style="margin-top: 4rem; opacity: 0.3;">EXIT DASHBOARD</a>
+        </nav>
+    </div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <h1 class="logo" style="font-size: 1rem; margin-bottom: 3rem;"><img src="logo.png" alt="GG ADMIN"
+                    style="height: 35px;"></h1>
+            <nav>
+                <a href="#" class="sidebar-link active" onclick="showTab('products'); return false;">PRODUCTS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('orders'); return false;">ORDERS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('users'); return false;">USERS</a>
+                <a href="#" class="sidebar-link" onclick="showTab('next-drop'); return false;">NEXT DROP</a>
+                <a href="#" class="sidebar-link" onclick="showTab('hero-section'); return false;">HERO SECTION</a>
+                <a href="#" class="sidebar-link" onclick="showTab('telegram'); return false;">TELEGRAM</a>
+                <a href="/" class="sidebar-link" style="margin-top: 4rem; opacity: 0.3;">EXIT DASHBOARD</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <header style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 id="tab-title">PRODUCT MANAGEMENT</h2>
+                    <p id="tab-subtitle" style="font-size: 0.7rem; opacity: 0.5;">Manage your drops and inventory levels.</p>
+                </div>
+                <button class="btn" onclick="openProductModal()" id="add-product-btn">NEW DROP</button>
+            </header>
+
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Drops</div>
+                    <div class="stat-value" id="stat-total-products">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Nomads</div>
+                    <div class="stat-value" id="stat-total-users">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Secured Orders</div>
+                    <div class="stat-value" id="stat-total-orders">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-value" id="stat-revenue">GH₵ 0.00</div>
+                </div>
+            </div>
+
+            <div id="table-container">
+                <div id="admin-loading" style="text-align:center;padding:3rem;">
+                    <div style="font-size:2rem;animation:spin 1s linear infinite;display:inline-block;">?</div>
+                    <p style="opacity:0.5;margin-top:1rem;font-size:0.8rem;">Loading dashboard...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin-bottom: 2rem;">ADD NEW DROP</h3>
+            <input type="hidden" id="p-id">
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="p-name" style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>SKU</label>
+                <input type="text" id="p-sku" placeholder="e.g., GG-TSHIRT-BLK" style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="p-description" rows="3" placeholder="Product description"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color); resize: vertical;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Price (GH₵)</label>
+                <input type="number" id="p-price" style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Initial Stock</label>
+                <input type="number" id="p-stock" style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Release Date (Leave empty for immediate availability)</label>
+                <input type="datetime-local" id="p-release-date"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="p-category"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+                    <option value="tshirt">T-Shirt</option>
+                    <option value="hoodie">Hoodie</option>
+                    <option value="cap">Caps</option>
+                    <option value="shorts">Shorts</option>
+                    <option value="pants">Pants</option>
+                    <option value="jacket">Jacket</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Available Colors</label>
+                <div id="color-picker" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div class="color-option" data-color="Black" data-hex="#000000"
+                        style="width: 40px; height: 40px; background: #000000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="White" data-hex="#ffffff"
+                        style="width: 40px; height: 40px; background: #ffffff; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Gray" data-hex="#666666"
+                        style="width: 40px; height: 40px; background: #666666; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Navy" data-hex="#1a237e"
+                        style="width: 40px; height: 40px; background: #1a237e; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Red" data-hex="#c62828"
+                        style="width: 40px; height: 40px; background: #c62828; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Green" data-hex="#2e7d32"
+                        style="width: 40px; height: 40px; background: #2e7d32; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Brown" data-hex="#5d4037"
+                        style="width: 40px; height: 40px; background: #5d4037; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                    <div class="color-option" data-color="Beige" data-hex="#d4c4b7"
+                        style="width: 40px; height: 40px; background: #d4c4b7; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; position: relative;"
+                        onclick="toggleColor(this)"></div>
+                </div>
+                <input type="hidden" id="p-colors" value="">
+                <div id="selected-colors-display" style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">Click colors to select/deselect</div>
+            </div>
+             <div class="form-group">
+                 <label>Available Sizes</label>
+                 <div id="size-picker" style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+                     <div class="size-option" data-size="S" style="width: 40px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">S</div>
+                     <div class="size-option" data-size="M" style="width: 40px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">M</div>
+                     <div class="size-option" data-size="L" style="width: 40px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">L</div>
+                     <div class="size-option" data-size="XL" style="width: 40px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">XL</div>
+                     <div class="size-option" data-size="XXL" style="width: 44px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">XXL</div>
+                     <div class="size-option" data-size="XXXL" style="width: 44px; height: 40px; background: #000; border: 2px solid var(--border-color); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff;" onclick="toggleSize(this)">XXXL</div>
+                 </div>
+                 <input type="hidden" id="p-sizes" value="">
+                 <div id="selected-sizes-display" style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">Click sizes to select/deselect</div>
+             </div>
+            <div class="form-group">
+                <label>Product Image</label>
+                <div id="file-upload-area"
+                    style="border: 2px dashed var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                    <input type="file" id="p-image" accept="image/*" style="display: none;">
+                    <div id="file-upload-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin: 0 auto 1rem; opacity: 0.5;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style="margin: 0; color: #888;">Click to select an image</p>
+                        <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #666;">or drag and drop</p>
+                    </div>
+                    <div id="file-selected-info" style="display: none;">
+                        <img id="p-image-preview" src="" alt="Preview"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; margin-bottom: 1rem;">
+                        <p id="file-name" style="margin: 0 0 1rem; color: #fff; font-size: 0.9rem;"></p>
+                        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                            <button type="button" id="confirm-upload-btn" class="btn"
+                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">UPLOAD</button>
+                            <button type="button" id="cancel-upload-btn" class="btn btn-outline"
+                                style="padding: 0.5rem 1.5rem; font-size: 0.85rem;">CANCEL</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="image-preview-group" style="display: none;">
+                <label>Selected Image</label>
+                <div
+                    style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <img id="confirmed-image-preview" src="" alt="Preview"
+                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <p id="confirmed-file-name" style="margin: 0; color: #fff; font-size: 0.9rem;"></p>
+                        <p style="margin: 0.25rem 0 0; color: #888; font-size: 0.8rem;">Image ready to save</p>
+                    </div>
+                    <button type="button" id="remove-image-btn" class="btn btn-outline"
+                        style="padding: 0.5rem 1rem; font-size: 0.8rem;">REMOVE</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Or Image URL</label>
+                <input type="text" id="p-image-url" placeholder="https://example.com/image.jpg"
+                    style="width: 100%; padding: 0.75rem; background: #000; color: #fff; border: 1px solid var(--border-color);">
+            </div>
+            <div class="form-group">
+                <label>Product Gallery (Multiple Views)</label>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Add multiple images like Front, Back, Detail views</p>
+                <div id="gallery-images-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+                <button type="button" class="btn btn-outline" onclick="addGalleryImage()"
+                    style="margin-top: 1rem; padding: 0.75rem; width: 100%;">ADD IMAGE VIEW</button>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn" style="flex: 1;" onclick="saveProduct()">SAVE DROP</button>
+                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script src="components.js?v=12"></script>
+    <script src="toast.js?v=12"></script>
+    <script src="admin-api.js?v=10"></script>
+    <script>
+        // Global config
+        var USE_BACKEND_API = true;
+        var API_BASE_URL = 'http://localhost:5001/api';
+        var currentTab = 'products';
+
+        // ===== AUTH CHECK =====
+        document.addEventListener('DOMContentLoaded', function () {
+            var token = adminAPI.getStoredToken();
+            if (!token) {
+                window.location.href='/admin-setup';
+                return;
+            }
+
+            adminAPI.getCurrentUser().then(function(result) {
+                if (!result || result.is_admin !== true) {
+                    adminAPI.clearToken();
+                    window.location.href='/admin-setup';
+                    return;
+                }
+                // Auth OK - render dashboard
+                renderDashboard();
+                initAdminMobileMenu();
+                initFileUploadHandlers();
+            }).catch(function(err) {
+                console.error('Auth check failed:', err);
+                adminAPI.clearToken();
+                window.location.href='/admin-setup';
+            });
+        });
+
+        // ===== MOBILE MENU =====
+        function initAdminMobileMenu() {
+            var mobileHeader = document.querySelector('.admin-mobile-header');
+            var mobileMenu = document.getElementById('admin-mobile-menu');
+            var mobileOverlay = document.getElementById('admin-mobile-overlay');
+            var menuToggle = document.getElementById('admin-mobile-menu-toggle');
+            var menuClose = document.getElementById('admin-mobile-close');
+
+            function checkMobile() {
+                if (window.innerWidth <= 768) {
+                    mobileHeader.style.display = 'flex';
+                    mobileMenu.style.display = 'block';
+                    mobileOverlay.style.display = 'block';
+                } else {
+                    mobileHeader.style.display = 'none';
+                    mobileMenu.style.left = '-280px';
+                    mobileOverlay.style.opacity = '0';
+                    document.body.style.overflow = '';
+                }
+            }
+
+            checkMobile();
+            window.addEventListener('resize', checkMobile);
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function () {
+                    mobileMenu.style.left = '0';
+                    mobileOverlay.style.opacity = '1';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+
+            window.closeAdminMobileMenu = function () {
+                mobileMenu.style.left = '-280px';
+                mobileOverlay.style.opacity = '0';
+                document.body.style.overflow = '';
+            };
+
+            if (menuClose) menuClose.addEventListener('click', closeAdminMobileMenu);
+            if (mobileOverlay) mobileOverlay.addEventListener('click', closeAdminMobileMenu);
+        }
+
+        // ===== TAB SWITCHING =====
+        function showTab(tab) {
+            currentTab = tab;
+            var links = document.querySelectorAll('.sidebar-link');
+            for (var i = 0; i < links.length; i++) {
+                links[i].classList.remove('active');
+            }
+
+            for (var j = 0; j < links.length; j++) {
+                if (links[j].getAttribute('onclick') && links[j].getAttribute('onclick').indexOf(tab) !== -1) {
+                    links[j].classList.add('active');
+                }
+            }
+
+            var title = document.getElementById('tab-title');
+            var subtitle = document.getElementById('tab-subtitle');
+            var addBtn = document.getElementById('add-product-btn');
+            var statsGrid = document.getElementById('stats-grid');
+
+            if (statsGrid) statsGrid.style.display = '';
+
+            if (tab === 'products') {
+                title.textContent = 'PRODUCT MANAGEMENT';
+                subtitle.textContent = 'Manage your drops and inventory levels.';
+                addBtn.innerHTML = '<i class="fas fa-plus"></i> ADD NEW DROP';
+                addBtn.onclick = function() { openProductModal(); };
+                addBtn.style.display = 'block';
+            } else if (tab === 'orders') {
+                title.textContent = 'ORDER TRACKING';
+                subtitle.textContent = 'View and manage customer orders.';
+                addBtn.style.display = 'none';
+            } else if (tab === 'users') {
+                title.textContent = 'USER MANAGEMENT';
+                subtitle.textContent = 'View all registered users.';
+                addBtn.style.display = 'none';
+            } else if (tab === 'next-drop') {
+                title.textContent = 'NEXT DROP CONFIGURATION';
+                subtitle.textContent = 'Configure the upcoming drop.';
+                addBtn.style.display = 'none';
+            } else if (tab === 'hero-section') {
+                title.textContent = 'HERO SECTION MANAGEMENT';
+                subtitle.textContent = 'Manage the hero slider slides shown on the homepage.';
+                addBtn.innerHTML = '<i class="fas fa-plus"></i> ADD NEW SLIDE';
+                addBtn.onclick = function() { openHeroSlideModal(); };
+                addBtn.style.display = 'block';
+                if (statsGrid) statsGrid.style.display = 'none';
+                renderHeroSectionConfig();
+                return;
+            } else if (tab === 'telegram') {
+                title.textContent = 'TELEGRAM NOTIFICATIONS';
+                subtitle.textContent = 'Get notified on Telegram when a new order comes in.';
+                addBtn.style.display = 'none';
+                if (statsGrid) statsGrid.style.display = 'none';
+                renderTelegramConfig();
+                return;
+            }
+
+            renderTable();
+        }
+
+        // ===== DASHBOARD STATS =====
+        function showLoading() {
+            var loading = document.getElementById('admin-loading');
+            if (loading) loading.style.display = '';
+            var container = document.getElementById('table-container');
+            if (container && !container.querySelector('#admin-loading')) {
+                container.innerHTML = '<div id="admin-loading" style="text-align:center;padding:3rem;"><div style="font-size:2rem;animation:spin 1s linear infinite;display:inline-block;">?</div><p style="opacity:0.5;margin-top:1rem;font-size:0.8rem;">Loading...</p></div>';
+            }
+        }
+
+        function hideLoading() {
+            var loading = document.getElementById('admin-loading');
+            if (loading) loading.style.display = 'none';
+        }
+
+        function renderDashboard() {
+            showLoading();
+            if (USE_BACKEND_API) {
+                adminAPI.getStats().then(function(stats) {
+                    hideLoading();
+                    document.getElementById('stat-total-products').textContent = stats.success ? stats.totalProducts : 0;
+                    document.getElementById('stat-total-users').textContent = stats.success ? stats.totalUsers : 0;
+                    document.getElementById('stat-total-orders').textContent = stats.success ? stats.totalOrders : 0;
+                    document.getElementById('stat-revenue').textContent = stats.success ? 'GH₵ ' + stats.totalRevenue.toFixed(2) : 'GH₵ 0.00';
+                }).catch(function(err) {
+                    hideLoading();
+                    console.error('Error fetching stats:', err);
+                });
+            } else {
+                var products = storageService.getProducts();
+                var orders = storageService.getOrders();
+                var users = storageService.getUsers();
+                var revenue = orders.reduce(function(sum, o) { return sum + (parseFloat(o.price) || 0); }, 0);
+                document.getElementById('stat-total-products').textContent = products.length;
+                document.getElementById('stat-total-users').textContent = users.length;
+                document.getElementById('stat-total-orders').textContent = orders.length;
+                document.getElementById('stat-revenue').textContent = 'GH₵ ' + revenue.toFixed(2);
+            }
+            renderTable();
+        }
+
+        // ===== RENDER TABLE =====
+        function renderTable() {
+            showLoading();
+            var container = document.getElementById('table-container');
+            if (currentTab === 'products') {
+                adminAPI.getProducts().then(function(result) {
+                    hideLoading();
+                    renderProductsTable(container, result.success ? result.products : []);
+                }).catch(function() {
+                    hideLoading();
+                    container.innerHTML = '<p style="text-align:center;padding:2rem;">Failed to load products</p>';
+                });
+            } else if (currentTab === 'orders') {
+                adminAPI.getOrders().then(function(result) {
+                    hideLoading();
+                    renderOrdersTable(container, result.success ? result.orders : []);
+                }).catch(function() {
+                    hideLoading();
+                    container.innerHTML = '<p style="text-align:center;padding:2rem;">Failed to load orders</p>';
+                });
+            } else if (currentTab === 'users') {
+                adminAPI.getAllUsers().then(function(users) {
+                    hideLoading();
+                    renderUsersTable(container, users || []);
+                }).catch(function() {
+                    hideLoading();
+                    container.innerHTML = '<p style="text-align:center;padding:2rem;">Failed to load users</p>';
+                });
+            } else if (currentTab === 'next-drop') {
+                hideLoading();
+                renderNextDropConfig(container);
+            } else if (currentTab === 'hero-section') {
+                hideLoading();
+                renderHeroSectionConfig(container);
+            }
+        }
+
+        // ===== PRODUCTS TABLE =====
+        function renderProductsTable(container, products) {
+            var html = '<div style="overflow-y:auto;max-height:calc(100vh - 220px);"><table style="width:100%;"><thead><tr><th>ID</th><th>NAME</th><th>CATEGORY</th><th>PRICE</th><th>STOCK</th><th>ACTIONS</th></tr></thead><tbody>';
+            for (var i = 0; i < products.length; i++) {
+                var p = products[i];
+                html += '<tr>';
+                html += '<td>' + (p.id || '') + '</td>';
+                html += '<td>' + (p.name || 'N/A') + '</td>';
+                html += '<td>' + (p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : 'N/A') + '</td>';
+                html += '<td>GH₵ ' + (parseFloat(p.price) || 0).toFixed(2) + '</td>';
+                html += '<td>' + (p.stock || 0) + '</td>';
+                html += '<td><button class="action-btn edit-btn" onclick="editProduct(&quot;' + p.id + '&quot;)">Edit</button>';
+                html += '<button class="action-btn danger-btn" onclick="deleteProduct(&quot;' + p.id + '&quot;)">Delete</button></td>';
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+// ===== ORDERS TABLE =====
+         function renderOrdersTable(container, orders) {
+             if (orders.length === 0) {
+                 container.innerHTML = '<div style="text-align:center;padding:4rem;opacity:0.6;"><p>NO ORDERS YET</p></div>';
+                 return;
+             }
+             var html = '<div style="overflow-x:auto;"><table><thead><tr><th>ORDER ID</th><th>CUSTOMER</th><th>PRODUCT</th><th>COLOR</th><th>SIZE</th><th>QTY</th><th>AMOUNT</th><th>STATUS</th><th>DATE</th><th>ACTIONS</th></tr></thead><tbody>';
+             var totalRevenue = 0;
+             for (var i = 0; i < orders.length; i++) {
+                 var o = orders[i];
+                 var customerName = 'Guest';
+                 var customerEmail = 'N/A';
+                 if (o.customer_info && o.customer_info.name) customerName = o.customer_info.name;
+                 if (o.customerInfo && o.customerInfo.name) customerName = o.customerInfo.name;
+                 if (o.customer_info && o.customer_info.email) customerEmail = o.customer_info.email;
+                 if (o.customerInfo && o.customerInfo.email) customerEmail = o.customerInfo.email;
+
+                 var productName = 'N/A';
+                 var productImage = '';
+                 var itemColor = '-';
+                 var itemSize = '-';
+                 var itemQty = 1;
+                 if (o.items && o.items[0]) {
+                     if (o.items[0].name) productName = o.items[0].name;
+                     if (o.items[0].image) productImage = o.items[0].image;
+                     if (o.items[0].color) itemColor = o.items[0].color;
+                     if (o.items[0].size) itemSize = o.items[0].size;
+                     if (o.items[0].quantity) itemQty = o.items[0].quantity;
+                 }
+                 if (o.productName) productName = o.productName;
+
+                 var amount = 0;
+                 if (o.total) amount = parseFloat(o.total);
+                 else if (o.price) amount = parseFloat(o.price);
+                 totalRevenue += amount;
+
+                 // Format date
+                 var orderDate = 'N/A';
+                 try {
+                     var dt = null;
+                     if (o.created_at) dt = new Date(o.created_at);
+                     else if (o.createdAt) dt = new Date(o.createdAt);
+                     else if (o.timestamp) dt = new Date(o.timestamp);
+                     if (dt) orderDate = dt.toLocaleDateString();
+                 } catch (e) {}
+
+                 html += '<tr>';
+                 html += '<td><strong>' + (o.order_number || o.id) + '</strong></td>';
+                 html += '<td>' + customerName + '<br><small style="opacity:0.6;">' + customerEmail + '</small></td>';
+                 html += '<td><div style="display:flex;align-items:center;gap:0.5rem;">' + (productImage ? '<img src="' + productImage + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border-color);">' : '<div style="width:40px;height:40px;background:rgba(255,255,255,0.05);border-radius:4px;border:1px solid var(--border-color);"></div>') + '<span style="flex:1;">' + productName + '</span></div></td>';
+                 html += '<td>' + itemColor + '</td>';
+                 html += '<td>' + itemSize + '</td>';
+                 html += '<td>' + itemQty + '</td>';
+                 html += '<td>GH₵ ' + amount.toFixed(2) + '</td>';
+                 html += '<td>' + (o.status || 'pending') + '</td>';
+                 html += '<td>' + orderDate + '</td>';
+                 html += '<td>';
+                 html += '<select onchange="updateOrderStatus(&quot;' + (o.order_number || o.id) + '&quot;, this.value)" style="padding:0.3rem;font-size:0.7rem;background:#000;color:#fff;border:1px solid var(--border-color);">';
+                 html += '<option value="">Change Status</option>';
+                 html += '<option value="pending" ' + (o.status === 'pending' ? 'selected' : '') + '>Pending</option>';
+                 html += '<option value="confirmed" ' + (o.status === 'confirmed' ? 'selected' : '') + '>Confirmed</option>';
+                 html += '<option value="processing" ' + (o.status === 'processing' ? 'selected' : '') + '>Processing</option>';
+                 html += '<option value="shipped" ' + (o.status === 'shipped' ? 'selected' : '') + '>Shipped</option>';
+                 html += '<option value="delivered" ' + (o.status === 'delivered' ? 'selected' : '') + '>Delivered</option>';
+                 html += '<option value="cancelled" ' + (o.status === 'cancelled' ? 'selected' : '') + '>Cancelled</option>';
+                 html += '</select>';
+                 html += '<button class="action-btn" onclick="viewOrderDetails(&quot;' + (o.order_number || o.id) + '&quot;)">View</button>';
+                 html += '</td></tr>';
+             }
+             html += '</tbody><tfoot><tr><td colspan="6" style="text-align:right;"><strong>TOTAL REVENUE:</strong></td><td><strong>GH₵ ' + totalRevenue.toFixed(2) + '</strong></td><td colspan="3"></td></tr></tfoot></table></div>';
+             container.innerHTML = '<div class="orders-table-wrapper">' + html + '</div>';
+         }
+
+        // ===== USERS TABLE =====
+        function renderUsersTable(container, users) {
+            var html = '<div style="overflow-y:auto;max-height:calc(100vh - 220px);"><table style="width:100%;"><thead><tr><th>USER ID</th><th>NAME</th><th>EMAIL</th><th>VIP</th><th>ADMIN</th><th>JOINED</th></tr></thead><tbody>';
+            for (var i = 0; i < users.length; i++) {
+                var u = users[i];
+                var joinDate = 'N/A';
+                try {
+                    if (u.created_at) {
+                        var dt = u.created_at;
+                        if (dt && dt.seconds) dt = new Date(dt.seconds * 1000);
+                        else dt = new Date(dt);
+                        joinDate = dt.toLocaleDateString();
+                    }
+                } catch (e) {}
+                html += '<tr>';
+                html += '<td>' + (u.id || '') + '</td>';
+                html += '<td>' + (u.name || 'N/A') + '</td>';
+                html += '<td>' + (u.email || 'N/A') + '</td>';
+                html += '<td>' + (u.is_vip || u.isVIP ? '? VIP' : '-') + '</td>';
+                html += '<td>' + (u.is_admin || u.isAdmin ? '? Admin' : '-') + '</td>';
+                html += '<td>' + joinDate + '</td>';
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // ===== NEXT DROP CONFIG =====
+        function renderNextDropConfig(container) {
+            if (!container) container = document.getElementById('table-container');
+
+            var nextDrop = null;
+            try {
+                nextDrop = JSON.parse(localStorage.getItem('glitchgarb_next_drop') || 'null');
+            } catch (e) {}
+
+            adminAPI.getProducts().then(function(result) {
+                var products = result.success ? result.products || [] : [];
+
+                var productOptions = '';
+                for (var i = 0; i < products.length; i++) {
+                    p = products[i];
+                    productOptions += '<option value="' + (p.id || i) + '" ' + (nextDrop && nextDrop.productId === p.id ? 'selected' : '') + '>' + p.name + ' - GH₵ ' + (parseFloat(p.price) || 0).toFixed(2) + '</option>';
+                }
+
+                var html = '<div style="overflow-y:auto;max-height:calc(100vh - 220px);"><div class="next-drop-config"><div class="next-drop-status">';
+                if (nextDrop && nextDrop.enabled) {
+                    html += '<div class="status-indicator active"><i class="fas fa-check-circle"></i></div>';
+                    html += '<div class="status-text"><h4>Next Drop Active</h4><p>The next drop is currently visible on the landing page</p></div>';
+                } else {
+                    html += '<div class="status-indicator inactive"><i class="fas fa-times-circle"></i></div>';
+                    html += '<div class="status-text"><h4>No Active Drop</h4><p>Configure a drop to make it visible on the landing page</p></div>';
+                }
+                html += '</div>';
+
+                html += '<div class="next-drop-form">';
+                html += '<div class="form-group"><label>Enable Next Drop</label><label class="toggle-switch"><input type="checkbox" id="nd-enabled" ' + (nextDrop && nextDrop.enabled ? 'checked' : '') + '><span class="toggle-slider"></span></label></div>';
+                html += '<div class="form-group"><label>Select Product</label><select id="nd-product" style="width:100%"><option value="">Select...</option>' + productOptions + '</select></div>';
+                html += '<div class="form-group"><label>Drop Date</label><input type="datetime-local" id="nd-datetime" value="' + (nextDrop && nextDrop.dropDate ? nextDrop.dropDate : '') + '"></div>';
+                html += '<div class="form-group"><label>Drop Title</label><input type="text" id="nd-title" value="' + (nextDrop && nextDrop.title ? nextDrop.title : '') + '" placeholder="e.g., SUMMER COLLECTION"></div>';
+                html += '<div class="form-group"><label>Description</label><textarea id="nd-description" rows="3" placeholder="Describe the upcoming drop...">' + (nextDrop && nextDrop.description ? nextDrop.description : '') + '</textarea></div>';
+                html += '<div class="form-group"><label>Banner Image URL</label><input type="text" id="nd-banner" value="' + (nextDrop && nextDrop.bannerImage ? nextDrop.bannerImage : '') + '" placeholder="https://..."></div>';
+                html += '<div class="next-drop-actions">';
+                html += '<button class="btn" onclick="saveNextDrop()">Save Configuration</button>';
+                if (nextDrop && nextDrop.enabled) html += '<button class="btn btn-outline" onclick="disableNextDrop()">Disable Drop</button>';
+                html += '</div></div></div></div>';
+
+                container.innerHTML = html;
+            }).catch(function(err) {
+                console.error('Error loading next drop config:', err);
+            });
+        }
+
+        function saveNextDrop() {
+            var enabled = document.getElementById('nd-enabled').checked;
+            var productId = document.getElementById('nd-product').value;
+            var dropDate = document.getElementById('nd-datetime').value;
+            var title = document.getElementById('nd-title').value.trim();
+            var description = document.getElementById('nd-description').value.trim();
+            var bannerImage = document.getElementById('nd-banner').value.trim();
+
+            var nextDrop = { enabled: enabled, productId: productId, dropDate: dropDate, title: title, description: description, bannerImage: bannerImage };
+
+            adminAPI.updateNextDrop(nextDrop).then(function(result) {
+                if (result.success) Toast.success('Next drop saved');
+                else Toast.warning('Drop saved locally');
+                renderTable();
+            });
+        }
+
+        function disableNextDrop() {
+            if (confirm('Disable the next drop?')) {
+                var nextDrop = { enabled: false };
+                adminAPI.updateNextDrop(nextDrop);
+                Toast.success('Next drop disabled');
+                renderTable();
+            }
+        }
+
+        // ===== HERO SECTION CONFIG =====
+        var defaultHeroSlides = [
+            {
+                id: 'default-1',
+                image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=1587',
+                title: 'GLITCH<br>CORE',
+                subtitle: 'THE FOUNDATION COLLECTION. LIMITED NUMBERS.',
+                cta: 'Secure the Drop',
+                link: 'shop.html',
+                enabled: true,
+                sort_order: 0
+            },
+            {
+                id: 'default-2',
+                image: 'https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?auto=format&fit=crop&q=80&w=1740',
+                title: 'URBAN<br>UTILITY',
+                subtitle: 'ENGINEERED FOR THE STREETS. GHANA PRIDE.',
+                cta: 'View Collection',
+                link: 'shop.html',
+                enabled: true,
+                sort_order: 1
+            }
+        ];
+
+        function renderHeroSlidesList(slides) {
+            var listHtml = '';
+            if (!slides || slides.length === 0) {
+                listHtml = '<p style="opacity:0.5;padding:2rem;text-align:center;">No hero slides yet. Click "+ ADD NEW SLIDE" above to create one.</p>';
+            }
+            for (var i = 0; i < slides.length; i++) {
+                var s = slides[i];
+                var statusDot = s.enabled
+                    ? '<span style="color:#4caf50;font-size:0.7rem;">? ACTIVE</span>'
+                    : '<span style="color:#f44336;font-size:0.7rem;">? DISABLED</span>';
+                listHtml += '<div class="hero-slide-card">';
+                listHtml += '<img src="' + s.image + '" alt="Slide ' + (i + 1) + '" onerror="this.src=\'placeholder.png\'">';
+                listHtml += '<div class="slide-info">';
+                listHtml += '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">' + statusDot + '<span style="font-size:0.7rem;opacity:0.35;">Slide ' + (i + 1) + '</span></div>';
+                listHtml += '<h4>' + s.title.replace(/<br>/g, ' / ') + '</h4>';
+                listHtml += '<p>' + s.subtitle + '</p>';
+                listHtml += '<p style="font-size:0.7rem;opacity:0.35;">CTA: ' + s.cta + ' ? ' + s.link + '</p>';
+                listHtml += '<div class="slide-actions">';
+                listHtml += '<button class="action-btn edit-btn" onclick="editHeroSlide(\'' + s.id + '\')">Edit</button>';
+                listHtml += '<button class="action-btn" onclick="toggleHeroSlide(\'' + s.id + '\')">' + (s.enabled ? 'Disable' : 'Enable') + '</button>';
+                listHtml += '<button class="action-btn danger-btn" onclick="deleteHeroSlide(\'' + s.id + '\')">Delete</button>';
+                listHtml += '</div></div></div>';
+            }
+            document.getElementById('hero-slides-list').innerHTML = listHtml;
+        }
+
+        function renderHeroSectionConfig(container) {
+            if (!container) container = document.getElementById('table-container');
+
+            var headingHtml = '<div style="margin-bottom:1rem;">';
+            headingHtml += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">';
+            headingHtml += '<p style="font-size:0.8rem;opacity:0.5;margin:0;">Manage the hero slider slides shown on the homepage.</p>';
+            headingHtml += '<button class="btn" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="openHeroSlideModal()">+ ADD NEW SLIDE</button>';
+            headingHtml += '</div></div>';
+
+            container.innerHTML = headingHtml + '<div id="hero-slides-list" class="hero-slides-container"></div>';
+
+            adminAPI.getHeroSlides().then(function(result) {
+                var slides = (result.success && result.slides && result.slides.length > 0) ? result.slides : defaultHeroSlides;
+                if (!result.success || !result.slides || result.slides.length === 0) {
+                    localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(defaultHeroSlides));
+                }
+                renderHeroSlidesList(slides);
+            }).catch(function(err) {
+                console.error('Error loading hero slides:', err);
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(defaultHeroSlides));
+                renderHeroSlidesList(defaultHeroSlides);
+            });
+        }
+
+function openHeroSlideModal(slideId) {
+             var modal = document.getElementById('hero-slide-modal');
+             if (modal) modal.remove();
+
+             var modalHtml = '<div id="hero-slide-modal" class="modal" style="display:flex;"><div class="modal-content" style="max-width:600px;">';
+             modalHtml += '<h3 style="margin-bottom:2rem;">ADD NEW HERO SECTION</h3>';
+             modalHtml += '<input type="hidden" id="hs-id">';
+             modalHtml += '<div class="form-group"><label>Title</label><input type="text" id="hs-title" style="width:100%"></div>';
+             modalHtml += '<div class="form-group"><label>Subtitle</label><input type="text" id="hs-subtitle" style="width:100%"></div>';
+             modalHtml += '<div class="form-group"><label>CTA</label><input type="text" id="hs-cta" value="View Collection" style="width:100%"></div>';
+             modalHtml += '<div class="form-group"><label>CTA Link</label><input type="text" id="hs-link" value="shop.html" style="width:100%"></div>';
+             modalHtml += '<div class="form-group"><label>Background Image</label>';
+             modalHtml += '<div id="hs-image-upload-area" style="border:2px dashed var(--border-color);border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.3s ease;margin-bottom:0.75rem;">';
+             modalHtml += '<input type="file" id="hs-image-file" accept="image/*" style="display:none;">';
+             modalHtml += '<div id="hs-image-placeholder">';
+             modalHtml += '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 1rem;opacity:0.5;">';
+             modalHtml += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+             modalHtml += '<p style="margin:0;color:#888;">Click to select an image</p>';
+             modalHtml += '<p style="margin:0.5rem 0 0;font-size:0.85rem;color:#666;">or drag and drop</p></div>';
+             modalHtml += '<div id="hs-image-selected-info" style="display:none;">';
+             modalHtml += '<img id="hs-image-preview" src="" alt="Preview" style="max-width:150px;max-height:150px;border-radius:8px;margin-bottom:1rem;">';
+             modalHtml += '<p id="hs-file-name" style="margin:0 0 1rem;color:#fff;font-size:0.9rem;"></p>';
+             modalHtml += '<div style="display:flex;gap:0.75rem;justify-content:center;">';
+             modalHtml += '<button type="button" id="hs-confirm-upload-btn" class="btn" style="padding:0.5rem 1.5rem;font-size:0.85rem;">USE IMAGE</button>';
+             modalHtml += '<button type="button" id="hs-cancel-upload-btn" class="btn btn-outline" style="padding:0.5rem 1.5rem;font-size:0.85rem;">CANCEL</button></div></div></div></div>';
+             modalHtml += '<div class="form-group" id="hs-image-preview-group" style="display:none;"><label>Current Image</label>';
+             modalHtml += '<div style="display:flex;align-items:center;gap:1rem;padding:1rem;background:rgba(255,255,255,0.05);border-radius:8px;">';
+             modalHtml += '<img id="hs-confirmed-image-preview" src="" alt="Preview" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">';
+             modalHtml += '<div style="flex:1;"><p id="hs-confirmed-file-name" style="margin:0;color:#fff;font-size:0.9rem;"></p></div>';
+             modalHtml += '<button type="button" id="hs-remove-image-btn" class="btn btn-outline" style="padding:0.5rem 1rem;font-size:0.8rem;">REMOVE</button></div></div>';
+             modalHtml += '<div class="form-group"><label>Or Image URL</label><input type="text" id="hs-image-url" placeholder="https://example.com/image.jpg" style="width:100%;padding:0.75rem;background:#000;color:#fff;border:1px solid var(--border-color);">';
+             modalHtml += '</div>';
+             modalHtml += '<div style="display:flex;gap:1rem;margin-top:2rem;">';
+             modalHtml += '<button class="btn" style="flex:1" onclick="saveHeroSlide()">SAVE SLIDE</button>';
+             modalHtml += '<button class="btn btn-outline" style="flex:1" onclick="closeHeroModal()">CANCEL</button>';
+             modalHtml += '</div></div></div>';
+
+             document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+             if (slideId) {
+                 var stored = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || '[]');
+                 var slide = stored.find(function(s) { return s.id == slideId; });
+                 if (slide) {
+                     document.getElementById('hs-id').value = slideId;
+                     document.getElementById('hs-title').value = slide.title.replace(/<br>/g, ' ');
+                     document.getElementById('hs-subtitle').value = slide.subtitle;
+                     document.getElementById('hs-cta').value = slide.cta;
+                     document.getElementById('hs-link').value = slide.link || 'shop.html';
+                     document.getElementById('hs-image-url').value = slide.image;
+                     if (slide.image) {
+                         document.getElementById('hs-confirmed-image-preview').src = slide.image;
+                         document.getElementById('hs-confirmed-file-name').textContent = 'Current image';
+                         document.getElementById('hs-image-preview-group').style.display = 'block';
+                     }
+                 }
+             }
+
+             initHeroSlideFileUpload();
+         }
+
+         function closeHeroModal() {
+             var m = document.getElementById('hero-slide-modal');
+             if (m) m.remove();
+         }
+
+         var heroSlideSelectedFileBase64 = null;
+
+         function initHeroSlideFileUpload() {
+             var uploadArea = document.getElementById('hs-image-upload-area');
+             var fileInput = document.getElementById('hs-image-file');
+             var placeholder = document.getElementById('hs-image-placeholder');
+             var selectedInfo = document.getElementById('hs-image-selected-info');
+             var previewGroup = document.getElementById('hs-image-preview-group');
+             var confirmedPreview = document.getElementById('hs-confirmed-image-preview');
+             var confirmedFileName = document.getElementById('hs-confirmed-file-name');
+             var urlInput = document.getElementById('hs-image-url');
+
+             if (!uploadArea) return;
+
+             uploadArea.addEventListener('click', function (e) {
+                 if (e.target.tagName === 'BUTTON') return;
+                 if (previewGroup && previewGroup.style.display === 'block') return;
+                 fileInput.click();
+             });
+
+             uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent-color)'; });
+             uploadArea.addEventListener('dragleave', function (e) { e.preventDefault(); uploadArea.style.borderColor = ''; });
+             uploadArea.addEventListener('drop', function (e) {
+                 e.preventDefault();
+                 uploadArea.style.borderColor = '';
+                 if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type.startsWith('image/')) heroSlideHandleFile(e.dataTransfer.files[0]);
+             });
+
+             fileInput.addEventListener('change', function () {
+                 if (fileInput.files[0]) heroSlideHandleFile(fileInput.files[0]);
+             });
+
+             document.getElementById('hs-confirm-upload-btn').addEventListener('click', function () {
+                 if (heroSlideSelectedFileBase64) {
+                     urlInput.value = heroSlideSelectedFileBase64;
+                     confirmedPreview.src = heroSlideSelectedFileBase64;
+                     confirmedFileName.textContent = 'Image ready to save';
+                     if (previewGroup) previewGroup.style.display = 'block';
+                     placeholder.style.display = 'block';
+                     selectedInfo.style.display = 'none';
+                     Toast.success('Image uploaded');
+                 }
+             });
+
+             document.getElementById('hs-cancel-upload-btn').addEventListener('click', function () { heroSlideResetUploadUI(); });
+
+             var removeBtn = document.getElementById('hs-remove-image-btn');
+             if (removeBtn) {
+                 removeBtn.addEventListener('click', function () {
+                     urlInput.value = '';
+                     if (previewGroup) previewGroup.style.display = 'none';
+                     heroSlideResetUploadUI();
+                 });
+             }
+         }
+
+         function heroSlideHandleFile(file) {
+             var reader = new FileReader();
+             reader.onload = function (e) {
+                 var img = new Image();
+                 img.onload = function () {
+                     var canvas = document.createElement('canvas');
+                     var w = img.width, h = img.height;
+                     var MAX = 1920;
+                     if (w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+                     else if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+                     canvas.width = w; canvas.height = h;
+                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                     heroSlideSelectedFileBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                     document.getElementById('hs-image-preview').src = heroSlideSelectedFileBase64;
+                     document.getElementById('hs-file-name').textContent = file.name + ' (' + (heroSlideSelectedFileBase64.length / 1024).toFixed(1) + 'KB)';
+                     document.getElementById('hs-image-placeholder').style.display = 'none';
+                     document.getElementById('hs-image-selected-info').style.display = 'block';
+                 };
+                 img.src = e.target.result;
+             };
+             reader.readAsDataURL(file);
+         }
+
+         function heroSlideResetUploadUI() {
+             heroSlideSelectedFileBase64 = null;
+             document.getElementById('hs-image-file').value = '';
+             document.getElementById('hs-image-placeholder').style.display = 'block';
+             document.getElementById('hs-image-selected-info').style.display = 'none';
+         }
+
+function saveHeroSlide() {
+             var stored = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || '[]');
+             var id = document.getElementById('hs-id').value;
+             var titleWords = document.getElementById('hs-title').value.trim().split(' ');
+             var formattedTitle = titleWords.length <= 2 ? titleWords.join('<br>') : titleWords.slice(0, 2).join('<br>') + '<br>' + titleWords.slice(2).join(' ');
+
+             var slide = {
+                 id: id ? id : crypto.randomUUID(),
+                 title: formattedTitle,
+                 subtitle: document.getElementById('hs-subtitle').value,
+                 cta: document.getElementById('hs-cta').value,
+                 link: document.getElementById('hs-link').value || 'shop.html',
+                 image: document.getElementById('hs-image-url').value,
+                 enabled: true,
+                 sort_order: stored.length
+             };
+
+            if (id) {
+                var idx = stored.findIndex(function(s) { return s.id == id; });
+                if (idx > -1) stored[idx] = slide;
+            } else {
+                stored.push(slide);
+            }
+
+            localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(stored));
+            adminAPI.updateHeroSlides(stored).then(function(result) {
+                if (result && result.success) {
+                    Toast.success('Hero slide saved successfully');
+                } else {
+                    Toast.error('Failed to save: ' + (result && result.message || 'Unknown error'));
+                }
+            }).catch(function(err) {
+                Toast.error('Error saving slide: ' + (err.message || 'Network error'));
+                console.error('saveHeroSlide error:', err);
+            });
+            closeHeroModal();
+            renderHeroSectionConfig();
+        }
+
+        function editHeroSlide(id) {
+            openHeroSlideModal(id);
+        }
+
+        function toggleHeroSlide(id) {
+            var stored = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || '[]');
+            var idx = stored.findIndex(function(s) { return s.id == id; });
+            if (idx > -1) {
+                stored[idx].enabled = !stored[idx].enabled;
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(stored));
+                adminAPI.updateHeroSlides(stored).then(function(result) {
+                    if (result && result.success) {
+                        Toast.success(stored[idx].enabled ? 'Slide enabled' : 'Slide disabled');
+                    }
+                }).catch(function(err) {
+                    Toast.error('Error: ' + (err.message || 'Network error'));
+                });
+                renderHeroSectionConfig();
+            }
+        }
+
+        function deleteHeroSlide(id) {
+            if (confirm('Delete this slide?')) {
+                var stored = JSON.parse(localStorage.getItem('glitchgarb_hero_slides') || '[]');
+                stored = stored.filter(function(s) { return s.id != id; });
+                localStorage.setItem('glitchgarb_hero_slides', JSON.stringify(stored));
+                adminAPI.updateHeroSlides(stored).then(function(result) {
+                    if (result && result.success) {
+                        Toast.success('Slide deleted');
+                    }
+                }).catch(function(err) {
+                    Toast.error('Error: ' + (err.message || 'Network error'));
+                });
+                renderHeroSectionConfig();
+            }
+        }
+
+        // ===== TELEGRAM CONFIG =====
+        function renderTelegramConfig(container) {
+            if (!container) container = document.getElementById('table-container');
+
+            var html = '<div style="max-width:600px;">';
+            html += '<div style="background:var(--secondary-bg);border:1px solid var(--border-color);border-radius:12px;padding:2rem;margin-bottom:1.5rem;">';
+            html += '<h4 style="margin-bottom:0.5rem;font-size:0.9rem;">Telegram Bot Setup</h4>';
+            html += '<p style="font-size:0.75rem;opacity:0.5;margin-bottom:1.5rem;">Get instant notifications on Telegram when a new order is placed.</p>';
+
+            html += '<div class="form-group" style="margin-bottom:1rem;">';
+            html += '<label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer;">';
+            html += '<input type="checkbox" id="tg-enabled" style="width:18px;height:18px;accent-color:var(--accent-color);">';
+            html += '<span style="font-size:0.85rem;font-weight:600;">Enable Telegram Notifications</span></label></div>';
+
+            html += '<div id="tg-config-fields" style="display:none;">';
+            html += '<div class="form-group" style="margin-bottom:1rem;">';
+            html += '<label style="display:block;font-size:0.75rem;opacity:0.6;margin-bottom:0.4rem;">Bot Token</label>';
+            html += '<input type="text" id="tg-bot-token" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" style="width:100%;padding:0.75rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;">';
+            html += '<p style="font-size:0.65rem;opacity:0.4;margin-top:0.3rem;">Get this from <a href="https://t.me/BotFather" target="_blank" style="color:var(--accent-color);">@BotFather</a> on Telegram</p></div>';
+
+            html += '<div class="form-group" style="margin-bottom:1rem;">';
+            html += '<label style="display:block;font-size:0.75rem;opacity:0.6;margin-bottom:0.4rem;">Chat ID</label>';
+            html += '<input type="text" id="tg-chat-id" placeholder="-1001234567890 or your user ID" style="width:100%;padding:0.75rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;">';
+            html += '<p style="font-size:0.65rem;opacity:0.4;margin-top:0.3rem;">Send /start to <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent-color);">@userinfobot</a> to get your chat ID</p></div>';
+
+            html += '<div style="display:flex;gap:0.75rem;margin-top:1.5rem;">';
+            html += '<button class="btn" onclick="saveTelegramSettings()" style="flex:1;">SAVE SETTINGS</button>';
+            html += '<button class="btn btn-outline" onclick="testTelegramNotification()" style="flex:1;">SEND TEST MESSAGE</button>';
+            html += '</div></div></div>';
+
+            html += '<div style="background:var(--secondary-bg);border:1px solid var(--border-color);border-radius:12px;padding:2rem;">';
+            html += '<h4 style="margin-bottom:0.5rem;font-size:0.9rem;">How to set up</h4>';
+            html += '<ol style="font-size:0.75rem;opacity:0.6;padding-left:1.2rem;line-height:1.8;">';
+            html += '<li>Open Telegram and search for <strong>@BotFather</strong></li>';
+            html += '<li>Send <code>/newbot</code> and follow the instructions</li>';
+            html += '<li>Copy the bot token and paste it above</li>';
+            html += '<li>Search for <strong>@userinfobot</strong> and send /start</li>';
+            html += '<li>Copy your chat ID and paste it above</li>';
+            html += '<li>Enable notifications and save!</li>';
+            html += '</ol></div></div>';
+
+            container.innerHTML = html;
+
+            adminAPI.getTelegramSettings().then(function(result) {
+                if (result.success && result.settings) {
+                    var s = result.settings;
+                    document.getElementById('tg-enabled').checked = s.enabled || false;
+                    document.getElementById('tg-bot-token').value = s.bot_token || '';
+                    document.getElementById('tg-chat-id').value = s.chat_id || '';
+                    if (s.enabled) {
+                        document.getElementById('tg-config-fields').style.display = 'block';
+                    }
+                }
+            });
+
+            document.getElementById('tg-enabled').addEventListener('change', function() {
+                document.getElementById('tg-config-fields').style.display = this.checked ? 'block' : 'none';
+            });
+        }
+
+        function saveTelegramSettings() {
+            var settings = {
+                enabled: document.getElementById('tg-enabled').checked,
+                bot_token: document.getElementById('tg-bot-token').value.trim(),
+                chat_id: document.getElementById('tg-chat-id').value.trim()
+            };
+            if (settings.enabled && (!settings.bot_token || !settings.chat_id)) {
+                Toast.error('Please enter both Bot Token and Chat ID');
+                return;
+            }
+            adminAPI.updateTelegramSettings(settings).then(function(result) {
+                if (result.success) Toast.success('Telegram settings saved!');
+                else Toast.error('Failed to save settings');
+            }).catch(function(err) {
+                Toast.error('Error: ' + err.message);
+            });
+        }
+
+        function testTelegramNotification() {
+            var token = document.getElementById('tg-bot-token').value.trim();
+            var chatId = document.getElementById('tg-chat-id').value.trim();
+            if (!token || !chatId) {
+                Toast.error('Please enter Bot Token and Chat ID first');
+                return;
+            }
+            var btn = document.querySelector('button[onclick="testTelegramNotification()"]');
+            var origText = btn ? btn.innerHTML : 'SEND TEST MESSAGE';
+            if (btn) { btn.disabled = true; btn.innerHTML = 'SENDING...'; }
+
+            adminAPI.testTelegramNotification(token, chatId).then(function(result) {
+                if (result.success) Toast.success('Test message sent! Check your Telegram.');
+                else Toast.error(result.message || 'Failed to send test message');
+            }).catch(function() {
+                Toast.error('Could not reach backend. Make sure the server is running.');
+            }).finally(function() {
+                if (btn) { btn.disabled = false; btn.innerHTML = origText; }
+            });
+        }
+
+        // ===== PRODUCT MODAL =====
+        function openProductModal(productId) {
+            document.getElementById('p-id').value = '';
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-sku').value = '';
+            document.getElementById('p-description').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-stock').value = '';
+            document.getElementById('p-release-date').value = '';
+            document.getElementById('p-category').value = 'tshirt';
+            document.getElementById('p-image-url').value = '';
+            document.getElementById('p-image').value = '';
+            document.getElementById('image-preview-group').style.display = 'none';
+            document.getElementById('modal-title').textContent = 'ADD NEW DROP';
+            resetColorSelection();
+            resetSizeSelection();
+            resetUploadUI();
+
+if (productId) {
+                 adminAPI.getProducts().then(function(result) {
+                     var product = result.success ? (result.products || []).find(function(p) { return p.id === productId; }) : null;
+                     if (product) {
+                         document.getElementById('p-id').value = product.id;
+                         document.getElementById('p-name').value = product.name;
+                         document.getElementById('p-sku').value = product.sku || '';
+                         document.getElementById('p-description').value = product.description || '';
+                         document.getElementById('p-price').value = product.price;
+                         document.getElementById('p-stock').value = product.stock;
+                         document.getElementById('p-category').value = product.category || 'tshirt';
+                         document.getElementById('p-image-url').value = product.image_url || product.image || '';
+                         if (product.image_url || product.image) {
+                             var img = product.image_url || product.image;
+                             document.getElementById('confirmed-image-preview').src = img;
+                             document.getElementById('confirmed-file-name').textContent = 'Existing image';
+                             document.getElementById('image-preview-group').style.display = 'block';
+                         }
+                         if (product.colors) setColorSelection(product.colors);
+                         if (product.sizes) setSizeSelection(product.sizes);
+
+                         // Load gallery images for editing
+                         var galleryContainer = document.getElementById('gallery-images-container');
+                         if (product.gallery && product.gallery.length > 0) {
+                             for (var g = 0; g < product.gallery.length; g++) {
+                                 var galItem = product.gallery[g];
+                                 var uid = 'gal_' + Date.now() + '_' + g;
+                                 var div = document.createElement('div');
+                                 div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;padding:0.75rem;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:0.5rem;flex-wrap:wrap;';
+                                 div.setAttribute('data-uid', uid);
+                                 div.innerHTML =
+                                     '<div id="gal-upload-' + uid + '" style="border:2px dashed var(--border-color);border-radius:6px;padding:0.75rem;text-align:center;cursor:pointer;min-width:80px;height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(255,255,255,0.02);">' +
+                                     '<img src="' + (galItem.url || galItem || '') + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">' +
+                                     '</div>' +
+                                     '<input type="text" id="gal-url-' + uid + '" class="gal-url-input" placeholder="Or image URL" value="' + (galItem.url || galItem || '') + '" style="flex:1;padding:0.65rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:4px;font-size:0.85rem;">' +
+                                     '<input type="text" id="gal-label-' + uid + '" placeholder="Label" value="' + (galItem.label || 'View') + '" style="width:90px;padding:0.65rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:4px;font-size:0.85rem;">' +
+                                     '<button onclick="this.closest(\'[data-uid]\').remove();delete galleryFileData[\'' + uid + '\']" style="background:none;border:1px solid var(--color-error);color:var(--color-error);padding:0.4rem 0.6rem;border-radius:4px;cursor:pointer;font-size:0.9rem;">?</button>';
+                                 galleryContainer.appendChild(div);
+
+                                 // Setup file upload for this gallery item
+                                 (function(uid) {
+                                     var fileInput = document.getElementById('gal-file-' + uid);
+                                     var uploadArea = document.getElementById('gal-upload-' + uid);
+                                     if (!fileInput || !uploadArea) return;
+
+                                     uploadArea.addEventListener('click', function (e) {
+                                         if (e.target.tagName === 'BUTTON') return;
+                                         fileInput.click();
+                                     });
+
+                                     uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent-color)'; });
+                                     uploadArea.addEventListener('dragleave', function (e) { e.preventDefault(); uploadArea.style.borderColor = ''; });
+                                     uploadArea.addEventListener('drop', function (e) {
+                                         e.preventDefault();
+                                         uploadArea.style.borderColor = '';
+                                         if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type.startsWith('image/')) {
+                                             handleGalleryFile(e.dataTransfer.files[0], uid);
+                                         }
+                                     });
+
+                                     fileInput.addEventListener('change', function () {
+                                         if (fileInput.files[0]) handleGalleryFile(fileInput.files[0], uid);
+                                     });
+                                 })(uid);
+                             }
+                         }
+
+                         document.getElementById('modal-title').textContent = 'EDIT DROP';
+                     }
+                 });
+             } else {
+                 // Clear gallery for new product
+                 document.getElementById('gallery-images-container').innerHTML = '';
+             }
+
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        // ===== COLOR PICKER =====
+        function toggleColor(el) {
+            el.classList.toggle('selected');
+            el.style.borderColor = el.classList.contains('selected') ? 'var(--accent-color)' : 'var(--border-color)';
+            el.style.boxShadow = el.classList.contains('selected') ? '0 0 10px rgba(255,62,0,0.5)' : 'none';
+            var selected = document.querySelectorAll('.color-option.selected');
+            var names = [];
+            for (var i = 0; i < selected.length; i++) names.push(selected[i].getAttribute('data-color'));
+            document.getElementById('selected-colors-display').textContent = names.length ? 'Selected: ' + names.join(', ') : 'Click colors to select/deselect';
+        }
+
+        function getSelectedColors() {
+            var selected = document.querySelectorAll('.color-option.selected');
+            var out = [];
+            for (var i = 0; i < selected.length; i++) out.push({ name: selected[i].getAttribute('data-color'), hex: selected[i].getAttribute('data-hex') });
+            return out;
+        }
+
+        function resetColorSelection() {
+            var opts = document.querySelectorAll('.color-option');
+            for (var i = 0; i < opts.length; i++) {
+                opts[i].classList.remove('selected');
+                opts[i].style.borderColor = 'var(--border-color)';
+                opts[i].style.boxShadow = 'none';
+            }
+            document.getElementById('selected-colors-display').textContent = 'Click colors to select/deselect';
+        }
+
+        function setColorSelection(colors) {
+            resetColorSelection();
+            for (var i = 0; i < colors.length; i++) {
+                var el = document.querySelector('.color-option[data-color="' + (colors[i].name || colors[i]) + '"]');
+                if (el) {
+                    el.classList.add('selected');
+                    el.style.borderColor = 'var(--accent-color)';
+                    el.style.boxShadow = '0 0 10px rgba(255,62,0,0.5)';
+                }
+            }
+        }
+
+
+         // ===== SIZE PICKER =====
+         function toggleSize(el) {
+             el.classList.toggle('selected');
+             if (el.classList.contains('selected')) {
+                 el.style.borderColor = 'var(--accent-color)';
+                 el.style.boxShadow = '0 0 10px rgba(255,62,0,0.5)';
+                 el.style.background = 'var(--accent-color)';
+                 el.style.color = '#000';
+             } else {
+                 el.style.borderColor = 'var(--border-color)';
+                 el.style.boxShadow = 'none';
+                 el.style.background = '#000';
+                 el.style.color = '#fff';
+             }
+             var selected = document.querySelectorAll('.size-option.selected');
+             var names = [];
+             for (var i = 0; i < selected.length; i++) names.push(selected[i].getAttribute('data-size'));
+             document.getElementById('selected-sizes-display').textContent = names.length ? 'Selected: ' + names.join(', ') : 'Click sizes to select/deselect';
+             document.getElementById('p-sizes').value = names.join(',');
+         }
+
+         function getSelectedSizes() {
+             var selected = document.querySelectorAll('.size-option.selected');
+             var out = [];
+             for (var i = 0; i < selected.length; i++) out.push(selected[i].getAttribute('data-size'));
+             return out;
+         }
+
+         function resetSizeSelection() {
+             var opts = document.querySelectorAll('.size-option');
+             for (var i = 0; i < opts.length; i++) {
+                 opts[i].classList.remove('selected');
+                 opts[i].style.borderColor = 'var(--border-color)';
+                 opts[i].style.boxShadow = 'none';
+                 opts[i].style.background = '#000';
+                 opts[i].style.color = '#fff';
+             }
+             document.getElementById('selected-sizes-display').textContent = 'Click sizes to select/deselect';
+             document.getElementById('p-sizes').value = '';
+         }
+
+         function setSizeSelection(sizes) {
+             resetSizeSelection();
+             for (var i = 0; i < sizes.length; i++) {
+                 var el = document.querySelector('.size-option[data-size="' + sizes[i] + '"]');
+                 if (el) {
+                     el.classList.add('selected');
+                     el.style.borderColor = 'var(--accent-color)';
+                     el.style.boxShadow = '0 0 10px rgba(255,62,0,0.5)';
+                     el.style.background = 'var(--accent-color)';
+                     el.style.color = '#000';
+                 }
+             }
+             document.getElementById('p-sizes').value = sizes.join(',');
+         }
+
+        // ===== FILE UPLOAD =====
+        var selectedFileBase64 = null;
+
+        function initFileUploadHandlers() {
+            var area = document.getElementById('file-upload-area');
+            var input = document.getElementById('p-image');
+            var placeholder = document.getElementById('file-upload-placeholder');
+            var selectedInfo = document.getElementById('file-selected-info');
+            var previewGroup = document.getElementById('image-preview-group');
+
+            if (!area) return;
+
+            area.addEventListener('click', function (e) {
+                if (e.target.tagName === 'BUTTON') return;
+                if (previewGroup.style.display === 'block') return;
+                input.click();
+            });
+
+            area.addEventListener('dragover', function (e) { e.preventDefault(); area.style.borderColor = '#fff'; });
+            area.addEventListener('dragleave', function (e) { e.preventDefault(); area.style.borderColor = ''; });
+            area.addEventListener('drop', function (e) {
+                e.preventDefault();
+                area.style.borderColor = '';
+                if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type.startsWith('image/')) handleFile(e.dataTransfer.files[0]);
+            });
+
+            input.addEventListener('change', function () {
+                if (input.files[0]) handleFile(input.files[0]);
+            });
+
+            document.getElementById('confirm-upload-btn').addEventListener('click', function () {
+                if (selectedFileBase64) {
+                    document.getElementById('p-image-url').value = selectedFileBase64;
+                    document.getElementById('confirmed-image-preview').src = selectedFileBase64;
+                    document.getElementById('confirmed-file-name').textContent = 'Image ready to save';
+                    previewGroup.style.display = 'block';
+                    placeholder.style.display = 'block';
+                    selectedInfo.style.display = 'none';
+                    Toast.success('Image uploaded');
+                }
+            });
+
+            document.getElementById('cancel-upload-btn').addEventListener('click', function () { resetUploadUI(); });
+
+            document.getElementById('remove-image-btn').addEventListener('click', function () {
+                document.getElementById('p-image-url').value = '';
+                previewGroup.style.display = 'none';
+                resetUploadUI();
+            });
+        }
+
+        function handleFile(file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var canvas = document.createElement('canvas');
+                    var w = img.width, h = img.height;
+                    var max = 1200;
+                    if (w > h && w > max) { h = Math.round(h * max / w); w = max; }
+                    else if (h > max) { w = Math.round(w * max / h); h = max; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    selectedFileBase64 = canvas.toDataURL('image/jpeg', 0.9);
+                    document.getElementById('p-image-preview').src = selectedFileBase64;
+                    document.getElementById('file-name').textContent = file.name + ' (' + (selectedFileBase64.length / 1024).toFixed(1) + 'KB)';
+                    document.getElementById('file-upload-placeholder').style.display = 'none';
+                    document.getElementById('file-selected-info').style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetUploadUI() {
+            selectedFileBase64 = null;
+            document.getElementById('p-image').value = '';
+            document.getElementById('file-upload-placeholder').style.display = 'block';
+            document.getElementById('file-selected-info').style.display = 'none';
+        }
+
+// ===== GALLERY =====
+         var galleryFileData = {};
+
+         function addGalleryImage() {
+             var c = document.getElementById('gallery-images-container');
+             var uid = 'gal_' + Date.now();
+             var div = document.createElement('div');
+             div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;padding:0.75rem;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:0.5rem;flex-wrap:wrap;';
+             div.setAttribute('data-uid', uid);
+             div.innerHTML =
+                 '<div style="display:flex;gap:0.5rem;flex:1;min-width:200px;">' +
+                 '<div id="gal-upload-' + uid + '" style="border:2px dashed var(--border-color);border-radius:6px;padding:0.75rem;text-align:center;cursor:pointer;min-width:80px;height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(255,255,255,0.02);">' +
+                 '<input type="file" id="gal-file-' + uid + '" accept="image/*" style="display:none;">' +
+                 '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity:0.4;margin-bottom:0.25rem;"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>' +
+                 '<p style="margin:0;font-size:0.7rem;color:#888;">Upload</p>' +
+                 '</div>' +
+                 '<input type="text" id="gal-url-' + uid + '" class="gal-url-input" placeholder="Or image URL" style="flex:1;padding:0.65rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:4px;font-size:0.85rem;">' +
+                 '<input type="text" id="gal-label-' + uid + '" placeholder="Label" style="width:90px;padding:0.65rem;background:#000;color:#fff;border:1px solid var(--border-color);border-radius:4px;font-size:0.85rem;">' +
+                 '<button onclick="this.closest(\'[data-uid]\').remove();delete galleryFileData[\'' + uid + '\']" style="background:none;border:1px solid var(--color-error);color:var(--color-error);padding:0.4rem 0.6rem;border-radius:4px;cursor:pointer;font-size:0.9rem;">?</button>' +
+                 '</div>';
+             c.appendChild(div);
+
+             // Setup file upload for this gallery item
+             var fileInput = document.getElementById('gal-file-' + uid);
+             var uploadArea = document.getElementById('gal-upload-' + uid);
+
+             uploadArea.addEventListener('click', function (e) {
+                 if (e.target.tagName === 'BUTTON') return;
+                 fileInput.click();
+             });
+
+             uploadArea.addEventListener('dragover', function (e) { e.preventDefault(); uploadArea.style.borderColor = 'var(--accent-color)'; });
+             uploadArea.addEventListener('dragleave', function (e) { e.preventDefault(); uploadArea.style.borderColor = ''; });
+             uploadArea.addEventListener('drop', function (e) {
+                 e.preventDefault();
+                 uploadArea.style.borderColor = '';
+                 if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type.startsWith('image/')) {
+                     handleGalleryFile(e.dataTransfer.files[0], uid);
+                 }
+             });
+
+             fileInput.addEventListener('change', function () {
+                 if (fileInput.files[0]) handleGalleryFile(fileInput.files[0], uid);
+             });
+         }
+
+         function handleGalleryFile(file, uid) {
+             var reader = new FileReader();
+             reader.onload = function (e) {
+                 var img = new Image();
+                 img.onload = function () {
+                     var canvas = document.createElement('canvas');
+                     var w = img.width, h = img.height;
+                     var MAX = 1200;
+                     if (w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+                     else if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+                     canvas.width = w; canvas.height = h;
+                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                     var base64 = canvas.toDataURL('image/jpeg', 0.85);
+                     galleryFileData[uid] = base64;
+                     var uploadArea = document.getElementById('gal-upload-' + uid);
+                     if (uploadArea) {
+                         uploadArea.innerHTML = '<img src="' + base64 + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">';
+                     }
+                     // Auto-fill URL input with base64
+                     var urlInput = document.getElementById('gal-url-' + uid);
+                     if (urlInput) urlInput.value = base64;
+                 };
+                 img.src = e.target.result;
+             };
+             reader.readAsDataURL(file);
+         }
+
+         function getGalleryImages() {
+             var rows = document.querySelectorAll('#gallery-images-container > div');
+             var out = [];
+             for (var i = 0; i < rows.length; i++) {
+                 var uid = rows[i].getAttribute('data-uid');
+                 var urlInput = rows[i].querySelector('.gal-url-input');
+                 var url = urlInput ? urlInput.value.trim() : '';
+                 var labelInput = rows[i].querySelector('#gal-label-' + uid);
+                 var label = labelInput ? labelInput.value.trim() : 'View';
+                 if (url) out.push({ url: url, label: label || 'View' });
+             }
+             return out;
+         }
+
+        // ===== SAVE PRODUCT =====
+        function saveProduct() {
+            var id = document.getElementById('p-id').value;
+            var name = document.getElementById('p-name').value.trim();
+            var sku = document.getElementById('p-sku').value.trim();
+            var description = document.getElementById('p-description').value.trim();
+            var price = document.getElementById('p-price').value;
+            var stock = document.getElementById('p-stock').value;
+            var imageUrl = document.getElementById('p-image-url').value.trim();
+            var category = document.getElementById('p-category').value;
+            var colors = getSelectedColors().map(function(c) { return c.name; });
+            var sizes = getSelectedSizes();
+
+if (!name || !price || !stock) {
+                 Toast.error('Please fill in all required fields');
+                 return;
+             }
+
+             var pData = {
+                  name: name,
+                  description: description || 'No description',
+                  price: parseFloat(price),
+                  stock: parseInt(stock),
+                  category: category,
+                  status: 'live',
+                  images: imageUrl ? [imageUrl] : [],
+                  gallery: getGalleryImages(),
+                  colors: colors.length ? colors : ['Black'],
+                  sizes: sizes.length ? sizes : ['S', 'M', 'L', 'XL']
+               };
+             
+             console.log('[saveProduct] id:', id);
+             console.log('[saveProduct] payload:', JSON.stringify(pData, null, 2));
+
+            var saveBtn = document.querySelector('button[onclick="saveProduct()"]');
+            var originalText = saveBtn ? saveBtn.innerHTML : 'SAVE';
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="spinner-small" style="display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span> SAVING...';
+            }
+
+            if (id) {
+                adminAPI.updateProduct(id, pData).then(function() {
+                    Toast.success('Product updated');
+                    adminAPI.clearProductCache();
+                    closeModal();
+                    renderDashboard();
+                }).catch(function(err) {
+                    Toast.error('Update failed: ' + err.message);
+                    console.error(err);
+                }).finally(function() {
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = originalText; }
+                });
+            } else {
+                adminAPI.addProduct(pData).then(function(result) {
+                    Toast.success('Product created');
+                    adminAPI.clearProductCache();
+                    closeModal();
+                    renderDashboard();
+                }).catch(function(err) {
+                    Toast.error('Creation failed: ' + err.message);
+                    console.error(err);
+                }).finally(function() {
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = originalText; }
+                });
+            }
+        }
+
+        function editProduct(id) {
+            openProductModal(id);
+        }
+
+        function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            adminAPI.deleteProduct(id).then(function() {
+                Toast.success('Product deleted');
+                adminAPI.clearProductCache();
+                renderDashboard();
+            });
+        }
+
+        function updateOrderStatus(orderId, status) {
+            if (!status) return;
+            console.log('updateOrderStatus:', orderId, status);
+            adminAPI.updateOrderStatus(orderId, status).then(function(result) {
+                console.log('updateOrderStatus result:', result);
+                Toast.success('Status updated to ' + status);
+                renderTable();
+            }).catch(function(err) {
+                console.error('updateOrderStatus error:', err);
+                Toast.error('Failed to update status: ' + (err.message || err));
+            });
+        }
+
+function viewOrderDetails(orderId) {
+             adminAPI.getOrders().then(function(result) {
+                 var orders = result.success ? result.orders : [];
+                 var o = orders.find(function(x) { return x.id === orderId || x.order_number === orderId; });
+                 if (!o) { Toast.error('Order not found'); return; }
+
+                 var custName = o.customer_info ? o.customer_info.name : 'Guest';
+                 var custEmail = o.customer_info ? o.customer_info.email : 'N/A';
+                 var custPhone = o.customer_info && o.customer_info.phone ? o.customer_info.phone : 'N/A';
+
+                 var itemsHtml = '';
+                 if (o.items && o.items.length > 0) {
+                     for (var i = 0; i < o.items.length; i++) {
+                         var item = o.items[i];
+                         var itemColor = item.color || '-';
+                         var itemSize = item.size || '-';
+                         var itemQty = item.quantity || 1;
+                         var itemImage = item.image || '';
+                         var itemName = item.name || 'N/A';
+                         itemsHtml +=
+                             '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">' +
+                             (itemImage ? '<img src="' + itemImage + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color);">' : '<div style="width:50px;height:50px;background:rgba(255,255,255,0.05);border-radius:6px;border:1px solid var(--border-color);"></div>') +
+                             '<div style="flex:1;">' +
+                             '<div style="font-weight:bold;">' + itemName + '</div>' +
+                             '<div style="opacity:0.6;font-size:0.8rem;">Color: ' + itemColor + ' &nbsp;|&nbsp; Size: ' + itemSize + ' &nbsp;|&nbsp; Qty: ' + itemQty + '</div>' +
+                             '</div></div>';
+                     }
+                 } else {
+                     itemsHtml = '<div style="opacity:0.5;">No items</div>';
+                 }
+
+                 var modal = document.createElement('div');
+                 modal.className = 'modal';
+                 modal.style.display = 'flex';
+                 modal.innerHTML =
+                     '<div class="modal-content" style="max-width:600px;max-height:90vh;overflow-y:auto;">' +
+                     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">' +
+                     '<h3 style="margin:0;">ORDER DETAILS</h3>' +
+                     '<button onclick="this.closest(\'.modal\').remove()" style="background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;">&times;</button>' +
+                     '</div>' +
+                     '<div style="display:grid;gap:1.5rem;">' +
+                     '<div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:8px;">' +
+                     '<div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.6;margin-bottom:0.5rem;">ORDER ID</div>' +
+                     '<div style="font-weight:bold;font-size:1.1rem;">' + (o.order_number || o.id) + '</div>' +
+                     '</div>' +
+                     '<div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:8px;">' +
+                     '<div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.6;margin-bottom:0.5rem;">CUSTOMER</div>' +
+                     '<div><strong>' + custName + '</strong><br><small style="opacity:0.6;">' + custEmail + ' &nbsp;|&nbsp; ' + custPhone + '</small></div>' +
+                     '</div>' +
+                     '<div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:8px;">' +
+                     '<div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.6;margin-bottom:0.5rem;">ITEMS</div>' +
+                     itemsHtml +
+                     '</div>' +
+                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">' +
+                     '<div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:8px;"><div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.6;margin-bottom:0.3rem;">DATE</div><div>' + (o.created_at ? new Date(o.created_at).toLocaleString() : 'N/A') + '</div></div>' +
+                     '<div style="background:rgba(255,255,255,0.05);padding:1rem;border-radius:8px;"><div style="font-size:0.7rem;letter-spacing:0.1em;opacity:0.6;margin-bottom:0.3rem;">TOTAL</div><div style="color:var(--accent-color);font-weight:bold;">GH₵ ' + (parseFloat(o.total || 0)).toFixed(2) + '</div></div></div></div>' +
+                     '<div style="margin-top:2rem;display:flex;gap:1rem;">' +
+                     '<button class="btn" style="flex:1;" onclick="window.print()">PRINT</button>' +
+                     '<button class="btn btn-outline" style="flex:1;" onclick="this.closest(\'.modal\').remove()">CLOSE</button></div></div>';
+                 document.body.appendChild(modal);
+             });
+         }
+    </script>
+</body>
+</html>
+
+

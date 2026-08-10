@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="profile-mobile.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo"><img src="logo.png" alt="GLITCHGARB" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-size:1.2rem;font-weight:800;&quot;>GLITCHGARB</span>'"></a>
+            <nav id="main-nav">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="#" id="auth-link">Logout</a>
+            </nav>
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="/cart" style="color: #fff; text-decoration: none; position: relative;" id="cart-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="cart-count"
+                        style="position: absolute; top: -8px; right: -8px; background: var(--accent-color); color: #fff; font-size: 0.65rem; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: 700;">0</span>
+                </a>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="#" id="mobile-auth-link">Logout</a>
+    </div>
+
+    <main class="container">
+        <!-- Breadcrumb -->
+        <div class="account-breadcrumb">
+            <a href="/">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>My Account</span>
+        </div>
+
+        <div class="account-layout">
+            <!-- Sidebar -->
+            <aside class="account-sidebar">
+                <!-- User Profile Card -->
+                <div class="account-user-card">
+                    <div class="account-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 id="user-name-display" class="account-user-name">User Name</h3>
+                    <p id="user-email-display" class="account-user-email">email@example.com</p>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="account-nav">
+                    <div class="account-nav-section">
+                        <span class="account-nav-section-title">Account</span>
+                        <a href="#" class="account-nav-item active" data-section="orders">
+                            <i class="fas fa-box"></i>
+                            <span>Orders</span>
+                        </a>
+                        <a href="#" class="account-nav-item" data-section="addresses">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Addresses</span>
+                        </a>
+                        <a href="#" class="account-nav-item" data-section="payment">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Payment Methods</span>
+                        </a>
+                    </div>
+                    <div class="account-nav-section">
+                        <span class="account-nav-section-title">Settings</span>
+                        <a href="#" class="account-nav-item" data-section="profile">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Profile Settings</span>
+                        </a>
+                        <a href="#" class="account-nav-item" data-section="notifications">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                        <a href="#" class="account-nav-item" data-section="security">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Security</span>
+                        </a>
+                    </div>
+                    <div class="account-nav-section">
+                        <a href="#" id="logout-btn" class="account-nav-item account-nav-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Sign Out</span>
+                        </a>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <section class="account-content">
+                <!-- Orders Section -->
+                <div id="section-orders" class="account-section active">
+                    <div class="account-section-header">
+                        <h2>Order History</h2>
+                        <p class="account-section-subtitle">Track and manage your orders</p>
+                    </div>
+
+                    <!-- Account Stats -->
+                    <div class="account-stats">
+                        <div class="account-stat-card">
+                            <div class="account-stat-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="account-stat-info">
+                                <span id="stat-orders" class="account-stat-value">0</span>
+                                <span class="account-stat-label">Total Orders</span>
+                            </div>
+                        </div>
+                        <div class="account-stat-card">
+                            <div class="account-stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="account-stat-info">
+                                <span id="stat-spent" class="account-stat-value">GH₵ 0.00</span>
+                                <span class="account-stat-label">Total Spent</span>
+                            </div>
+                        </div>
+                        <div class="account-stat-card">
+                            <div class="account-stat-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="account-stat-info">
+                                <span id="stat-pending" class="account-stat-value">0</span>
+                                <span class="account-stat-label">In Transit</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div id="orders-container" class="orders-list">
+                        <!-- Orders will be loaded here -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <h3>No Orders Yet</h3>
+                            <p>You haven't placed any orders. Start shopping to see your order history here.</p>
+                            <a href="/shop" class="btn btn-primary">
+                                <i class="fas fa-shopping-bag"></i>
+                                Start Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Addresses Section -->
+                <div id="section-addresses" class="account-section">
+                    <div class="account-section-header">
+                        <h2>Addresses</h2>
+                        <p class="account-section-subtitle">Manage your shipping addresses</p>
+                    </div>
+                    <div id="addresses-list">
+                        <!-- Addresses will be loaded here -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>No Saved Addresses</h3>
+                            <p>Add a shipping address to make checkout faster.</p>
+                            <button class="btn btn-primary" onclick="openModal('address-modal')">
+                                <i class="fas fa-plus"></i>
+                                Add Address
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Methods Section -->
+                <div id="section-payment" class="account-section">
+                    <div class="account-section-header">
+                        <h2>Payment Methods</h2>
+                        <p class="account-section-subtitle">Manage your payment options</p>
+                    </div>
+                    <div id="payment-methods-list">
+                        <!-- Payment methods will be loaded here -->
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h3>No Saved Payment Methods</h3>
+                            <p>Add a payment method for faster checkout.</p>
+                            <button class="btn btn-primary" onclick="openModal('payment-modal')">
+                                <i class="fas fa-plus"></i>
+                                Add Payment Method
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Settings Section -->
+                <div id="section-profile" class="account-section">
+                    <div class="account-section-header">
+                        <h2>Profile Settings</h2>
+                        <p class="account-section-subtitle">Update your personal information</p>
+                    </div>
+                    <div class="account-form">
+                        <div class="form-group">
+                            <label for="profile-name">Full Name</label>
+                            <input type="text" id="profile-name" class="form-input" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-email">Email Address</label>
+                            <input type="email" id="profile-email" class="form-input" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-phone">Phone Number</label>
+                            <input type="tel" id="profile-phone" class="form-input"
+                                placeholder="Enter your phone number">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProfileSettings()">Save Changes</button>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div id="section-notifications" class="account-section">
+                    <div class="account-section-header">
+                        <h2>Notifications</h2>
+                        <p class="account-section-subtitle">Manage your notification preferences</p>
+                    </div>
+                    <div class="account-form">
+                        <div class="form-toggle">
+                            <div class="form-toggle-info">
+                                <h4>Order Updates</h4>
+                                <p>Receive notifications about your order status</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notif-order-updates" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-toggle">
+                            <div class="form-toggle-info">
+                                <h4>New Drops</h4>
+                                <p>Get notified about new product releases</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notif-new-drops" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-toggle">
+                            <div class="form-toggle-info">
+                                <h4>Promotional Offers</h4>
+                                <p>Receive exclusive deals and discounts</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notif-promo">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveNotificationSettings()">Save Preferences</button>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div id="section-security" class="account-section">
+                    <div class="account-section-header">
+                        <h2>Security</h2>
+                        <p class="account-section-subtitle">Manage your account security</p>
+                    </div>
+                    <div class="account-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" class="form-input"
+                                placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" class="form-input"
+                                placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" class="form-input"
+                                placeholder="Confirm new password">
+                        </div>
+                        <button class="btn btn-primary" onclick="updatePassword()">Update Password</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="mobile-account-tabs">
+        <button class="mobile-account-tab active" data-section="orders" onclick="switchMobileSection('orders')">
+            <i class="fas fa-box"></i><span>Orders</span>
+        </button>
+        <button class="mobile-account-tab" data-section="payment" onclick="switchMobileSection('payment')">
+            <i class="fas fa-credit-card"></i><span>Payment</span>
+        </button>
+        <button class="mobile-account-tab" data-section="addresses" onclick="switchMobileSection('addresses')">
+            <i class="fas fa-map-marker-alt"></i><span>Address</span>
+        </button>
+        <button class="mobile-account-tab" data-section="profile" onclick="switchMobileSection('profile')">
+            <i class="fas fa-user-cog"></i><span>Profile</span>
+        </button>
+        <button class="mobile-account-tab" data-section="notifications" onclick="switchMobileSection('notifications')">
+            <i class="fas fa-bell"></i><span>Notifs</span>
+        </button>
+        <button class="mobile-account-tab" data-section="security" onclick="switchMobileSection('security')">
+            <i class="fas fa-shield-alt"></i><span>Security</span>
+        </button>
+    </nav>
+
+    <!-- Add Address Modal -->
+    <div id="address-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Address</h3>
+                <button class="modal-close" onclick="closeModal('address-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="address-name">Full Name</label>
+                    <input type="text" id="address-name" class="form-input" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="address-phone">Phone Number</label>
+                    <input type="tel" id="address-phone" class="form-input" placeholder="Enter phone number">
+                </div>
+                <div class="form-group">
+                    <label for="address-street">Street Address</label>
+                    <input type="text" id="address-street" class="form-input" placeholder="Enter street address">
+                </div>
+                <div class="form-group">
+                    <label for="address-city">City</label>
+                    <input type="text" id="address-city" class="form-input" placeholder="Enter city">
+                </div>
+                <div class="form-group">
+                    <label for="address-region">Region/State</label>
+                    <input type="text" id="address-region" class="form-input" placeholder="Enter region or state">
+                </div>
+                <div class="form-group">
+                    <label for="address-postal">Postal Code</label>
+                    <input type="text" id="address-postal" class="form-input" placeholder="Enter postal code">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="address-default">
+                        <span>Set as default address</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('address-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAddress()">Save Address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Payment Method Modal -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Payment Method</h3>
+                <button class="modal-close" onclick="closeModal('payment-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-methods">
+                    <div class="payment-method-option selected" data-method="card">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Credit/Debit Card</span>
+                    </div>
+                    <div class="payment-method-option" data-method="mobile-money">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Mobile Money</span>
+                    </div>
+                </div>
+                <div id="card-form">
+                    <div class="form-group">
+                        <label for="card-number">Card Number</label>
+                        <input type="text" id="card-number" class="form-input" placeholder="1234 5678 9012 3456"
+                            maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="card-expiry">Expiry Date</label>
+                            <input type="text" id="card-expiry" class="form-input" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="card-cvv">CVV</label>
+                            <input type="text" id="card-cvv" class="form-input" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-name">Cardholder Name</label>
+                        <input type="text" id="card-name" class="form-input" placeholder="Enter cardholder name">
+                    </div>
+                </div>
+                <div id="mobile-money-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="mm-provider">Provider</label>
+                        <select id="mm-provider" class="form-input">
+                            <option value="">Select provider</option>
+                            <option value="mtn">MTN Mobile Money</option>
+                            <option value="vodacom">Vodafone Cash</option>
+                            <option value="airteltigo">AirtelTigo Money</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mm-number">Phone Number</label>
+                        <input type="tel" id="mm-number" class="form-input" placeholder="Enter phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="payment-default">
+                        <span>Set as default payment method</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('payment-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="savePaymentMethod()">Save Payment Method</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="order-details-modal" class="modal-overlay">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <button class="modal-close" onclick="closeModal('order-details-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="order-details-content">
+                <!-- Order details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('order-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Order Modal -->
+    <div id="track-order-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Track Order</h3>
+                <button class="modal-close" onclick="closeModal('track-order-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="track-order-content">
+                <!-- Tracking info will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('track-order-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script src="components.js?v=12"></script>
+    <script src="toast.js?v=12"></script>
+    <script>
+        // ============================================
+        // GLOBAL FUNCTIONS (Available immediately)
+        // ============================================
+
+        let currentUser = null; // Global user variable
+        let renderAddresses, renderPaymentMethods;
+
+        // Define all functions immediately - they will be available when onclick attributes are processed
+        window.openModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        window.closeModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                // Clear form inputs
+                const formInputs = modal.querySelectorAll('input, select');
+                formInputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+            }
+        };
+
+        window.saveProfileSettings = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            const name = document.getElementById('profile-name').value.trim();
+            const email = document.getElementById('profile-email').value.trim();
+            const phone = document.getElementById('profile-phone').value.trim();
+
+            if (!name || !email) {
+                if (typeof Toast !== 'undefined') Toast.error('Name and email are required');
+                else alert('Name and email are required');
+                return;
+            }
+
+            apiService.updateProfile({ name, email, phone })
+                .then(function(result) {
+                    document.getElementById('user-name-display').textContent = name;
+                    document.getElementById('user-email-display').textContent = email;
+                    if (typeof Toast !== 'undefined') Toast.success('Profile updated successfully');
+                    else alert('Profile updated successfully');
+                })
+                .catch(function(err) {
+                    if (typeof Toast !== 'undefined') Toast.error(err.message || 'Failed to update profile');
+                    else alert('Failed to update profile');
+                });
+        };
+
+        window.updatePassword = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                if (typeof Toast !== 'undefined') Toast.error('Please fill in all password fields');
+                else alert('Please fill in all password fields');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                if (typeof Toast !== 'undefined') Toast.error('New passwords do not match');
+                else alert('New passwords do not match');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                if (typeof Toast !== 'undefined') Toast.error('Password must be at least 6 characters');
+                else alert('Password must be at least 6 characters');
+                return;
+            }
+
+            apiService.updatePassword(currentPassword, newPassword)
+                .then(function(result) {
+                    if (result && result.success) {
+                        if (typeof Toast !== 'undefined') Toast.success('Password updated successfully');
+                        else alert('Password updated successfully');
+                        document.getElementById('current-password').value = '';
+                        document.getElementById('new-password').value = '';
+                        document.getElementById('confirm-password').value = '';
+                    } else {
+                        if (typeof Toast !== 'undefined') Toast.error(result.message || 'Failed to update password');
+                        else alert('Failed to update password');
+                    }
+                })
+                .catch(function(err) {
+                    if (typeof Toast !== 'undefined') Toast.error('Failed to update password');
+                    else alert('Failed to update password');
+                });
+        };
+
+        window.saveNotificationSettings = function() {
+            const notifications = {
+                orderUpdates: document.getElementById('notif-order-updates')?.checked || false,
+                newDrops: document.getElementById('notif-new-drops')?.checked || false,
+                promo: document.getElementById('notif-promo')?.checked || false
+            };
+
+            localStorage.setItem('glitchgarb_notifications', JSON.stringify(notifications));
+
+            if (typeof Toast !== 'undefined') Toast.success('Notification preferences saved');
+            else alert('Notification preferences saved');
+        };
+
+        window.saveAddress = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            const name = document.getElementById('address-name').value.trim();
+            const phone = document.getElementById('address-phone').value.trim();
+            const street = document.getElementById('address-street').value.trim();
+            const city = document.getElementById('address-city').value.trim();
+            const region = document.getElementById('address-region').value.trim();
+            const postal = document.getElementById('address-postal').value.trim();
+            const isDefault = document.getElementById('address-default').checked;
+
+            // Validation
+            if (!name || !phone || !street || !city || !region) {
+                Toast.error('Please fill in all required fields');
+                return;
+            }
+
+            // Get existing addresses
+            const addresses = JSON.parse(localStorage.getItem('glitchgarb_addresses') || '[]');
+
+            // Create new address
+             const newAddress = {
+                 id: Date.now().toString(),
+                 name,
+                 phone,
+                 address: street,
+                 city,
+                 region,
+                 postal,
+                 isDefault,
+                 userId: user.id
+            };
+
+            // If set as default, remove default from others
+            if (isDefault) {
+                addresses.forEach(addr => addr.isDefault = false);
+            }
+
+            addresses.push(newAddress);
+            localStorage.setItem('glitchgarb_addresses', JSON.stringify(addresses));
+
+            Toast.success('Address saved successfully');
+            window.closeModal('address-modal');
+            if (renderAddresses) renderAddresses();
+        };
+
+        window.deleteAddress = function(addressId) {
+            if (confirm('Are you sure you want to delete this address?')) {
+                const user = apiService.getCurrentUser();
+                if (!user) {
+                    if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                    return;
+                }
+                const addresses = JSON.parse(localStorage.getItem('glitchgarb_addresses') || '[]');
+                const filtered = addresses.filter(addr => addr.id !== addressId);
+                localStorage.setItem('glitchgarb_addresses', JSON.stringify(filtered));
+                if (typeof Toast !== 'undefined') Toast.success('Address deleted');
+                if (renderAddresses) renderAddresses();
+            }
+        };
+
+        window.savePaymentMethod = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            const selectedMethod = document.querySelector('.payment-method-option.selected');
+            if (!selectedMethod) {
+                Toast.error('Please select a payment method');
+                return;
+            }
+
+            const method = selectedMethod.dataset.method;
+            const isDefault = document.getElementById('payment-default').checked;
+            let paymentData = {};
+
+            if (method === 'card') {
+                const cardNumber = document.getElementById('card-number').value.trim();
+                const cardExpiry = document.getElementById('card-expiry').value.trim();
+                const cardCvv = document.getElementById('card-cvv').value.trim();
+                const cardName = document.getElementById('card-name').value.trim();
+
+                if (!cardNumber || !cardExpiry || !cardCvv || !cardName) {
+                    Toast.error('Please fill in all card details');
+                    return;
+                }
+
+                paymentData = {
+                    type: 'card',
+                    last4: cardNumber.slice(-4),
+                    expiry: cardExpiry,
+                    name: cardName
+                };
+            } else {
+                const provider = document.getElementById('mm-provider').value;
+                const phoneNumber = document.getElementById('mm-number').value.trim();
+
+                if (!provider || !phoneNumber) {
+                    Toast.error('Please fill in all mobile money details');
+                    return;
+                }
+
+                paymentData = {
+                    type: 'mobile-money',
+                    provider,
+                    phoneNumber
+                };
+            }
+
+            // Get existing payment methods
+            const paymentMethods = JSON.parse(localStorage.getItem('glitchgarb_payment_methods') || '[]');
+
+            // Create new payment method
+             const newPaymentMethod = {
+                 id: Date.now().toString(),
+                 ...paymentData,
+                 isDefault,
+                 userId: user.id
+            };
+
+            // If set as default, remove default from others
+            if (isDefault) {
+                paymentMethods.forEach(pm => pm.isDefault = false);
+            }
+
+            paymentMethods.push(newPaymentMethod);
+            localStorage.setItem('glitchgarb_payment_methods', JSON.stringify(paymentMethods));
+
+            Toast.success('Payment method saved successfully');
+            window.closeModal('payment-modal');
+            if (renderPaymentMethods) renderPaymentMethods();
+        };
+
+        window.deletePaymentMethod = function(paymentId) {
+            if (confirm('Are you sure you want to delete this payment method?')) {
+                const user = apiService.getCurrentUser();
+                if (!user) {
+                    if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                    return;
+                }
+                const paymentMethods = JSON.parse(localStorage.getItem('glitchgarb_payment_methods') || '[]');
+                const filtered = paymentMethods.filter(pm => pm.id !== paymentId);
+                localStorage.setItem('glitchgarb_payment_methods', JSON.stringify(filtered));
+                if (typeof Toast !== 'undefined') Toast.success('Payment method deleted');
+                if (renderPaymentMethods) renderPaymentMethods();
+            }
+        };
+
+        window.viewOrderDetails = async function(orderId) {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            // Fetch single order by ID or order_number
+            const order = await apiService.getOrder(orderId);
+
+            if (!order) {
+                Toast.error('Order not found');
+                return;
+            }
+
+             const content = document.getElementById('order-details-content');
+             const orderNum = order.order_number || order.id;
+             const date = order.created_at || order.timestamp;
+             const status = order.status || 'pending';
+             const total = order.total || 0;
+             const firstItem = order.items && order.items[0] ? order.items[0] : {};
+             const productName = firstItem.productName || firstItem.name || 'Product';
+             const productImage = firstItem.image || firstItem.productImage || (firstItem.images && firstItem.images[0]) || '';
+             const shipping = order.shipping_address || order.shipping || {};
+
+             content.innerHTML = `
+                 <div class="order-details">
+                     <div class="order-details-header">
+                         <div class="order-details-info">
+                             <h4>Order #${orderNum}</h4>
+                             <p>${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                         </div>
+                         <div class="order-details-status order-status-${status.toLowerCase()}">${status}</div>
+                     </div>
+
+                     <div class="order-details-section">
+                         <h5>Product Information</h5>
+                         <div class="order-details-product">
+                             <img src="${productImage}" alt="${productName}">
+                             <div>
+                                 <h4>${productName}</h4>
+                                 <p>Color: ${firstItem.color || 'Black'} | Size: ${firstItem.size || 'M'}</p>
+                                 <p>Quantity: ${firstItem.quantity || 1}</p>
+                             </div>
+                             <div class="order-details-price">GH₵ ${total.toFixed(2)}</div>
+                         </div>
+                     </div>
+
+                     <div class="order-details-section">
+                         <h5>Payment Information</h5>
+                         <div class="order-details-row">
+                             <span>Payment Method:</span>
+                             <span>${order.payment_method || order.paymentMethod || 'card'}</span>
+                         </div>
+                         ${order.payment_reference || order.paymentReference ? `
+                         <div class="order-details-row">
+                             <span>Reference:</span>
+                             <span class="order-ref">${order.payment_reference || order.paymentReference}</span>
+                         </div>
+                         ` : ''}
+                         <div class="order-details-row order-details-total">
+                             <span>Total Paid:</span>
+                             <span>GH₵ ${total.toFixed(2)}</span>
+                         </div>
+                     </div>
+
+                     ${shipping && Object.keys(shipping).length > 0 ? `
+                     <div class="order-details-section">
+                         <h5>Shipping Address</h5>
+                         <div class="order-details-address">
+                             <strong>${shipping.name || 'N/A'}</strong>
+                             <p>${shipping.address || ''}</p>
+                             <p>${shipping.city || ''}, ${shipping.region || ''}</p>
+                             <p>${shipping.phone || ''}</p>
+                         </div>
+                     </div>
+                     ` : ''}
+                 </div>
+             `;
+
+            window.openModal('order-details-modal');
+        };
+
+window.trackOrder = async function(orderId) {
+            const user = apiService.getCurrentUser();
+            if (!user) {
+                if (typeof Toast !== 'undefined') Toast.error('Please login first');
+                else alert('Please login first');
+                return;
+            }
+
+            // Fetch single order by ID or order_number
+            const order = await apiService.getOrder(orderId);
+
+            if (!order) {
+                Toast.error('Order not found');
+                return;
+            }
+
+            // Determine tracking steps based on order status
+             const status = (order.status || 'pending').toLowerCase();
+             const date = order.created_at || order.timestamp;
+             const orderNum = order.order_number || order.id;
+             const total = order.total || order.price || 0;
+             const steps = [
+                 { icon: 'fa-check-circle', label: 'Order Placed', date: new Date(date).toLocaleDateString(), completed: true },
+                 { icon: 'fa-box', label: 'Processing', date: '', completed: status !== 'pending' && status !== 'confirmed' },
+                 { icon: 'fa-truck', label: 'In Transit', date: '', completed: status === 'shipped' || status === 'in_transit' || status === 'in transit' },
+                 { icon: 'fa-home', label: 'Delivered', date: '', completed: status === 'delivered' }
+             ];
+
+             // Get product info from first item
+             const firstItem = order.items && order.items[0] ? order.items[0] : {};
+             const productName = firstItem.productName || firstItem.name || 'Product';
+             const productImage = firstItem.image || firstItem.productImage || firstItem.product_image || (firstItem.images && firstItem.images[0]) || '';
+
+              const content = document.getElementById('track-order-content');
+              content.innerHTML = `
+                  <div class="track-order">
+                      <div class="track-order-header">
+                          <h4>Order #${orderNum}</h4>
+                          <span class="order-status order-status-${status}">${order.status}</span>
+                      </div>
+
+                      <div class="track-order-product">
+                          <div class="track-order-product-image">
+                              <img src="${productImage}" alt="${productName}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0iI2UwZTBmZiIgeG1zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMzMzIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMjAiIGZpbGw9IiNmZmYiLz48dGV4dCB4PSI0MCIgeT0iNDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIjk5OSIgY29udHJvbC1hY2NlbnQ9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+'">
+                          </div>
+                          <div class="track-order-product-info">
+                              <h4>${productName}</h4>
+                              <p>Color: ${firstItem.color || 'Black'} | Size: ${firstItem.size || 'M'}</p>
+                              <p class="track-order-product-price">GH₵ ${total.toFixed(2)}</p>
+                          </div>
+                      </div>
+
+                     <div class="tracking-timeline">
+                         ${steps.map((step, index) => `
+                             <div class="tracking-step ${step.completed ? 'completed' : ''} ${index === steps.findIndex(s => !s.completed) ? 'current' : ''}">
+                                 <div class="tracking-step-icon">
+                                     <i class="fas ${step.icon}"></i>
+                                 </div>
+                                 <div class="tracking-step-content">
+                                     <h5>${step.label}</h5>
+                                     ${step.date ? `<p>${step.date}</p>` : ''}
+                                 </div>
+                                 ${index < steps.length - 1 ? '<div class="tracking-line"></div>' : ''}
+                             </div>
+                         `).join('')}
+                     </div>
+
+                     <div class="track-order-info">
+                         <p><i class="fas fa-info-circle"></i> Estimated delivery: 3-5 business days from shipping date</p>
+                     </div>
+                 </div>
+             `;
+
+             window.openModal('track-order-modal');
+         };
+
+
+        window.switchMobileSection = function(section) {
+            // Update active tab
+            document.querySelectorAll('.mobile-account-tab').forEach(function(t) { t.classList.remove('active'); });
+            var tab = document.querySelector('.mobile-account-tab[data-section="' + section + '"]');
+            if (tab) tab.classList.add('active');
+
+            // Switch section
+            document.querySelectorAll('.account-section').forEach(function(s) { s.classList.remove('active'); });
+            var target = document.getElementById('section-' + section);
+            if (target) target.classList.add('active');
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up render functions now that DOM is ready
+            renderAddresses = function() {
+                const user = apiService.getCurrentUser();
+                if (!user) return;
+
+                const addressesList = document.getElementById('addresses-list');
+                const addresses = JSON.parse(localStorage.getItem('glitchgarb_addresses') || '[]');
+                const userAddresses = addresses.filter(addr => addr.userId === user.id);
+
+                if (userAddresses.length === 0) {
+                    addressesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>No Saved Addresses</h3>
+                            <p>Add a shipping address to make checkout faster.</p>
+                            <button class="btn btn-primary" onclick="openModal('address-modal')">
+                                <i class="fas fa-plus"></i>
+                                Add Address
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    addressesList.innerHTML = `
+                        <div class="addresses-grid">
+                            ${userAddresses.map(addr => `
+                                <div class="address-card ${addr.isDefault ? 'address-card-default' : ''}">
+                                    ${addr.isDefault ? '<span class="address-default-badge">Default</span>' : ''}
+                                    <div class="address-card-header">
+                                        <h4>${addr.name}</h4>
+                                        <div class="address-card-actions">
+                                            <button class="address-action-btn" onclick="deleteAddress('${addr.id}')" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="address-card-body">
+                                        <p><i class="fas fa-phone"></i> ${addr.phone}</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> ${addr.address}</p>
+                                        <p>${addr.city}, ${addr.region} ${addr.postal || ''}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <div class="address-card address-card-add" onclick="openModal('address-modal')">
+                                <div class="address-card-add-content">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Address</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+
+            renderPaymentMethods = function() {
+                const user = apiService.getCurrentUser();
+                if (!user) return;
+
+                const paymentMethodsList = document.getElementById('payment-methods-list');
+                const paymentMethods = JSON.parse(localStorage.getItem('glitchgarb_payment_methods') || '[]');
+                const userPaymentMethods = paymentMethods.filter(pm => pm.userId === user.id);
+
+                if (userPaymentMethods.length === 0) {
+                    paymentMethodsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h3>No Saved Payment Methods</h3>
+                            <p>Add a payment method to make checkout faster.</p>
+                            <button class="btn btn-primary" onclick="openModal('payment-modal')">
+                                <i class="fas fa-plus"></i>
+                                Add Payment Method
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    paymentMethodsList.innerHTML = `
+                        <div class="payment-methods-grid">
+                            ${userPaymentMethods.map(pm => `
+                                <div class="payment-method-card ${pm.isDefault ? 'payment-method-card-default' : ''}">
+                                    ${pm.isDefault ? '<span class="payment-default-badge">Default</span>' : ''}
+                                    <div class="payment-method-card-header">
+                                        <h4>${pm.type === 'card' ? '���� ���� ���� ' + pm.last4 : pm.provider + ' Mobile Money'}</h4>
+                                        <div class="payment-method-card-actions">
+                                            <button class="payment-action-btn" onclick="deletePaymentMethod('${pm.id}')" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="payment-method-card-body">
+                                        ${pm.type === 'card' ? `
+                                            <p><i class="fas fa-credit-card"></i> ${pm.name}</p>
+                                            <p><i class="fas fa-calendar"></i> Expires ${pm.expiry}</p>
+                                        ` : `
+                                            <p><i class="fas fa-mobile-alt"></i> ${pm.phoneNumber}</p>
+                                        `}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <div class="payment-method-card payment-method-card-add" onclick="openModal('payment-modal')">
+                                <div class="payment-method-card-add-content">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Payment Method</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+            // Mobile Menu Toggle
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+        function openMobileMenu() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', openMobileMenu);
+        }
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', closeMobileMenu);
+        }
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+
+        renderAddresses = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) return;
+
+            const addressesList = document.getElementById('addresses-list');
+            const addresses = JSON.parse(localStorage.getItem('glitchgarb_addresses') || '[]');
+            const userAddresses = addresses.filter(addr => addr.userId === user.id);
+
+            if (userAddresses.length === 0) {
+                addressesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>No Saved Addresses</h3>
+                        <p>Add a shipping address to make checkout faster.</p>
+                        <button class="btn btn-primary" onclick="openModal('address-modal')">
+                            <i class="fas fa-plus"></i>
+                            Add Address
+                        </button>
+                    </div>
+                `;
+            } else {
+                addressesList.innerHTML = `
+                    <div class="addresses-grid">
+                        ${userAddresses.map(addr => `
+                            <div class="address-card ${addr.isDefault ? 'address-card-default' : ''}">
+                                ${addr.isDefault ? '<span class="address-default-badge">Default</span>' : ''}
+                                <div class="address-card-header">
+                                    <h4>${addr.name}</h4>
+                                    <div class="address-card-actions">
+                                        <button class="address-action-btn" onclick="deleteAddress('${addr.id}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="address-card-body">
+                                    <p><i class="fas fa-phone"></i> ${addr.phone}</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> ${addr.address}</p>
+                                    <p>${addr.city}, ${addr.region} ${addr.postal || ''}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="address-card address-card-add" onclick="openModal('address-modal')">
+                            <div class="address-card-add-content">
+                                <i class="fas fa-plus"></i>
+                                <span>Add New Address</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+
+        // Payment method selection
+        document.querySelectorAll('.payment-method-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.payment-method-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                const method = option.dataset.method;
+                document.getElementById('card-form').style.display = method === 'card' ? 'block' : 'none';
+                document.getElementById('mobile-money-form').style.display = method === 'mobile-money' ? 'block' : 'none';
+            });
+        });
+
+        renderPaymentMethods = function() {
+            const user = apiService.getCurrentUser();
+            if (!user) return;
+
+            const paymentMethodsList = document.getElementById('payment-methods-list');
+            const paymentMethods = JSON.parse(localStorage.getItem('glitchgarb_payment_methods') || '[]');
+            const userPaymentMethods = paymentMethods.filter(pm => pm.userId === user.id);
+
+            if (userPaymentMethods.length === 0) {
+                paymentMethodsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3>No Saved Payment Methods</h3>
+                        <p>Add a payment method to make checkout faster.</p>
+                        <button class="btn btn-primary" onclick="openModal('payment-modal')">
+                            <i class="fas fa-plus"></i>
+                            Add Payment Method
+                        </button>
+                    </div>
+                `;
+            } else {
+                paymentMethodsList.innerHTML = `
+                    <div class="payment-methods-grid">
+                        ${userPaymentMethods.map(pm => `
+                            <div class="payment-method-card ${pm.isDefault ? 'payment-method-card-default' : ''}">
+                                ${pm.isDefault ? '<span class="payment-default-badge">Default</span>' : ''}
+                                <div class="payment-method-card-header">
+                                    <h4>${pm.type === 'card' ? '���� ���� ���� ' + pm.last4 : pm.provider + ' Mobile Money'}</h4>
+                                    <div class="payment-method-card-actions">
+                                        <button class="payment-action-btn" onclick="deletePaymentMethod('${pm.id}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="payment-method-card-body">
+                                    ${pm.type === 'card' ? `
+                                        <p><i class="fas fa-credit-card"></i> ${pm.name}</p>
+                                        <p><i class="fas fa-calendar"></i> Expires ${pm.expiry}</p>
+                                    ` : `
+                                        <p><i class="fas fa-mobile-alt"></i> ${pm.phoneNumber}</p>
+                                    `}
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div class="payment-method-card payment-method-card-add" onclick="openModal('payment-modal')">
+                            <div class="payment-method-card-add-content">
+                                <i class="fas fa-plus"></i>
+                                <span>Add Payment Method</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+             // Sidebar navigation - switch sections
+             document.querySelectorAll('.account-nav-item').forEach(item => {
+                 item.addEventListener('click', (e) => {
+                     e.preventDefault();
+                     const section = item.dataset.section;
+                     
+                     // Update active nav item
+                     document.querySelectorAll('.account-nav-item').forEach(nav => nav.classList.remove('active'));
+                     item.classList.add('active');
+                     
+                     // Show corresponding section
+                     document.querySelectorAll('.account-section').forEach(sec => sec.classList.remove('active'));
+                     const targetSection = document.getElementById('section-' + section);
+                     if (targetSection) targetSection.classList.add('active');
+                 });
+             });
+             
+              // Load current user
+              const currentUser = apiService.getCurrentUser();
+              
+              if (!currentUser || !currentUser.email) {
+                  window.location.href='/login';
+                  return;
+              }
+
+              // Update UI with user data
+              document.getElementById('user-name-display').textContent = currentUser.name || 'User Name';
+              document.getElementById('user-email-display').textContent = currentUser.email || 'email@example.com';
+              document.getElementById('profile-name').value = currentUser.name || '';
+              document.getElementById('profile-email').value = currentUser.email || '';
+              document.getElementById('profile-phone').value = currentUser.phone || '';
+
+             // Load notification preferences
+             try {
+                 const notifPrefs = JSON.parse(localStorage.getItem('glitchgarb_notifications') || '{}');
+                 const orderUpdates = document.getElementById('notif-order-updates');
+                 const newDrops = document.getElementById('notif-new-drops');
+                 const promo = document.getElementById('notif-promo');
+                 if (orderUpdates) orderUpdates.checked = notifPrefs.orderUpdates !== false;
+                 if (newDrops) newDrops.checked = notifPrefs.newDrops !== false;
+                 if (promo) promo.checked = notifPrefs.promo === true;
+             } catch(e) { /* ignore */ }
+
+             // Initialize addresses and payment methods
+             renderAddresses();
+             renderPaymentMethods();
+             renderOrders();
+
+              // Function to load and display orders
+              async function renderOrders() {
+                  const user = apiService.getCurrentUser();
+                  if (!user) return;
+
+                  const ordersContainer = document.getElementById('orders-container');
+                  if (!ordersContainer) return;
+
+                  try {
+                      // Use getOrders() which fetches orders for the authenticated user
+                      const orders = await apiService.getOrders();
+
+                     if (!orders || orders.length === 0) {
+                         ordersContainer.innerHTML = `
+                             <div class="empty-state">
+                                 <div class="empty-state-icon">
+                                     <i class="fas fa-box-open"></i>
+                                 </div>
+                                 <h3>No Orders Yet</h3>
+                                 <p>You haven't placed any orders. Start shopping to see your order history here.</p>
+                                 <a href="/shop" class="btn btn-primary">
+                                     <i class="fas fa-shopping-bag"></i>
+                                     Start Shopping
+                                 </a>
+                             </div>
+                         `;
+                         return;
+                     }
+
+                     // Update stats
+                     const totalSpent = orders.reduce((sum, o) => sum + (o.total || o.price || 0), 0);
+                     const pendingCount = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+
+                     document.getElementById('stat-orders').textContent = orders.length;
+                     document.getElementById('stat-spent').textContent = 'GH₵ ' + totalSpent.toFixed(2);
+                     document.getElementById('stat-pending').textContent = pendingCount;
+
+                     // Render orders list
+                     ordersContainer.innerHTML = `
+                         <div class="orders-list-items">
+                             ${orders.map(order => {
+                                 const orderNum = order.order_number || order.id;
+                                 const date = order.created_at || order.timestamp;
+                                 const status = order.status || 'pending';
+                                 const total = order.total || order.price || 0;
+                                 const productName = order.productName || (order.items && order.items[0] && order.items[0].name) || 'Product';
+                                 const productImage = order.productImage || (order.items && order.items[0] && (order.items[0].image || order.items[0].productImage || (order.items[0].images && order.items[0].images[0]))) || '';
+
+                                 return `
+                                     <div class="order-card" onclick="viewOrderDetails('${order.id || orderNum}')">
+                                         <div class="order-header">
+                                             <div class="order-info">
+                                                 <span class="order-id">Order #${orderNum}</span>
+                                                 <span class="order-date">${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                             </div>
+                                             <span class="order-status order-status-${status.toLowerCase()}">${status}</span>
+                                         </div>
+                                         <div class="order-body">
+                                             <div class="order-product">
+                                                 <img src="${productImage}" alt="${productName}" class="order-product-image">
+                                                 <div class="order-product-details">
+                                                     <div class="order-product-name">${productName}</div>
+                                                     <div class="order-product-meta">${order.items && order.items.length > 1 ? order.items.length + ' items' : '1 item'}</div>
+                                                 </div>
+                                             </div>
+                                             <div class="order-total">GH₵ ${total.toFixed(2)}</div>
+                                         </div>
+                                     </div>
+                                 `;
+                             }).join('')}
+                         </div>
+                     `;
+                 } catch (error) {
+                     console.error('Error loading orders:', error);
+                     ordersContainer.innerHTML = `
+                         <div class="empty-state">
+                             <div class="empty-state-icon">
+                                 <i class="fas fa-exclamation-circle"></i>
+                             </div>
+                             <h3>Error Loading Orders</h3>
+                             <p>Please try again later.</p>
+                         </div>
+                     `;
+                 }
+             }
+
+             const authLink = document.getElementById('auth-link');
+             const mobileAuthLink = document.getElementById('mobile-auth-link');
+
+             function handleLogout(e) {
+                 e.preventDefault();
+                 apiService.logout();
+                 if (typeof Toast !== 'undefined') Toast.info('Logged out successfully');
+                 setTimeout(() => {
+                     window.location.href='/';
+                 }, 1000);
+             }
+
+              if (authLink) {
+                  authLink.onclick = handleLogout;
+              }
+              if (mobileAuthLink) {
+                  mobileAuthLink.onclick = handleLogout;
+              }
+
+              // Sidebar logout button
+              const logoutBtn = document.getElementById('logout-btn');
+              if (logoutBtn) {
+                  logoutBtn.addEventListener('click', function(e) {
+                      e.preventDefault();
+                      apiService.logout();
+                      if (typeof Toast !== 'undefined') Toast.info('Logged out successfully');
+                      setTimeout(() => {
+                          window.location.href='/';
+                      }, 1000);
+                  });
+              }
+          });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+# Root .dockerignore - applies only to the "web" image build (context = project root).
+# Keeps secrets and backend code out of the frontend image / build cache.
+
+.env
+.git
+node_modules
+backend-python
+deploy
+*.db
+*.sql
+*.md

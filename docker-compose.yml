@@ -1,0 +1,63 @@
+# GlitchGarb - VPS Docker Compose
+# Brings up: PostgreSQL (db), FastAPI backend (api), Nginx frontend + reverse proxy (web)
+#
+# Usage:
+#   cp .env.example .env          # then fill in real values
+#   docker compose up -d --build
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchgarb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: glitchgarb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchgarb -d glitchgarb"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - glitchgarb
+
+  api:
+    build: ./backend-python
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://glitchgarb:${POSTGRES_PASSWORD}@db:5432/glitchgarb
+      ENV: production
+      PORT: "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    networks:
+      - glitchgarb
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /var/www/certbot:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - api
+    networks:
+      - glitchgarb
+
+volumes:
+  pgdata:
+
+networks:
+  glitchgarb:

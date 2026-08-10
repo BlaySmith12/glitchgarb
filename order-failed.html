@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYMENT FAILED | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .failed-hero {
+            padding: 8rem 0;
+            text-align: center;
+        }
+
+        .failed-icon {
+            font-size: 4rem;
+            color: #ff3333;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+        }
+
+        .failed-card {
+            max-width: 500px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 51, 51, 0.3);
+            padding: 2rem;
+            text-align: left;
+            background: rgba(255, 51, 51, 0.05);
+        }
+
+        .failed-card h3 {
+            color: #ff3333;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+        }
+
+        .failed-card p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .error-details {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #ff6666;
+            word-break: break-all;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-retry {
+            background: var(--accent-color) !important;
+            color: #000 !important;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="failed-hero fade-in">
+            <div class="failed-icon">✕</div>
+            <h1 style="font-size: 3rem; letter-spacing: -0.05em; margin-bottom: 1rem;">PAYMENT FAILED</h1>
+            <p style="opacity: 0.6; margin-bottom: 3rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Your payment could not be processed. Don't worry — you haven't been charged.
+            </p>
+
+            <div class="failed-card">
+                <h3>WHAT HAPPENED?</h3>
+                <p id="error-message">Your payment was not completed. This could be due to:</p>
+                <ul style="font-size: 0.85rem; opacity: 0.7; padding-left: 1.5rem; line-height: 2;">
+                    <li>Insufficient funds in your account</li>
+                    <li>Incorrect card details or expired card</li>
+                    <li>Bank declined the transaction</li>
+                    <li>Network connectivity issues</li>
+                    <li>Payment session timed out</li>
+                </ul>
+
+                <div id="error-ref-container" style="display: none; margin-top: 1.5rem;">
+                    <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">TRANSACTION REFERENCE</div>
+                    <div id="error-ref" class="error-details"></div>
+                </div>
+
+                <div id="error-code-container" style="display: none; margin-top: 1rem;">
+                    <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 0.5rem;">ERROR CODE</div>
+                    <div id="error-code" class="error-details"></div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/checkout" class="btn btn-retry" style="font-size: 1rem; padding: 1.2rem 2.5rem; background: var(--accent-color); color: #000;">TRY AGAIN</a>
+                <a href="/shop" class="btn" style="background: none; border: 1px solid var(--border-color); font-size: 1rem; padding: 1.2rem 2.5rem; color: #fff;">CONTINUE SHOPPING</a>
+                <a href="/contact" class="btn" style="background: none; border: 1px solid var(--border-color); font-size: 1rem; padding: 1.2rem 2.5rem; color: #fff;">CONTACT SUPPORT</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('ref');
+            const code = params.get('code');
+            const message = params.get('message');
+
+            if (ref) {
+                document.getElementById('error-ref-container').style.display = 'block';
+                document.getElementById('error-ref').textContent = ref;
+            }
+
+            if (code) {
+                document.getElementById('error-code-container').style.display = 'block';
+                document.getElementById('error-code').textContent = code;
+            }
+
+            if (message) {
+                document.getElementById('error-message').textContent = decodeURIComponent(message);
+            }
+        });
+    </script>
+</body>
+
+</html>

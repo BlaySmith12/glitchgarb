@@ -1,0 +1,39 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/shop", "destination": "/shop.html" },
+    { "source": "/product", "destination": "/product.html" },
+    { "source": "/product/:id", "destination": "/product.html?id=:id" },
+    { "source": "/cart", "destination": "/cart.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/signup", "destination": "/signup.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin-setup", "destination": "/admin-setup.html" },
+    { "source": "/collections", "destination": "/collections.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/faq", "destination": "/faq.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/shipping", "destination": "/shipping.html" },
+    { "source": "/returns", "destination": "/returns.html" },
+    { "source": "/size-guide", "destination": "/size-guide.html" },
+    { "source": "/careers", "destination": "/careers.html" },
+    { "source": "/order-success", "destination": "/order-success.html" },
+    { "source": "/order-failed", "destination": "/order-failed.html" },
+    { "source": "/reset-password", "destination": "/reset-password.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Content-Security-Policy", "value": "frame-src 'self' https://js.paystack.co https://paystack.com https://*.paystack.com; script-src 'self' 'unsafe-inline' https://js.paystack.co; connect-src 'self' https://glitchgarb-api-mkma.onrender.com https://js.paystack.co https://*.paystack.com; img-src 'self' data: https:;" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Creation</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <h1>Test Admin User Creation</h1>
+    <button onclick="testAdminCreation()">Test Admin Creation</button>
+    <button onclick="checkAdminAccount()">Check Admin Account</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+
+    <div id="results"></div>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script>
+        function testAdminCreation() {
+            const results = document.getElementById('results');
+
+            // Check current state
+            const users = storageService.getUsers();
+            results.innerHTML += `<p>Current users count: ${users.length}</p>`;
+
+            // Check if admin exists
+            const adminExists = users.some(user => user.email === 'admin@glitchgarb.com');
+            results.innerHTML += `<p>Admin exists: ${adminExists}</p>`;
+
+            if (adminExists) {
+                const adminUser = users.find(user => user.email === 'admin@glitchgarb.com');
+                results.innerHTML += `<p>Admin details: ${JSON.stringify(adminUser)}</p>`;
+            } else {
+                results.innerHTML += `<p>Admin user NOT found in storage</p>`;
+            }
+        }
+
+        function checkAdminAccount() {
+            const results = document.getElementById('results');
+
+            // Try to log in as admin
+            const loginResult = storageService.loginUser('admin@glitchgarb.com', 'admin123');
+
+            if (loginResult.success) {
+                results.innerHTML += `<p>✅ Login successful! ${loginResult.user.name} (${loginResult.user.email})</p>`;
+                results.innerHTML += `<p>Admin rights: ${loginResult.user.isAdmin}</p>`;
+                results.innerHTML += `<p>VIP status: ${loginResult.user.isVIP}</p>`;
+            } else {
+                results.innerHTML += `<p>❌ Login failed: ${loginResult.message}</p>`;
+
+                // Show all users in storage
+                const users = storageService.getUsers();
+                results.innerHTML += `<p>All users in storage: ${JSON.stringify(users)}</p>`;
+            }
+        }
+
+        function clearStorage() {
+            if (confirm('Are you sure you want to clear all localStorage?')) {
+                localStorage.clear();
+                // Reload to re-initialize
+                location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

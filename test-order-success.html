@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Order Success</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <h1>Testing Order Success Page</h1>
+    <button onclick="testOrderSuccess()">Test Order Success Page</button>
+    <button onclick="clearOrders()">Clear Orders</button>
+    <div id="result"></div>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script>
+        async function testOrderSuccess() {
+            try {
+                console.log('Testing order success...');
+                const result = document.getElementById('result');
+
+                // Check current orders
+                const orders = await apiService.getOrders();
+                result.innerHTML = `<p>Found ${orders.length} orders</p>`;
+
+                if (orders.length === 0) {
+                    result.innerHTML += '<p>No orders found, redirecting to order-success.html to create sample...</p>';
+                    window.open('order-success.html', '_blank');
+                } else {
+                    result.innerHTML += `<p>Most recent order: ${orders[0].id}</p>`;
+                    result.innerHTML += '<p>Opening order-success.html...</p>';
+                    window.open(`order-success.html?orderId=${orders[0].id}`, '_blank');
+                }
+            } catch (error) {
+                console.error('Test failed:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        function clearOrders() {
+            localStorage.removeItem('gg_orders');
+            document.getElementById('result').innerHTML = '<p>Orders cleared</p>';
+        }
+    </script>
+</body>
+</html>

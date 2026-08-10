@@ -1,0 +1,67 @@
+.mobile-account-tabs { display: none; }
+
+@media (max-width: 768px) {
+    .account-layout {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        padding-bottom: 68px !important;
+    }
+    .account-sidebar {
+        display: none !important;
+    }
+    .account-section {
+        display: none;
+    }
+    .account-section.active {
+        display: block;
+    }
+    .mobile-account-tabs {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #0d0d0d;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        z-index: 1000;
+        height: 60px;
+        padding: 0 4px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+    }
+    .mobile-account-tab {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: rgba(255,255,255,0.35);
+        font-size: 0.55rem;
+        letter-spacing: 0.03em;
+        padding: 6px 2px 4px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+        text-decoration: none;
+        text-transform: uppercase;
+        min-width: 0;
+    }
+    .mobile-account-tab i {
+        font-size: 1.05rem;
+        line-height: 1;
+    }
+    .mobile-account-tab span {
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    .mobile-account-tab.active {
+        color: var(--accent-color);
+    }
+    .mobile-account-tab.active i {
+        filter: drop-shadow(0 0 6px rgba(255,62,0,0.4));
+    }
+}

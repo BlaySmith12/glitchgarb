@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Order API</title>
+    <style>
+        body { background: #000; color: #fff; font-family: monospace; padding: 2rem; }
+        pre { background: #222; padding: 1rem; overflow: auto; max-height: 60vh; }
+        button { background: #0ff; color: #000; border: none; padding: 1rem 2rem; cursor: pointer; font-size: 1rem; margin: 0.5rem; }
+        .error { color: #f44; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>Order API Test</h1>
+    <button onclick="testHealth()">Test Health</button>
+    <button onclick="testCreateOrder()">Test Create Order</button>
+    <button onclick="testGetOrders()">Test Get Orders</button>
+    <pre id="output">Click a test button...</pre>
+
+    <script src="config.js"></script>
+    <script src="api-service.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        function log(msg, isError) {
+            const line = typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg;
+            output.innerHTML += (isError ? '\nERROR: ' : '\n') + line + '\n---';
+        }
+
+        async function testHealth() {
+            output.innerHTML = 'Testing health...';
+            try {
+                const r = await fetch(GLITCHGARB_API_URL + '/health', { signal: AbortSignal.timeout(10000) });
+                const data = await r.json();
+                log(data);
+            } catch (e) {
+                log(e.message, true);
+            }
+        }
+
+        async function testCreateOrder() {
+            output.innerHTML = 'Creating test order...';
+            try {
+                const result = await apiService.createOrder({
+                    items: [{
+                        productId: 'test-product-id',
+                        name: 'Test Product',
+                        price: 100,
+                        size: 'M',
+                        color: 'Black',
+                        quantity: 1
+                    }],
+                    shipping_address: {
+                        name: 'Test User',
+                        email: 'test@test.com',
+                        phone: '0241234567',
+                        address: '123 Test St',
+                        city: 'Accra',
+                        country: 'Ghana',
+                        region: 'Greater Accra'
+                    },
+                    customer_info: {
+                        name: 'Test User',
+                        email: 'test@test.com',
+                        phone: '0241234567'
+                    },
+                    payment_method: 'test',
+                    payment_reference: 'TEST-' + Date.now(),
+                    subtotal: 100,
+                    total: 100
+                });
+                log(result, !result.success);
+            } catch (e) {
+                log(e.message, true);
+            }
+        }
+
+        async function testGetOrders() {
+            output.innerHTML = 'Getting orders...';
+            try {
+                // Need to be logged in as admin to get orders
+                const response = await apiService.apiRequest('/orders/');
+                log(response);
+            } catch (e) {
+                log(e.message, true);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo"><img src="logo.png" alt="GLITCHGARB" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-size:1.2rem;font-weight:800;&quot;>GLITCHGARB</span>'"></a>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container fade-in">
+            <h2 style="margin-bottom: 2rem;">Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="????????">
+                </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="#" id="forgot-password-link"
+                        style="color: var(--accent-color); text-decoration: none; font-size: 0.8rem;">Forgot
+                        Password?</a>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Enter</button>
+            </form>
+
+            <!-- Forgot Password Modal -->
+            <div id="forgot-password-modal"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+                <div
+                    style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; max-width: 400px; width: 90%; border: 1px solid var(--border-color);">
+                    <h3 style="margin-bottom: 1rem;">Reset Password</h3>
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 1.5rem;">Enter your email address and
+                        we'll send you a link to reset your password.</p>
+                    <form id="forgot-password-form">
+                        <div class="form-group">
+                            <label for="reset-email">Email Address</label>
+                            <input type="email" id="reset-email" required placeholder="name@example.com">
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="button" id="cancel-reset" class="btn btn-secondary"
+                                style="flex: 1;">Cancel</button>
+                            <button type="submit" class="btn" style="flex: 1;">Send Reset Link</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+                Don't have an account? <a href="/signup"
+                    style="color: var(--accent-color); text-decoration: none;">Join the Club</a>
+            </div>
+
+            <div class="social-auth">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                    <span style="font-size: 0.7rem; opacity: 0.5;">OR CONTINUE WITH</span>
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                </div>
+                <button class="btn-social" id="google-login">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" width="16"> Google
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script src="components.js?v=12"></script>
+    <script src="toast.js?v=12"></script>
+
+    <script>
+        // Check for token in URL (from Google OAuth callback)
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            const refreshToken = params.get('refresh_token');
+            const email = params.get('email');
+            
+            if (token) {
+                // Fetch user data
+                 fetch(`${apiService.API_URL}/auth/me`, {
+                     headers: { 'Authorization': `Bearer ${token}` }
+                 })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user) {
+                        // Store using apiService helper to ensure correct keys
+                        apiService.setAuth(token, refreshToken, data.user);
+                        
+                        Toast.success('Login successful! Redirecting...', { duration: 2000 });
+                        setTimeout(() => {
+                            if (data.user.is_admin) {
+                                window.location.href='/admin';
+                            } else {
+                                window.location.href='/';
+                            }
+                        }, 1500);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching user:', err);
+                    Toast.error('Login failed. Please try again.');
+                });
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        })();
+
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Show loading state
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use Python Backend API via apiService
+                // loginUser is an alias for login added to api-service.js
+                const result = await apiService.loginUser(email, password);
+
+                if (result.success) {
+                    Toast.success('Welcome back! Redirecting...', { duration: 2000 });
+                    
+                    const user = result.user;
+                    setTimeout(() => {
+                        // Redirect admin to admin dashboard, others to home
+                        if (user && user.is_admin) {
+                            window.location.href='/admin';
+                        } else {
+                            window.location.href='/';
+                        }
+                    }, 1500);
+                } else {
+                    Toast.error(result.message || 'Invalid credentials');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                Toast.error(error.message || 'An error occurred. Please try again.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Google Login
+        document.getElementById('google-login').addEventListener('click', () => {
+            window.location.href = 'https://glitchgarb-api-mkma.onrender.com/api/auth/google/login';
+        });
+
+        // Forgot Password functionality
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const forgotPasswordModal = document.getElementById('forgot-password-modal');
+        const forgotPasswordForm = document.getElementById('forgot-password-form');
+        const cancelResetBtn = document.getElementById('cancel-reset');
+
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPasswordModal.style.display = 'flex';
+        });
+
+        cancelResetBtn.addEventListener('click', () => {
+            forgotPasswordModal.style.display = 'none';
+        });
+
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = forgotPasswordForm.querySelector('input[type="email"]').value;
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+                
+                const result = await apiService.forgotPassword(email);
+                if (result.success) {
+                    Toast.success(result.message || 'Reset link sent to your email.');
+                    forgotPasswordModal.style.display = 'none';
+                    forgotPasswordForm.reset();
+                } else {
+                    Toast.error(result.message || 'Failed to send reset link.');
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                Toast.error('An error occurred. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+
+</html>
+

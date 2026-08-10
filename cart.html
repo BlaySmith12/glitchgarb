@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CART | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 1.5rem;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            align-items: center;
+        }
+
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .cart-item-details h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-meta {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .quantity-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .quantity-value {
+            width: 40px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .remove-btn {
+            background: none;
+            border: 1px solid #500;
+            color: #f55;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #500;
+            color: #fff;
+        }
+
+        .cart-summary {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .summary-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        .summary-card h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            opacity: 0.6;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+            opacity: 0.6;
+        }
+
+        .empty-cart svg {
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-cart h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-cart p {
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .cart-container {
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+                margin-top: 2rem;
+            }
+
+            .cart-summary {
+                position: static;
+                order: -1;
+                margin-bottom: 2rem;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .cart-item-details h3 {
+                font-size: 0.9rem;
+            }
+
+            .cart-item-meta {
+                font-size: 0.7rem;
+            }
+
+            .cart-item-price {
+                font-size: 1rem;
+            }
+
+            .cart-item>div:last-child {
+                grid-column: 1 / -1;
+                text-align: left !important;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .quantity-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+
+            .summary-card {
+                padding: 1.5rem;
+            }
+
+            .summary-card h2 {
+                font-size: 0.7rem;
+            }
+
+            .summary-row {
+                font-size: 0.85rem;
+            }
+
+            .summary-total {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cart-item {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .cart-item-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .cart-item-details h3 {
+                font-size: 0.85rem;
+            }
+
+            .quantity-controls {
+                gap: 0.25rem;
+            }
+
+            .quantity-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 0.9rem;
+            }
+
+            .quantity-value {
+                width: 30px;
+                font-size: 0.9rem;
+            }
+
+            .remove-btn {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo"><img src="logo.png" alt="GLITCHGARB" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;font-size:1.2rem;font-weight:800;&quot;>GLITCHGARB</span>'"></a>
+            <nav id="main-nav">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/login" id="auth-link">Login</a>
+                <a href="/profile" id="profile-link" style="display: none;">Account</a>
+            </nav>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="position: relative;">
+                    <a href="/cart" style="color: #fff; text-decoration: none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span id="cart-count"
+                            style="position: absolute; top: -8px; right: -8px; background: var(--accent-color); color: #fff; font-size: 0.65rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">0</span>
+                    </a>
+                </div>
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/login" id="mobile-auth-link">Login</a>
+        <a href="/profile" id="mobile-profile-link" style="display: none;">Account</a>
+        <a href="#" id="mobile-logout-link" style="display: none;">Logout</a>
+    </div>
+
+    <main class="container">
+        <h1 style="font-size: 2rem; margin-bottom: 2rem;">YOUR CART</h1>
+
+        <div class="cart-container fade-in" id="cart-container">
+            <!-- Cart content loaded via JS -->
+        </div>
+    </main>
+
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script src="components.js?v=12"></script>
+    <script src="toast.js?v=12"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileMenuOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileMenuOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', openMobileMenu);
+            }
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeMobileMenu();
+                }
+            });
+
+            // Update auth links
+            const authLink = document.getElementById('auth-link');
+            const profileLink = document.getElementById('profile-link');
+            const mobileAuthLink = document.getElementById('mobile-auth-link');
+            const mobileProfileLink = document.getElementById('mobile-profile-link');
+            const mobileLogoutLink = document.getElementById('mobile-logout-link');
+
+            function updateAuthLinks() {
+                const user = storageService.getCurrentUser();
+                if (user) {
+                    if (authLink) authLink.style.display = 'none';
+                    if (profileLink) profileLink.style.display = 'inline-block';
+                    if (mobileAuthLink) mobileAuthLink.style.display = 'none';
+                    if (mobileProfileLink) mobileProfileLink.style.display = 'block';
+                    if (mobileLogoutLink) mobileLogoutLink.style.display = 'block';
+                } else {
+                    if (authLink) authLink.style.display = 'inline-block';
+                    if (profileLink) profileLink.style.display = 'none';
+                    if (mobileAuthLink) mobileAuthLink.style.display = 'block';
+                    if (mobileProfileLink) mobileProfileLink.style.display = 'none';
+                    if (mobileLogoutLink) mobileLogoutLink.style.display = 'none';
+                }
+            }
+
+            // Mobile logout handler
+            if (mobileLogoutLink) {
+                mobileLogoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    storageService.logout();
+                    Toast.info('Logged out successfully');
+                    setTimeout(() => {
+                        window.location.href='/';
+                    }, 1000);
+                });
+            }
+
+            updateAuthLinks();
+            renderCart();
+            updateCartCount();
+
+            window.addEventListener('storage', () => {
+                updateAuthLinks();
+                renderCart();
+                updateCartCount();
+            });
+        });
+
+        async function updateCartCount() {
+            const cartCountEl = document.getElementById('cart-count');
+            const count = await storageService.getCartCountAsync();
+            cartCountEl.textContent = count;
+            cartCountEl.style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        async function renderCart() {
+            const container = document.getElementById('cart-container');
+            
+            try {
+                const token = localStorage.getItem('glitchgarb_token');
+                let cart;
+                if (token) {
+                    // Logged in: fetch from API
+                    console.log('[renderCart] fetching from API...');
+                    try {
+                        cart = await apiService.getCart();
+                        console.log('[renderCart] API cart received:', JSON.stringify(cart));
+                    } catch (apiErr) {
+                        console.error('[renderCart] API getCart failed:', apiErr);
+                        // Fallback to localStorage
+                        cart = await storageService.getCart();
+                        console.log('[renderCart] fallback to localStorage:', JSON.stringify(cart));
+                    }
+                } else {
+                    // Guest: use localStorage
+                    cart = await storageService.getCart();
+                    console.log('[renderCart] localStorage cart received:', JSON.stringify(cart));
+                }
+                
+                // Handle both API response (object with .items) and localStorage (array)
+                const items = cart.items || cart;
+                console.log('[renderCart] items:', JSON.stringify(items, null, 2));
+                const cartTotal = cart.subtotal !== undefined ? cart.subtotal : await storageService.getCartTotal();
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-cart" style="grid-column: 1 / -1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <h3>YOUR CART IS EMPTY</h3>
+                            <p>Looks like you haven't added any items yet.</p>
+                            <a href="/shop" class="btn" style="display: inline-block;">BROWSE DROPS</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="cart-items">
+                        ${items.map(item => `
+                            <div class="cart-item" data-id="${item.id}">
+                                <img src="${item.image || item.productImage || ''}" alt="${item.name || item.productName || 'Product'}" class="cart-item-image">
+                                <div class="cart-item-details">
+                                    <h3>${item.name || item.productName || 'Product'}</h3>
+                                    <div class="cart-item-meta">
+                                        Size: ${item.size || 'N/A'} | Color: ${item.color || 'N/A'}
+                                    </div>
+                                    <div class="cart-item-price">GH₵ ${(item.price || 0).toFixed(2)}</div>
+                                    <div class="quantity-controls">
+                                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', ${(item.quantity || 1) - 1})">-</button>
+                                        <span class="quantity-value">${item.quantity || 1}</span>
+                                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', ${(item.quantity || 1) + 1})">+</button>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700; margin-bottom: 1rem;">GH₵ ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</div>
+                                    <button class="remove-btn" onclick="removeItem('${item.id}')">REMOVE</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="cart-summary">
+                        <div class="summary-card">
+                            <h2>ORDER SUMMARY</h2>
+                            <div class="summary-row">
+                                <span>Subtotal (${items.reduce((sum, item) => sum + (item.quantity || 1), 0)} items)</span>
+                                <span>GH₵ ${cartTotal.toFixed(2)}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping</span>
+                                <span>${cartTotal > 100 ? 'FREE' : 'GH₵ 9.99'}</span>
+                            </div>
+                            <div class="summary-row summary-total">
+                                <span>Total</span>
+                                <span>GH₵ ${cartTotal.toFixed(2)}</span>
+                            </div>
+                            <button class="btn" style="width: 100%; padding: 1.5rem; margin-top: 2rem;" onclick="proceedToCheckout()">
+                                PROCEED TO CHECKOUT
+                            </button>
+                            <a href="/shop" style="display: block; text-align: center; margin-top: 1rem; font-size: 0.8rem; opacity: 0.6; text-decoration: none;">
+                                Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error rendering cart:', error);
+                container.innerHTML = `
+                    <div class="empty-cart" style="grid-column: 1 / -1;">
+                        <h3>Error loading cart</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function updateQuantity(itemId, newQuantity) {
+            console.log('updateQuantity called:', itemId, newQuantity);
+            if (!itemId || itemId === 'undefined') {
+                console.error('Invalid itemId:', itemId);
+                return;
+            }
+            if (newQuantity < 1) {
+                await removeItem(itemId);
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('glitchgarb_token');
+                if (token) {
+                    // Logged in: use API
+                    const result = await apiService.updateCartItem(itemId, { quantity: newQuantity });
+                    console.log('updateCartItem API result:', result);
+                } else {
+                    // Guest: use localStorage
+                    await storageService.updateCartItem(itemId, { quantity: newQuantity });
+                }
+                await renderCart();
+                await updateCartCount();
+            } catch (e) {
+                console.error('updateQuantity error:', e);
+                try {
+                    const stored = localStorage.getItem('glitchgarb_cart');
+                    if (stored) {
+                        const cart = JSON.parse(stored);
+                        const items = cart.items || (Array.isArray(cart) ? cart : []);
+                        const item = items.find(i => String(i.id) === String(itemId));
+                        if (item) {
+                            item.quantity = newQuantity;
+                            localStorage.setItem('glitchgarb_cart', JSON.stringify(cart));
+                            await renderCart();
+                            await updateCartCount();
+                            if (typeof Toast !== 'undefined') Toast.success('Quantity updated');
+                        }
+                    }
+                } catch (e2) {
+                    console.error('localStorage fallback failed:', e2);
+                }
+            }
+        }
+
+        async function removeItem(itemId) {
+            if (confirm('Remove this item from cart?')) {
+                try {
+                    const token = localStorage.getItem('glitchgarb_token');
+                    if (token) {
+                        await apiService.removeFromCart(itemId);
+                    } else {
+                        await storageService.removeFromCart(itemId);
+                    }
+                    await renderCart();
+                    await updateCartCount();
+                    Toast.success('Item removed from cart');
+                } catch (e) {
+                    console.error('removeItem error:', e);
+                    await storageService.removeFromCart(itemId);
+                    await renderCart();
+                    await updateCartCount();
+                }
+            }
+        }
+
+        function proceedToCheckout() {
+            // Guest checkout is now allowed - no login required
+            window.location.href = 'checkout.html?cart=true';
+        }
+    </script>
+</body>
+
+</html>

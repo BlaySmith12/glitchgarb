@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOIN THE CLUB | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <a href="/" class="logo"><img src="logo.png" alt="GLITCHGARB"></a>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container fade-in">
+            <h2 style="margin-bottom: 2rem;">Join the Club</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="????????????????????????" minlength="6">
+                    <small style="opacity: 0.6; font-size: 0.7rem;">Minimum 6 characters</small>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">Create Account</button>
+            </form>
+
+            <div style="margin-top: 2rem; text-align: center; font-size: 0.8rem;">
+                Already a member? <a href="/login" style="color: var(--accent-color); text-decoration: none;">Login
+                    Here</a>
+            </div>
+
+            <div class="social-auth">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                    <span style="font-size: 0.7rem; opacity: 0.5;">OR CONTINUE WITH</span>
+                    <hr style="flex: 1; border: 0.5px solid var(--border-color);">
+                </div>
+                <button class="btn-social" id="google-signup">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" width="16"> Google
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="config.js?v=12"></script>
+    <script src="api-service.js?v=12"></script>
+    <script src="components.js?v=12"></script>
+    <script src="toast.js?v=12"></script>
+
+    <script>
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Show loading state
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use Python Backend API via apiService
+                // registerUser is an alias for signup added to api-service.js
+                const result = await apiService.registerUser({
+                    name,
+                    email,
+                    password
+                });
+
+                if (result.success) {
+                    Toast.success('Account created successfully! Redirecting...', { duration: 2000 });
+                    setTimeout(() => {
+                        window.location.href='/';
+                    }, 1500);
+                } else {
+                    Toast.error(result.message || 'Registration failed');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                Toast.error(error.message || 'An error occurred. Please try again.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Google Sign Up
+        document.getElementById('google-signup').onclick = () => {
+            window.location.href = 'https://glitchgarb-api-mkma.onrender.com/api/auth/google/login';
+        };
+    </script>
+</body>
+
+</html>
+

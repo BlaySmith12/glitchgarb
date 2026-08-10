@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN LOGIN | GLITCHGARB</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .portal-entrance {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%);
+            padding: 2rem 0;
+            overflow-y: auto;
+        }
+
+        .portal-card {
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 3.5rem 2.5rem 5rem;
+            width: 420px;
+            max-width: 90vw;
+            border-radius: 24px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 62, 0, 0.05);
+            position: relative;
+            text-align: center;
+        }
+
+        .portal-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .portal-header img {
+            width: 160px;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1)) brightness(0) invert(1);
+        }
+
+        .portal-brand-text {
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+        }
+
+        .portal-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 15px rgba(255, 62, 0, 0.3);
+        }
+
+        .portal-form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .portal-form-group label {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .portal-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.1rem;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .portal-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(255, 62, 0, 0.1);
+        }
+
+        .portal-btn {
+            width: 100%;
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 1.1rem;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .portal-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 62, 0, 0.4);
+        }
+
+        .portal-btn:active {
+            transform: translateY(0);
+        }
+
+        .portal-back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: 0.3s;
+            letter-spacing: 0.05em;
+            padding-bottom: 2rem;
+        }
+
+        .portal-back-link:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-entrance">
+        <div class="portal-card">
+            <div class="portal-header">
+                <img src="logo.png" alt="GLITCHGARB">
+                <div class="portal-brand-text">ADMIN DASHBOARD</div>
+                <div class="portal-badge">SECURE ACCESS</div>
+            </div>
+            
+            <form id="adminLoginForm">
+                <div class="portal-form-group">
+                    <label>Email</label>
+                    <input type="email" id="admin-email" class="portal-input" placeholder="Email address" required>
+                </div>
+                
+                <div class="portal-form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" class="portal-input" placeholder="��������" required>
+                </div>
+                
+                <button type="submit" class="portal-btn">ACCESS DASHBOARD</button>
+            </form>
+            
+
+        </div>
+    </div>
+
+     <script src="config.js?v=12"></script>
+    <script src="admin-api.js"></script>
+     <script>
+         document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+             e.preventDefault();
+             
+             const email = document.getElementById('admin-email').value;
+             const password = document.getElementById('admin-password').value;
+             
+             try {
+                 const result = await adminAPI.login(email, password);
+                 
+                  if (result.success) {
+                      const user = await adminAPI.getCurrentUser();
+                      if (user && user.is_admin === true) {
+                          window.location.href='/admin';
+                      } else {
+                          alert('Access denied.');
+                          adminAPI.logout();
+                      }
+                  } else {
+                      alert('Login failed. Check your credentials.');
+                  }
+              } catch (error) {
+                  alert('Login failed. Check your credentials.');
+              }
+         });
+     </script>
+</body>
+</html>
