@@ -40,7 +40,7 @@ done
 # 3. Dump from Neon and restore into the local container (plain SQL, safe to re-run)
 echo "[migrate] Dumping data from Neon..."
 echo "[migrate] Restoring into local PostgreSQL (this may take a few minutes)..."
-pg_dump "$NEON_URL" --no-owner --no-acls --clean --if-exists \
+pg_dump "$NEON_URL" --no-owner --no-acl --clean --if-exists \
   | docker compose exec -T db psql -U glitchgarb -d glitchgarb \
   || { echo "[migrate] ERROR: restore failed"; exit 1; }
 
