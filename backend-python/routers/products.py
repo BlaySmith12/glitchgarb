@@ -3,7 +3,12 @@ routers/products.py — Product CRUD endpoints
 Matches all original Node.js /api/products/* routes exactly.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+import base64
+import binascii
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from datetime import datetime
@@ -18,8 +23,59 @@ from fastapi import BackgroundTasks
 
 router = APIRouter()
 
+FALLBACK_IMAGE = "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300"
+_DATA_URI_RE = re.compile(r"^data:image/(?P<mime>[\w.+-]+);base64,(?P<b64>.+)$", re.DOTALL)
+
+
+def _decode_data_uri(value: str):
+    """Decode a base64 data-URI (or bare base64) into (mime, bytes). Returns None if not decodable."""
+    if not value:
+        return None
+    m = _DATA_URI_RE.match(value)
+    if m:
+        mime = m.group("mime")
+        b64 = m.group("b64")
+    elif value.startswith("/api/") or value.startswith("http://") or value.startswith("https://"):
+        return None  # it's a URL, not image data
+    else:
+        mime = "jpeg"
+        b64 = value
+    try:
+        data = base64.b64decode(b64)
+    except (binascii.Error, ValueError):
+        return None
+    if not data:
+        return None
+    return (mime, data)
+
+
+def _image_url(p: Product, index: int = 0) -> str:
+    """Return the binary-serving URL for images[index], or the fallback if not set."""
+    images = p.images or []
+    if not images or index >= len(images) or not images[index]:
+        return FALLBACK_IMAGE
+    return f"/api/products/{p.id}/image/{index}"
+
+
+def _gallery_url(p: Product, index: int = 0) -> str:
+    return f"/api/products/{p.id}/gallery/{index}"
+
+
+def _is_self_reference(value, product_id):
+    """True if an admin-saved image value is our own binary URL (i.e. unchanged image)."""
+    if not isinstance(value, str):
+        return False
+    return value.startswith(f"/api/products/{product_id}/")
+
 
 def _product_out(p: Product) -> dict:
+     gallery_out = []
+     gallery = p.gallery or []
+     for i, item in enumerate(gallery):
+         if isinstance(item, dict):
+             gallery_out.append({"url": _gallery_url(p, i), "label": item.get("label", "View")})
+         elif isinstance(item, str):
+             gallery_out.append({"url": _gallery_url(p, i), "label": "View"})
      return {
          "id": p.id,
          "name": p.name,
@@ -27,8 +83,8 @@ def _product_out(p: Product) -> dict:
          "price": p.price,
          "original_price": p.original_price,
          "category": p.category,
-         "images": p.images or [],
-         "gallery": p.gallery or [],
+         "images": [_image_url(p, i) for i in range(len(p.images or []))],
+         "gallery": gallery_out,
          "sizes": p.sizes or [],
          "colors": p.colors or [],
          "stock": p.stock,
@@ -36,11 +92,31 @@ def _product_out(p: Product) -> dict:
          "featured": p.featured,
          "drop_date": p.drop_date.isoformat() if p.drop_date else None,
          "releaseDate": p.drop_date.isoformat() if p.drop_date else None,
-         "image": p.images[0] if p.images and len(p.images) > 0 else "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&q=80&w=300",
+         "image": _image_url(p, 0),
          "tags": p.tags or [],
          "created_at": p.created_at.isoformat() if p.created_at else None,
          "updated_at": p.updated_at.isoformat() if p.updated_at else None,
      }
+
+
+def _serve_image(value):
+    """Turn a stored image value into a binary Response (or redirect for external URLs)."""
+    if not value:
+        raise HTTPException(404, "Image not found")
+    if value.startswith("http://") or value.startswith("https://"):
+        return RedirectResponse(value, status_code=302)
+    decoded = _decode_data_uri(value)
+    if decoded is None:
+        raise HTTPException(404, "Image not found")
+    mime, data = decoded
+    return Response(
+        content=data,
+        media_type=f"image/{mime}",
+        headers={
+            "Cache-Control": "public, max-age=86400",
+            "Content-Length": str(len(data)),
+        },
+    )
 
 
 # ─────────────────────────────────────────────────────────────
@@ -138,6 +214,51 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
 
 
 # ─────────────────────────────────────────────────────────────
+#  GET /api/products/:id/image/:index  (binary image, cached)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{product_id}/image/{index}")
+async def get_product_image(
+    product_id: str,
+    index: int = 0,
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(404, "Product not found")
+
+    images = product.images or []
+    if index < 0 or index >= len(images):
+        raise HTTPException(404, "Image not found")
+    return _serve_image(images[index])
+
+
+# ─────────────────────────────────────────────────────────────
+#  GET /api/products/:id/gallery/:index  (binary image, cached)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{product_id}/gallery/{index}")
+async def get_product_gallery_image(
+    product_id: str,
+    index: int = 0,
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(404, "Product not found")
+
+    gallery = product.gallery or []
+    if index < 0 or index >= len(gallery):
+        raise HTTPException(404, "Image not found")
+
+    item = gallery[index]
+    value = item.get("url", "") if isinstance(item, dict) else (item or "")
+    return _serve_image(value)
+
+
+# ─────────────────────────────────────────────────────────────
 #  POST /api/products  (admin)
 # ─────────────────────────────────────────────────────────────
 
@@ -230,6 +351,33 @@ async def update_product(
             raise HTTPException(404, "Product not found")
 
         updates = body.model_dump(exclude_none=True)
+
+        # If admin saved unchanged images, they come back as our own /api/... URLs.
+        # Keep the original stored data so base64 images are not clobbered.
+        if "images" in updates:
+            cleaned_images = []
+            existing_images = product.images or []
+            for i, value in enumerate(updates["images"]):
+                if _is_self_reference(value, product_id) and i < len(existing_images):
+                    cleaned_images.append(existing_images[i])
+                else:
+                    cleaned_images.append(value)
+            updates["images"] = cleaned_images
+
+        if "gallery" in updates:
+            cleaned_gallery = []
+            existing_gallery = product.gallery or []
+            for i, item in enumerate(updates["gallery"]):
+                if isinstance(item, dict) and _is_self_reference(item.get("url", ""), product_id) and i < len(existing_gallery):
+                    existing = existing_gallery[i]
+                    if isinstance(existing, dict):
+                        cleaned_gallery.append({**existing, "label": item.get("label", existing.get("label", "View"))})
+                    else:
+                        cleaned_gallery.append(existing)
+                else:
+                    cleaned_gallery.append(item)
+            updates["gallery"] = cleaned_gallery
+
         for field, value in updates.items():
             setattr(product, field, value)
 

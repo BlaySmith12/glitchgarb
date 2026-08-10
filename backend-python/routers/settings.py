@@ -3,7 +3,12 @@ routers/settings.py — Site settings API endpoints (hero slides, next drop, etc
 """
 
 from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+import base64
+import binascii
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 from database import get_db
@@ -18,11 +23,48 @@ from sqlalchemy import select, delete
 
 router = APIRouter()
 
+_DATA_URI_RE = re.compile(r"^data:image/(?P<mime>[\w.+-]+);base64,(?P<b64>.+)$", re.DOTALL)
+
 
 class TelegramSettings(BaseModel):
     bot_token: Optional[str] = None
     chat_id: Optional[str] = None
     enabled: bool = False
+
+
+def _decode_data_uri(value: str):
+    if not value:
+        return None
+    m = _DATA_URI_RE.match(value)
+    if m:
+        mime, b64 = m.group("mime"), m.group("b64")
+    elif value.startswith("/api/") or value.startswith("http://") or value.startswith("https://"):
+        return None
+    else:
+        mime, b64 = "jpeg", value
+    try:
+        data = base64.b64decode(b64)
+    except (binascii.Error, ValueError):
+        return None
+    if not data:
+        return None
+    return (mime, data)
+
+
+def _slide_image_url(slide_id: str) -> str:
+    return f"/api/settings/hero-slides/{slide_id}/image"
+
+
+def _slide_out(slide) -> dict:
+    out = dict(slide) if isinstance(slide, dict) else {}
+    stored_image = str(out.get("image") or "")
+    if stored_image.startswith("http://") or stored_image.startswith("https://"):
+        out["image"] = stored_image
+    elif stored_image.startswith("/api/"):
+        out["image"] = stored_image
+    else:
+        out["image"] = _slide_image_url(str(out.get("id") or ""))
+    return out
 
 
 # ─────────────────────────────────────────────────────────────
@@ -42,8 +84,8 @@ async def get_hero_slides(db: AsyncSession = Depends(get_db)):
             return {
                 "success": True,
                 "slides": [
-                    {"id": s.id, "image": s.image, "title": s.title, "subtitle": s.subtitle,
-                     "cta": s.cta, "link": s.link, "enabled": s.enabled, "sort_order": s.sort_order}
+                    _slide_out({"id": s.id, "image": s.image, "title": s.title, "subtitle": s.subtitle,
+                     "cta": s.cta, "link": s.link, "enabled": s.enabled, "sort_order": s.sort_order})
                     for s in slides
                 ]
             }
@@ -54,7 +96,7 @@ async def get_hero_slides(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(SiteSetting).filter(SiteSetting.key == "hero_slides"))
     setting = result.scalar_one_or_none()
     if setting and setting.value:
-        return {"success": True, "slides": setting.value}
+        return {"success": True, "slides": [_slide_out(s) for s in setting.value]}
     
     # Return defaults
     return {"success": True, "slides": [
@@ -65,6 +107,51 @@ async def get_hero_slides(db: AsyncSession = Depends(get_db)):
          "title": "URBAN<br>UTILITY", "subtitle": "ENGINEERED FOR THE STREETS. GHANA PRIDE.",
          "cta": "View Collection", "link": "shop.html", "enabled": True, "sort_order": 1}
     ]}
+
+
+@router.get("/hero-slides/{slide_id}/image", tags=["Settings"])
+async def get_hero_slide_image(
+    slide_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Serve a hero slide image as binary (base64 stored in DB -> image bytes)."""
+    # Try HeroSlide table
+    try:
+        result = await db.execute(select(HeroSlide).where(HeroSlide.id == slide_id))
+        slide = result.scalar_one_or_none()
+        if slide:
+            return _serve_slide_image(slide.image)
+    except Exception:
+        pass
+
+    # Fallback: SiteSetting JSON blob
+    result = await db.execute(select(SiteSetting).filter(SiteSetting.key == "hero_slides"))
+    setting = result.scalar_one_or_none()
+    if setting and setting.value:
+        for s in setting.value:
+            if isinstance(s, dict) and str(s.get("id") or "") == slide_id:
+                return _serve_slide_image(s.get("image", ""))
+
+    raise HTTPException(404, "Image not found")
+
+
+def _serve_slide_image(value: str):
+    if not value:
+        raise HTTPException(404, "Image not found")
+    if value.startswith("http://") or value.startswith("https://"):
+        return RedirectResponse(value, status_code=302)
+    decoded = _decode_data_uri(value)
+    if decoded is None:
+        raise HTTPException(404, "Image not found")
+    mime, data = decoded
+    return Response(
+        content=data,
+        media_type=f"image/{mime}",
+        headers={
+            "Cache-Control": "public, max-age=86400",
+            "Content-Length": str(len(data)),
+        },
+    )
 
 
 @router.put("/hero-slides/", tags=["Settings"])
@@ -78,14 +165,33 @@ async def update_hero_slides(
         raise HTTPException(status_code=403, detail="Admin access required")
     
     slides_list = data.slides or []
-    
+
+    # Load existing stored slides so admin-saved image URLs can be mapped back to
+    # the original base64 (the admin form round-trips our /api/... image URLs).
+    existing_by_id = {}
+    try:
+        result = await db.execute(select(SiteSetting).filter(SiteSetting.key == "hero_slides"))
+        setting = result.scalar_one_or_none()
+        if setting and setting.value:
+            for s in setting.value:
+                if isinstance(s, dict) and s.get("id"):
+                    existing_by_id[str(s["id"])] = s
+    except Exception:
+        pass
+
     # Save to SiteSetting JSON blob (always works)
     slides_data = []
     for s in slides_list:
         d = s.model_dump()
+        image_value = d.get("image", "")
+        sid = str(d.get("id") or "")
+        if isinstance(image_value, str) and image_value.startswith("/api/settings/hero-slides/"):
+            existing = existing_by_id.get(sid)
+            if existing and existing.get("image"):
+                image_value = existing["image"]
         slides_data.append({
-            "id": str(d.get("id") or ""),
-            "image": d.get("image", ""),
+            "id": sid,
+            "image": image_value,
             "title": d.get("title", ""),
             "subtitle": d.get("subtitle", ""),
             "cta": d.get("cta", ""),

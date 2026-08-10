@@ -214,7 +214,7 @@ function renderProductGrid(container, products) {
         }
 
         const rawImgSrc = product.image || (product.images && product.images.length > 0 ? product.images[0] : '') || '';
-        const imgSrc = rawImgSrc && !rawImgSrc.startsWith('http') && !rawImgSrc.startsWith('data:image/') 
+        const imgSrc = rawImgSrc && !rawImgSrc.startsWith('http') && !rawImgSrc.startsWith('/') && !rawImgSrc.startsWith('data:image/') 
             ? `data:image/jpeg;base64,${rawImgSrc}` 
             : rawImgSrc;
 
