@@ -45,8 +45,11 @@ services:
       dockerfile: docker/web/Dockerfile
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      # Ports 80/443 are used by the other project (ecommerce) on this VPS,
+      # so glitchgarb's nginx listens on 8080 instead.
+      - "8080:80"
+      # Uncomment once you have a dedicated IP / free 443 for glitchgarb.com:
+      # - "443:443"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /var/www/certbot:/var/www/certbot:ro
